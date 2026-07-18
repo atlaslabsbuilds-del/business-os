@@ -3,12 +3,32 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./*": "./src/*.tsx"
+    "./styles/theme.css": "./src/styles/theme.css",
+    "./button": "./src/button.tsx",
+    "./input": "./src/input.tsx",
+    "./password-input": "./src/password-input.tsx",
+    "./checkbox": "./src/checkbox.tsx",
+    "./label": "./src/label.tsx",
+    "./alert": "./src/alert.tsx",
+    "./spinner": "./src/spinner.tsx",
+    "./form-field": "./src/form-field.tsx",
+    "./card": "./src/card.tsx",
+    "./badge": "./src/badge.tsx",
+    "./separator": "./src/separator.tsx",
+    "./dialog": "./src/dialog.tsx",
+    "./dropdown-menu": "./src/dropdown-menu.tsx",
+    "./app-shell": "./src/app-shell.tsx",
+    "./icons": "./src/icons.tsx",
+    "./code": "./src/code.tsx",
+    "./utils": "./src/utils.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
     "generate:component": "turbo gen react-component",
     "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "next": "^16.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
@@ -17,10 +37,16 @@
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "eslint": "^9.39.1",
+    "next": "^16.2.0",
     "typescript": "5.9.2"
   },
   "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.25.0",
+    "radix-ui": "^1.6.2",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.3.1"
   }
 }

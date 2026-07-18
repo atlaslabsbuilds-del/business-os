@@ -1,0 +1,43 @@
+{
+  "name": "@repo/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./gateway": "./src/gateway/index.ts",
+    "./providers/*": "./src/providers/*.ts",
+    "./prompts/*": "./src/prompts/*.ts",
+    "./memory": "./src/memory/index.ts",
+    "./memory/*": "./src/memory/*.ts",
+    "./knowledge": "./src/knowledge/index.ts",
+    "./knowledge/*": "./src/knowledge/*.ts",
+    "./embeddings/*": "./src/embeddings/*.ts",
+    "./vector/*": "./src/vector/*.ts",
+    "./agents/*": "./src/agents/*.ts",
+    "./tools/*": "./src/tools/*.ts",
+    "./tools": "./src/tools/index.ts",
+    "./types/*": "./src/types/*.ts",
+    "./chat": "./src/chat/index.ts",
+    "./chat/*": "./src/chat/*.ts",
+    "./inbox": "./src/inbox/index.ts",
+    "./inbox/*": "./src/inbox/*.ts",
+    "./gmail": "./src/gmail/index.ts",
+    "./gmail/*": "./src/gmail/*.ts",
+    "./credits/*": "./src/credits/*.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.39.1",
+    "typescript": "5.9.2"
+  }
+}

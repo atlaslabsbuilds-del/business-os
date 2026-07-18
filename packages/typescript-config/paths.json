@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@repo/auth": ["../auth/src/index.ts"],
+      "@repo/auth/*": ["../auth/src/*"],
+      "@repo/database": ["../database/src/index.ts"],
+      "@repo/database/*": ["../database/src/*"],
+      "@repo/ai": ["../ai/src/index.ts"],
+      "@repo/ai/*": ["../ai/src/*"],
+      "@repo/config": ["../config/src/index.ts"],
+      "@repo/config/*": ["../config/src/*"],
+      "@repo/types": ["../types/src/index.ts"],
+      "@repo/types/*": ["../types/src/*"],
+      "@repo/ui/*": ["../ui/src/*"]
+    }
+  }
+}

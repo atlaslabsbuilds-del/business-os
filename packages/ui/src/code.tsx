@@ -1,4 +1,5 @@
-import { type JSX } from "react";
+import * as React from "react";
+import { cn } from "./utils";
 
 export function Code({
   children,
@@ -6,6 +7,15 @@ export function Code({
 }: {
   children: React.ReactNode;
   className?: string;
-}): JSX.Element {
-  return <code className={className}>{children}</code>;
+}) {
+  return (
+    <code
+      className={cn(
+        "rounded-lg border border-border bg-elevated px-1.5 py-0.5 font-mono text-[0.8125rem] text-secondary",
+        className,
+      )}
+    >
+      {children}
+    </code>
+  );
 }

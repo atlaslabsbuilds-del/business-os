@@ -1,0 +1,43 @@
+{
+  "name": "@repo/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./browser": "./src/browser.ts",
+    "./server": "./src/server.ts",
+    "./admin": "./src/admin.ts",
+    "./middleware": "./src/middleware.ts",
+    "./env": "./src/env.ts",
+    "./workspace": "./src/workspace.ts",
+    "./chat": "./src/chat.ts",
+    "./credits": "./src/credits.ts",
+    "./crm": "./src/crm.ts",
+    "./inbox": "./src/inbox.ts",
+    "./gmail": "./src/gmail.ts",
+    "./ai-reply-drafts": "./src/ai-reply-drafts.ts"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@repo/config": "*",
+    "@repo/types": "*",
+    "@supabase/ssr": "^0.12.3",
+    "@supabase/supabase-js": "^2.90.1",
+    "zod": "^4.4.3"
+  },
+  "peerDependencies": {
+    "next": "^16.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.39.1",
+    "next": "^16.2.0",
+    "typescript": "5.9.2"
+  }
+}

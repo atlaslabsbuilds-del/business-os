@@ -1,27 +1,47 @@
-import { type JSX } from "react";
+import * as React from "react";
+import { cn } from "./utils";
 
-export function Card({
-  className,
-  title,
-  children,
-  href,
-}: {
-  className?: string;
-  title: string;
-  children: React.ReactNode;
-  href: string;
-}): JSX.Element {
+export type CardProps = React.HTMLAttributes<HTMLDivElement> & {
+  elevated?: boolean;
+};
+
+export function Card({ className, elevated = false, ...props }: CardProps) {
   return (
-    <a
-      className={className}
-      href={`${href}?utm_source=create-turbo&utm_medium=basic&utm_campaign=create-turbo"`}
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      <h2>
-        {title} <span>-&gt;</span>
-      </h2>
-      <p>{children}</p>
-    </a>
+    <div
+      className={cn(
+        "rounded-2xl border border-border p-6 transition duration-200",
+        elevated
+          ? "bg-elevated shadow-elevated"
+          : "bg-surface shadow-soft",
+        className,
+      )}
+      {...props}
+    />
   );
+}
+
+export function CardHeader({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("mb-4 flex flex-col gap-1", className)} {...props} />;
+}
+
+export function CardTitle({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      className={cn("text-base font-semibold tracking-tight text-foreground", className)}
+      {...props}
+    />
+  );
+}
+
+export function CardDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={cn("text-sm text-secondary", className)} {...props} />;
 }
