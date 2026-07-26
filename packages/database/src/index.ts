@@ -123,6 +123,7 @@ export {
 export {
   createAiReplyDraft,
   listAiReplyDrafts,
+  listWorkspaceAiReplyDrafts,
   getAiReplyDraft,
   updateAiReplyDraft,
 } from "./ai-reply-drafts";

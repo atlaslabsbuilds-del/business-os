@@ -87,8 +87,61 @@ export type DashboardInsight = {
   actionUrl: string;
 };
 
+export type DashboardConversationItem = {
+  id: string;
+  title: string;
+  model: string;
+  provider: string;
+  pinned: boolean;
+  updatedAt: string;
+  href: string;
+};
+
+export type DashboardLeadItem = {
+  id: string;
+  name: string;
+  email: string | null;
+  stage: string;
+  source: string | null;
+  updatedAt: string;
+  href: string;
+};
+
+export type DashboardDealItem = {
+  id: string;
+  title: string;
+  amount: number;
+  stage: string;
+  probability: number;
+  href: string;
+};
+
+export type DashboardPipelineStage = {
+  stage: string;
+  count: number;
+  value: number;
+};
+
+export type DashboardContentItem = {
+  id: string;
+  title: string;
+  kind: "thread" | "draft" | "summary";
+  subtitle: string;
+  href: string;
+  updatedAt: string;
+};
+
+export type DashboardAgendaItem = {
+  id: string;
+  title: string;
+  kind: "task" | "event";
+  at: string | null;
+  href: string;
+};
+
 export type DashboardSnapshot = {
   workspace: {
+    name: string;
     members: number;
     workspaces: number;
     pendingInvites: number;
@@ -100,6 +153,8 @@ export type DashboardSnapshot = {
     openTasks: number;
     upcomingEvents: number;
     aiCredits: number;
+    unread: number;
+    openDeals: number;
   };
   crm: {
     contacts: number;
@@ -107,6 +162,8 @@ export type DashboardSnapshot = {
     openDeals: number;
     pipelineValue: number;
     activities: number;
+    wonDeals: number;
+    wonValue: number;
   };
   inbox: {
     unread: number;
@@ -117,6 +174,39 @@ export type DashboardSnapshot = {
   chat: {
     conversations: number;
   };
+  finance: {
+    pipelineValue: number;
+    openDeals: number;
+    wonDeals: number;
+    wonValue: number;
+    aiCredits: number;
+    recentCredits: Array<{
+      id: string;
+      amount: number;
+      reason: string;
+      createdAt: string;
+    }>;
+  };
+  growth: {
+    contacts: number;
+    companies: number;
+    leads: number;
+    openDeals: number;
+    conversations: number;
+    unread: number;
+    members: number;
+  };
+  content: {
+    aiDrafts: number;
+    summarizedThreads: number;
+    unreadThreads: number;
+    items: DashboardContentItem[];
+  };
+  pipeline: DashboardPipelineStage[];
+  leads: DashboardLeadItem[];
+  deals: DashboardDealItem[];
+  conversations: DashboardConversationItem[];
+  agenda: DashboardAgendaItem[];
   notifications: WorkspaceNotification[];
   activity: WorkspaceActivityEvent[];
   memory: WorkspaceAiMemory[];

@@ -101,6 +101,24 @@ export async function listAiReplyDrafts(input: {
   return (data ?? []).map(mapDraft);
 }
 
+export async function listWorkspaceAiReplyDrafts(input: {
+  workspaceId: string;
+  limit?: number;
+  client?: SupabaseClient<Database>;
+}): Promise<InboxAiReplyDraft[]> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("inbox_ai_reply_drafts")
+    .select("*")
+    .eq("workspace_id", input.workspaceId)
+    .order("created_at", { ascending: false })
+    .limit(input.limit ?? 20);
+  if (error) {
+    throw new Error(`Failed to list workspace AI reply drafts: ${error.message}`);
+  }
+  return (data ?? []).map(mapDraft);
+}
+
 export async function getAiReplyDraft(input: {
   workspaceId: string;
   draftId: string;

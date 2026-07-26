@@ -66,6 +66,7 @@ export async function dashboardAiContextAction(): Promise<
       userId: context.userId,
       membershipCount: context.memberships.length,
       role: context.active.role,
+      workspaceName: context.active.workspace.name,
     });
     return { ok: true, data: { context: buildDashboardAiContext(snapshot) } };
   } catch (error) {
