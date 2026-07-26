@@ -7,6 +7,8 @@ node_modules
 
 # Local env files
 .env
+.env.*
+!.env.example
 .env.local
 .env.development.local
 .env.test.local
@@ -14,6 +16,8 @@ node_modules
 
 # Testing
 coverage
+*.lcov
+.nyc_output
 
 # Turbo
 .turbo
@@ -27,6 +31,9 @@ out/
 build
 dist
 
+# TypeScript / tooling cache
+*.tsbuildinfo
+.eslintcache
 
 # Debug
 npm-debug.log*
