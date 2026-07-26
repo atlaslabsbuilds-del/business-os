@@ -1761,6 +1761,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      calendar_booking_links: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; name: string; slug: string;
+          duration_minutes: number; buffer_minutes: number; timezone: string;
+          working_hours: Json; active: boolean; booking_count: number; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; name: string; slug: string;
+          duration_minutes?: number; buffer_minutes?: number; timezone?: string; working_hours?: Json;
+          active?: boolean; booking_count?: number; created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; name?: string; slug?: string;
+          duration_minutes?: number; buffer_minutes?: number; timezone?: string; working_hours?: Json;
+          active?: boolean; booking_count?: number; created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      calendar_availability: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; name: string; timezone: string;
+          working_days: Json; hours: Json; holidays: Json; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; name?: string; timezone?: string;
+          working_days?: Json; hours?: Json; holidays?: Json; created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; name?: string; timezone?: string;
+          working_days?: Json; hours?: Json; holidays?: Json; created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      calendar_meeting_notes: {
+        Row: {
+          id: string; workspace_id: string; event_id: string | null; created_by: string;
+          summary: string; action_items: Json; crm_synced: boolean; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; event_id?: string | null; created_by: string;
+          summary?: string; action_items?: Json; crm_synced?: boolean; created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; event_id?: string | null; created_by?: string;
+          summary?: string; action_items?: Json; crm_synced?: boolean; created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      calendar_reminders: {
+        Row: {
+          id: string; workspace_id: string; event_id: string | null; booking_link_id: string | null;
+          created_by: string; channel: string; minutes_before: number; sent_at: string | null; created_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; event_id?: string | null; booking_link_id?: string | null;
+          created_by: string; channel?: string; minutes_before?: number; sent_at?: string | null; created_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; event_id?: string | null; booking_link_id?: string | null;
+          created_by?: string; channel?: string; minutes_before?: number; sent_at?: string | null; created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

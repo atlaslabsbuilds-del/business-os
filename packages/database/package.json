@@ -20,6 +20,7 @@
     "./content": "./src/content.ts",
     "./social": "./src/social.ts",
     "./website": "./src/website.ts",
+    "./calendar": "./src/calendar.ts",
     "./crm": "./src/crm.ts",
     "./inbox": "./src/inbox.ts",
     "./gmail": "./src/gmail.ts",

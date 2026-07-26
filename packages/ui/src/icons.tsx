@@ -69,6 +69,14 @@ export const IconGlobe = icon(
   "IconGlobe",
 );
 
+export const IconCalendar = icon(
+  <>
+    <rect x="3" y="4" width="18" height="17" rx="2" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+  </>,
+  "IconCalendar",
+);
+
 export const IconSearch = icon(
   <>
     <circle cx="11" cy="11" r="7" />

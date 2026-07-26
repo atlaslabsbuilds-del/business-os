@@ -139,6 +139,20 @@ export type {
 export { websiteProjectTypeSchema, createWebsiteProjectSchema, generateWebsiteSchema } from "./website";
 
 export type {
+  CalendarBookingLink,
+  CalendarAvailability,
+  CalendarMeetingNote,
+  CalendarDashboardStats,
+  CreateBookingLinkInput,
+  UpdateAvailabilityInput,
+} from "./calendar";
+export {
+  createBookingLinkSchema,
+  updateAvailabilitySchema,
+  meetingSummarySchema,
+} from "./calendar";
+
+export type {
   Database,
   Json,
   Tables,

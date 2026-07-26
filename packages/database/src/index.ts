@@ -85,6 +85,14 @@ export {
   createWebsiteProject,
 } from "./website";
 export {
+  listBookingLinks,
+  createBookingLink,
+  getAvailability,
+  upsertAvailability,
+  listMeetingNotes,
+  getCalendarDashboardStats,
+} from "./calendar";
+export {
   listCompanies,
   getCompany,
   createCompany,

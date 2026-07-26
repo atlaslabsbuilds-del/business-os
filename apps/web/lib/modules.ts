@@ -66,11 +66,11 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
   {
     id: "calendar",
     label: "Calendar & Booking",
-    description: "Manage Google Calendar, availability, booking links, meetings, and events.",
-    route: "/inbox/calendar",
-    status: "foundation",
-    origin: "actora",
-    capabilities: ["Calendar", "Meetings", "Booking links", "Availability"],
+    description: "Manage availability, booking links, meetings, reminders, and events.",
+    route: "/calendar",
+    status: "active",
+    origin: "pbos",
+    capabilities: ["Calendar", "Meetings", "Booking links", "Availability", "Notes", "Analytics"],
   },
   {
     id: "leads",

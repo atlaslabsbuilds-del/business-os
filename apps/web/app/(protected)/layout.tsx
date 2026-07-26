@@ -1,6 +1,7 @@
 import { AppShell } from "@repo/ui/app-shell";
 import {
   IconBriefcase,
+  IconCalendar,
   IconGlobe,
   IconLayout,
   IconMail,
@@ -82,6 +83,11 @@ export default async function ProtectedLayout({
           href: "/website",
           label: "Website OS",
           icon: <IconGlobe />,
+        },
+        {
+          href: "/calendar",
+          label: "Calendar OS",
+          icon: <IconCalendar />,
         },
         {
           href: "/team",
