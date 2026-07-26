@@ -51,6 +51,16 @@ export const IconPen = icon(
   "IconPen",
 );
 
+export const IconShare = icon(
+  <>
+    <circle cx="18" cy="5" r="2.5" />
+    <circle cx="6" cy="12" r="2.5" />
+    <circle cx="18" cy="19" r="2.5" />
+    <path d="m8.2 10.8 7.6-4.4M8.2 13.2l7.6 4.4" />
+  </>,
+  "IconShare",
+);
+
 export const IconSearch = icon(
   <>
     <circle cx="11" cy="11" r="7" />

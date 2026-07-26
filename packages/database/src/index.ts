@@ -68,6 +68,14 @@ export {
   listContentTemplates,
 } from "./content";
 export {
+  listSocialAccounts,
+  listSocialPosts,
+  getSocialDashboardStats,
+  createSocialPost,
+  updateSocialPost,
+  listSocialEngagement,
+} from "./social";
+export {
   listCompanies,
   getCompany,
   createCompany,

@@ -50,8 +50,8 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     label: "Social Media OS",
     description: "Schedule, publish, and analyze Instagram, LinkedIn, X, YouTube, and Facebook.",
     route: "/social",
-    status: "coming_soon",
-    origin: "advora",
+    status: "active",
+    origin: "pbos",
     capabilities: ["Scheduling", "Publishing", "Analytics", "Channel inbox"],
   },
   {

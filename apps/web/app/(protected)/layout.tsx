@@ -5,6 +5,7 @@ import {
   IconMail,
   IconPen,
   IconSettings,
+  IconShare,
   IconSparkles,
   IconUsers,
 } from "@repo/ui/icons";
@@ -70,6 +71,11 @@ export default async function ProtectedLayout({
           href: "/content",
           label: "Content OS",
           icon: <IconPen />,
+        },
+        {
+          href: "/social",
+          label: "Social OS",
+          icon: <IconShare />,
         },
         {
           href: "/team",

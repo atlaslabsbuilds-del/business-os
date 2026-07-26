@@ -100,6 +100,30 @@ export {
 } from "./content";
 
 export type {
+  SocialPlatform,
+  SocialPostStatus,
+  SocialApprovalStatus,
+  SocialAccount,
+  SocialPostAnalytics,
+  SocialPost,
+  SocialEngagement,
+  SocialAnalytics,
+  SocialDashboardStats,
+  CreateSocialPostInput,
+  UpdateSocialPostInput,
+  GenerateSocialInput,
+} from "./social";
+
+export {
+  socialPlatformSchema,
+  socialPostStatusSchema,
+  socialApprovalStatusSchema,
+  createSocialPostSchema,
+  updateSocialPostSchema,
+  generateSocialSchema,
+} from "./social";
+
+export type {
   Database,
   Json,
   Tables,
