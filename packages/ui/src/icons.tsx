@@ -43,6 +43,14 @@ export const IconLayout = icon(
   "IconLayout",
 );
 
+export const IconPen = icon(
+  <>
+    <path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z" />
+    <path d="m14.5 7.5 2 2" />
+  </>,
+  "IconPen",
+);
+
 export const IconSearch = icon(
   <>
     <circle cx="11" cy="11" r="7" />

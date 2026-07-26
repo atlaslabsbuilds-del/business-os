@@ -41,8 +41,8 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     label: "Content OS",
     description: "Plan, draft, approve, repurpose, and organize high-leverage content.",
     route: "/content",
-    status: "coming_soon",
-    origin: "advora",
+    status: "active",
+    origin: "pbos",
     capabilities: ["Planner", "Calendar", "Drafts", "Repurpose", "Library"],
   },
   {

@@ -58,6 +58,16 @@ export {
 } from "./workspace-memory";
 export { getDashboardSnapshot } from "./dashboard";
 export {
+  listContentItems,
+  getContentDashboardStats,
+  createContentItem,
+  updateContentItem,
+  getContentBrandVoice,
+  upsertContentBrandVoice,
+  listContentAssets,
+  listContentTemplates,
+} from "./content";
+export {
   listCompanies,
   getCompany,
   createCompany,

@@ -1194,6 +1194,174 @@ export type Database = {
         };
         Relationships: [];
       };
+      content_items: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          created_by: string;
+          title: string;
+          body: string;
+          content_type: string;
+          status: "draft" | "scheduled" | "published" | "archived";
+          scheduled_at: string | null;
+          published_at: string | null;
+          tags: string[];
+          ai_generated: boolean;
+          source_item_id: string | null;
+          analytics: Json;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          created_by: string;
+          title?: string;
+          body?: string;
+          content_type?: string;
+          status?: "draft" | "scheduled" | "published" | "archived";
+          scheduled_at?: string | null;
+          published_at?: string | null;
+          tags?: string[];
+          ai_generated?: boolean;
+          source_item_id?: string | null;
+          analytics?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          created_by?: string;
+          title?: string;
+          body?: string;
+          content_type?: string;
+          status?: "draft" | "scheduled" | "published" | "archived";
+          scheduled_at?: string | null;
+          published_at?: string | null;
+          tags?: string[];
+          ai_generated?: boolean;
+          source_item_id?: string | null;
+          analytics?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      content_brand_voices: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          created_by: string;
+          tone: string;
+          writing_style: string;
+          cta_preferences: string;
+          keywords: string[];
+          audience_profile: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          created_by: string;
+          tone?: string;
+          writing_style?: string;
+          cta_preferences?: string;
+          keywords?: string[];
+          audience_profile?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          created_by?: string;
+          tone?: string;
+          writing_style?: string;
+          cta_preferences?: string;
+          keywords?: string[];
+          audience_profile?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      content_assets: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          created_by: string;
+          name: string;
+          asset_type: string;
+          url: string | null;
+          storage_path: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          created_by: string;
+          name: string;
+          asset_type?: string;
+          url?: string | null;
+          storage_path?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          created_by?: string;
+          name?: string;
+          asset_type?: string;
+          url?: string | null;
+          storage_path?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      content_templates: {
+        Row: {
+          id: string;
+          workspace_id: string | null;
+          created_by: string | null;
+          name: string;
+          template_type: string;
+          body: string;
+          is_system: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id?: string | null;
+          created_by?: string | null;
+          name: string;
+          template_type: string;
+          body: string;
+          is_system?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string | null;
+          created_by?: string | null;
+          name?: string;
+          template_type?: string;
+          body?: string;
+          is_system?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

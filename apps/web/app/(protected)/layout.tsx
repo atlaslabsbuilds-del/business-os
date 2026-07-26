@@ -3,6 +3,7 @@ import {
   IconBriefcase,
   IconLayout,
   IconMail,
+  IconPen,
   IconSettings,
   IconSparkles,
   IconUsers,
@@ -64,6 +65,11 @@ export default async function ProtectedLayout({
           href: "/inbox",
           label: "Inbox",
           icon: <IconMail />,
+        },
+        {
+          href: "/content",
+          label: "Content OS",
+          icon: <IconPen />,
         },
         {
           href: "/team",

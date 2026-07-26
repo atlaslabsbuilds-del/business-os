@@ -76,6 +76,30 @@ export {
 } from "./platform";
 
 export type {
+  ContentType,
+  ContentStatus,
+  ContentAnalytics,
+  ContentItem,
+  ContentBrandVoice,
+  ContentAsset,
+  ContentTemplate,
+  ContentDashboardStats,
+  CreateContentItemInput,
+  UpdateContentItemInput,
+  GenerateContentInput,
+  UpdateBrandVoiceInput,
+} from "./content";
+
+export {
+  contentTypeSchema,
+  contentStatusSchema,
+  createContentItemSchema,
+  updateContentItemSchema,
+  generateContentSchema,
+  updateBrandVoiceSchema,
+} from "./content";
+
+export type {
   Database,
   Json,
   Tables,

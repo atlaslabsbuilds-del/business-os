@@ -9,6 +9,7 @@
     "./database": "./src/database.ts",
     "./workspace": "./src/workspace.ts",
     "./platform": "./src/platform.ts",
+    "./content": "./src/content.ts",
     "./crm": "./src/crm.ts",
     "./inbox": "./src/inbox.ts",
     "./gmail": "./src/gmail.ts"

@@ -17,6 +17,7 @@
     "./activity": "./src/activity.ts",
     "./workspace-memory": "./src/workspace-memory.ts",
     "./dashboard": "./src/dashboard.ts",
+    "./content": "./src/content.ts",
     "./crm": "./src/crm.ts",
     "./inbox": "./src/inbox.ts",
     "./gmail": "./src/gmail.ts",
