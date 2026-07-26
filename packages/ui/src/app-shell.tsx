@@ -46,9 +46,9 @@ export function AppShell({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="flex min-h-screen">
-        <aside className="hidden w-60 shrink-0 border-r border-border bg-surface/80 lg:flex lg:flex-col">
+        <aside className="hidden w-60 shrink-0 border-r border-border bg-surface lg:flex lg:flex-col">
           <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-[11px] font-semibold text-white">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-[11px] font-semibold text-white">
               B
             </span>
             <Link
@@ -61,7 +61,7 @@ export function AppShell({
           {sidebarTop ? (
             <div className="border-b border-border p-3">{sidebarTop}</div>
           ) : null}
-          <nav className="flex flex-1 flex-col gap-1 p-3">
+          <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Primary">
             {navItems.map((item) => {
               const active =
                 pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -69,10 +69,11 @@ export function AppShell({
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition duration-200",
+                    "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-[background-color,color] duration-200 ease-out",
                     active
-                      ? "bg-accent-muted text-foreground"
+                      ? "bg-primary-muted text-foreground"
                       : "text-secondary hover:bg-elevated hover:text-foreground",
                   )}
                 >
@@ -127,7 +128,7 @@ export function AppShell({
         ) : null}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background px-4">
             <Button
               variant="ghost"
               size="sm"

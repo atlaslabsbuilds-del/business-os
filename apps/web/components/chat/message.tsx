@@ -73,7 +73,7 @@ export function Message({
           "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-semibold",
           isUser
             ? "bg-elevated text-secondary"
-            : "bg-accent-muted text-accent",
+            : "bg-primary-muted text-primary",
         )}
       >
         {isUser ? "You" : "AI"}

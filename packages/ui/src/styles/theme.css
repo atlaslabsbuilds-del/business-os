@@ -1,27 +1,51 @@
-/* Business OS — Enterprise design tokens (Linear / Vercel / Stripe / OpenAI inspired) */
+/* Personal Brand OS — dark-first premium design system
+   Inspired by Linear / Raycast / Stripe / Arc — orange identity */
 
 :root {
   color-scheme: dark;
 
-  --background: #09090b;
-  --surface: #111827;
-  --elevated: #18181b;
-  --border: #27272a;
+  /* Core surfaces */
+  --background: #0b0b0f;
+  --surface: #16161d;
+  --elevated: #1c1c26;
+  --border: #2a2a35;
+
+  /* Typography */
   --foreground: #ffffff;
   --secondary: #a1a1aa;
   --muted: #71717a;
-  --accent: #4f46e5;
-  --accent-hover: #6366f1;
-  --accent-muted: color-mix(in srgb, #4f46e5 18%, transparent);
+
+  /* Brand — primary + accent */
+  --primary: #f97316;
+  --primary-hover: #ea670c;
+  --primary-muted: color-mix(in srgb, #f97316 16%, transparent);
+  --accent: #fb923c;
+  --accent-hover: #fdba74;
+  --accent-muted: color-mix(in srgb, #fb923c 16%, transparent);
+
+  /* Semantic */
   --success: #22c55e;
   --warning: #f59e0b;
   --error: #ef4444;
-  --info: #3b82f6;
+  --info: #38bdf8;
 
+  /* Shape — 16px cards, 8px grid */
   --radius: 16px;
-  --bos-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 24px rgb(0 0 0 / 0.28);
-  --bos-shadow-elevated: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px rgb(0 0 0 / 0.35);
-  --transition: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+
+  /* Elevation — soft, not glassy */
+  --bos-shadow-soft: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 20px rgb(0 0 0 / 0.28);
+  --bos-shadow-elevated: 0 1px 2px rgb(0 0 0 / 0.45), 0 16px 36px rgb(0 0 0 / 0.38);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition: 200ms var(--ease-out);
+  --transition-slow: 320ms var(--ease-out);
 }
 
 @theme inline {
@@ -32,6 +56,9 @@
   --color-foreground: var(--foreground);
   --color-secondary: var(--secondary);
   --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-muted: var(--primary-muted);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-muted: var(--accent-muted);
@@ -40,18 +67,20 @@
   --color-error: var(--error);
   --color-info: var(--info);
 
+  --radius-lg: calc(var(--radius) - 4px);
   --radius-xl: var(--radius);
-  --radius-2xl: calc(var(--radius) + 4px);
+  --radius-2xl: var(--radius);
 
   --shadow-soft: var(--bos-shadow-soft);
   --shadow-elevated: var(--bos-shadow-elevated);
 
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   --default-transition-duration: 200ms;
+  --default-transition-timing-function: var(--ease-out);
 }
 
 * {
@@ -67,35 +96,113 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-feature-settings: "ss01" on, "cv01" on;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  background: color-mix(in srgb, var(--primary) 42%, transparent);
   color: var(--foreground);
 }
 
-/* Subtle enterprise atmosphere */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Minimal enterprise atmosphere — no glass, no heavy gradients */
 .bos-atmosphere {
   background-color: var(--background);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in srgb, var(--accent) 18%, transparent), transparent),
-    linear-gradient(to bottom, transparent, var(--background)),
-    radial-gradient(circle at 1px 1px, color-mix(in srgb, #ffffff 6%, transparent) 1px, transparent 0);
-  background-size: auto, auto, 24px 24px;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in srgb, #ffffff 5%, transparent) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
 }
 
-.bos-noise {
-  position: relative;
+/* Motion utilities (respect reduced motion) */
+@keyframes pbos-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-.bos-noise::before {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+@keyframes pbos-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pbos-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pbos-animate-fade {
+  animation: pbos-fade-in var(--transition-slow) var(--ease-out) both;
+}
+
+.pbos-animate-rise {
+  animation: pbos-rise var(--transition-slow) var(--ease-out) both;
+}
+
+.pbos-animate-scale {
+  animation: pbos-scale-in var(--transition-slow) var(--ease-out) both;
+}
+
+.pbos-stagger > * {
+  animation: pbos-rise var(--transition-slow) var(--ease-out) both;
+}
+
+.pbos-stagger > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.pbos-stagger > *:nth-child(2) {
+  animation-delay: 40ms;
+}
+.pbos-stagger > *:nth-child(3) {
+  animation-delay: 80ms;
+}
+.pbos-stagger > *:nth-child(4) {
+  animation-delay: 120ms;
+}
+.pbos-stagger > *:nth-child(5) {
+  animation-delay: 160ms;
+}
+.pbos-stagger > *:nth-child(6) {
+  animation-delay: 200ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pbos-animate-fade,
+  .pbos-animate-rise,
+  .pbos-animate-scale,
+  .pbos-stagger > * {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

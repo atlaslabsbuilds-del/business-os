@@ -323,7 +323,7 @@ export function CreateTagForm() {
           setError(null);
           const result = await createCrmTagAction({
             name: String(form.get("name") ?? ""),
-            color: String(form.get("color") ?? "#4f46e5"),
+            color: String(form.get("color") ?? "#F97316"),
           });
           if (!result.ok) {
             setError(result.error);
@@ -341,7 +341,7 @@ export function CreateTagForm() {
       </div>
       <div className="w-28">
         <Field label="Color">
-          <Input name="color" type="color" defaultValue="#4f46e5" />
+          <Input name="color" type="color" defaultValue="#F97316" />
         </Field>
       </div>
       <Button type="submit" loading={pending}>

@@ -48,6 +48,28 @@ export {
 } from "./workspace";
 
 export type {
+  PlatformModule,
+  WorkspaceNotificationType,
+  WorkspaceNotification,
+  WorkspaceActivityEvent,
+  WorkspaceAiMemory,
+  DashboardInsight,
+  DashboardSnapshot,
+  CreateWorkspaceNotificationInput,
+  CreateWorkspaceActivityEventInput,
+  CreateWorkspaceAiMemoryInput,
+} from "./platform";
+
+export {
+  platformModuleSchema,
+  workspaceNotificationTypeSchema,
+  createWorkspaceNotificationSchema,
+  markWorkspaceNotificationReadSchema,
+  createWorkspaceActivityEventSchema,
+  createWorkspaceAiMemorySchema,
+} from "./platform";
+
+export type {
   Database,
   Json,
   Tables,

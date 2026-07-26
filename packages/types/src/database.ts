@@ -207,6 +207,138 @@ export type Database = {
         };
         Relationships: [];
       };
+      workspace_notifications: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          module: string;
+          type: string;
+          title: string;
+          body: string | null;
+          action_url: string | null;
+          read_at: string | null;
+          created_by: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          module: string;
+          type?: string;
+          title: string;
+          body?: string | null;
+          action_url?: string | null;
+          read_at?: string | null;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          module?: string;
+          type?: string;
+          title?: string;
+          body?: string | null;
+          action_url?: string | null;
+          read_at?: string | null;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      workspace_activity_events: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          module: string;
+          event_type: string;
+          title: string;
+          body: string | null;
+          entity_type: string | null;
+          entity_id: string | null;
+          actor_id: string | null;
+          action_url: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          module: string;
+          event_type: string;
+          title: string;
+          body?: string | null;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          actor_id?: string | null;
+          action_url?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          module?: string;
+          event_type?: string;
+          title?: string;
+          body?: string | null;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          actor_id?: string | null;
+          action_url?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      workspace_ai_memory: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          source_module: string;
+          scope: string;
+          fact: string;
+          summary: string | null;
+          importance: number;
+          created_by: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          source_module?: string;
+          scope?: string;
+          fact: string;
+          summary?: string | null;
+          importance?: number;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          source_module?: string;
+          scope?: string;
+          fact?: string;
+          summary?: string | null;
+          importance?: number;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       ai_conversations: {
         Row: {
           id: string;

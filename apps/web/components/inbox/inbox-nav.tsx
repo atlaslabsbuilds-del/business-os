@@ -28,7 +28,7 @@ export function InboxNav() {
             className={cn(
               "rounded-xl px-3 py-1.5 text-sm transition duration-200",
               active
-                ? "bg-accent-muted text-foreground"
+                ? "bg-primary-muted text-foreground"
                 : "text-secondary hover:bg-elevated hover:text-foreground",
             )}
           >

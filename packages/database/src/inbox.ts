@@ -615,7 +615,7 @@ export async function createInboxLabel(input: {
     .insert({
       workspace_id: input.workspaceId,
       name: input.name,
-      color: input.color ?? "#4f46e5",
+      color: input.color ?? "#F97316",
       account_id: input.accountId ?? null,
     })
     .select("*")

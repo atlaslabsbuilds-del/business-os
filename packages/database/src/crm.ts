@@ -759,7 +759,7 @@ export async function createTag(input: {
       workspace_id: input.workspaceId,
       created_by: input.userId,
       name: input.name,
-      color: input.color ?? "#4f46e5",
+      color: input.color ?? "#F97316",
     })
     .select("*")
     .single();

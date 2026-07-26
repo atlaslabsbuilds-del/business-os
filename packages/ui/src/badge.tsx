@@ -7,7 +7,7 @@ export type BadgeProps = React.HTMLAttributes<HTMLSpanElement> & {
 
 const variants: Record<NonNullable<BadgeProps["variant"]>, string> = {
   default: "border-border bg-elevated text-secondary",
-  accent: "border-accent/30 bg-accent-muted text-accent-hover",
+  accent: "border-primary/30 bg-primary-muted text-accent",
   success: "border-success/30 bg-success/10 text-success",
   warning: "border-warning/30 bg-warning/10 text-warning",
   error: "border-error/30 bg-error/10 text-error",

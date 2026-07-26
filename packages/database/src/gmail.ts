@@ -381,7 +381,7 @@ export async function upsertGmailLabel(input: {
       account_id: input.accountId,
       external_id: input.externalId,
       name: input.name,
-      color: input.color ?? "#4f46e5",
+      color: input.color ?? "#F97316",
     })
     .select("*")
     .single();

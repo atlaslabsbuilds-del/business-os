@@ -17,7 +17,7 @@ export function EmptyState({ onSuggestion }: EmptyStateProps) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-12">
       <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-elevated shadow-soft">
-        <IconSparkles className="h-7 w-7 text-accent" />
+        <IconSparkles className="h-7 w-7 text-primary" />
       </div>
       <h2 className="text-xl font-semibold tracking-tight text-foreground">
         How can I help you today?
@@ -25,13 +25,13 @@ export function EmptyState({ onSuggestion }: EmptyStateProps) {
       <p className="mt-2 max-w-md text-center text-sm text-secondary">
         Business OS AI is workspace-aware, multi-model, and ready for enterprise workflows.
       </p>
-      <div className="mt-8 grid w-full max-w-2xl gap-3 sm:grid-cols-2">
+      <div className="pbos-stagger mt-8 grid w-full max-w-2xl gap-3 sm:grid-cols-2">
         {suggestions.map((suggestion) => (
           <button
             key={suggestion}
             type="button"
             onClick={() => onSuggestion(suggestion)}
-            className="rounded-2xl border border-border bg-surface/60 px-4 py-3 text-left text-sm text-secondary transition duration-200 hover:border-accent/40 hover:bg-elevated hover:text-foreground"
+            className="rounded-2xl border border-border bg-surface px-4 py-3 text-left text-sm text-secondary transition duration-200 hover:border-primary/40 hover:bg-elevated hover:text-foreground"
           >
             {suggestion}
           </button>

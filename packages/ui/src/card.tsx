@@ -9,10 +9,8 @@ export function Card({ className, elevated = false, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border p-6 transition duration-200",
-        elevated
-          ? "bg-elevated shadow-elevated"
-          : "bg-surface shadow-soft",
+        "rounded-2xl border border-border bg-surface p-6 transition-[border-color,box-shadow,background-color] duration-200 ease-out",
+        elevated ? "bg-elevated shadow-elevated" : "shadow-soft",
         className,
       )}
       {...props}

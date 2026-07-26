@@ -83,7 +83,7 @@ export function ConversationList({
                 className="flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-left text-sm"
               >
                 {conversation.pinned ? (
-                  <span className="text-[10px] text-accent">PIN</span>
+                  <span className="text-[10px] text-primary">PIN</span>
                 ) : null}
                 <span className="truncate text-foreground/90">{conversation.title}</span>
               </button>

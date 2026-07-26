@@ -43,6 +43,21 @@ export {
   tokensToCredits,
 } from "./credits";
 export {
+  listWorkspaceNotifications,
+  createWorkspaceNotification,
+  markWorkspaceNotificationRead,
+} from "./notifications";
+export {
+  listWorkspaceActivityEvents,
+  createWorkspaceActivityEvent,
+} from "./activity";
+export {
+  listWorkspaceAiMemory,
+  createWorkspaceAiMemory,
+  updateWorkspaceAiMemory,
+} from "./workspace-memory";
+export { getDashboardSnapshot } from "./dashboard";
+export {
   listCompanies,
   getCompany,
   createCompany,

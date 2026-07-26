@@ -12,14 +12,14 @@ export default function AdminLoginPage() {
             href="/login"
             className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-xs font-bold text-white shadow-soft">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white shadow-soft">
               B
             </span>
             Business OS
           </Link>
           <p className="mt-3 text-xs uppercase tracking-[0.14em] text-muted">Admin</p>
         </div>
-        <div className="rounded-2xl border border-border bg-surface/90 p-6 shadow-elevated backdrop-blur-sm sm:p-8">
+        <div className="rounded-2xl border border-border bg-surface p-6 shadow-elevated sm:p-8 pbos-animate-scale">
           <div className="mb-6 space-y-1.5">
             <h1 className="text-xl font-semibold tracking-tight">Admin sign in</h1>
             <p className="text-sm text-secondary">Restricted to platform operators.</p>

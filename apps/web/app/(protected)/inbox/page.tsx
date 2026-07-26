@@ -138,7 +138,7 @@ export default async function InboxPage({ searchParams }: Props) {
                     <div className="min-w-0 space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
                         {thread.isUnread ? (
-                          <span className="h-2 w-2 rounded-full bg-accent" />
+                          <span className="h-2 w-2 rounded-full bg-primary" />
                         ) : null}
                         <p
                           className={`truncate text-sm ${

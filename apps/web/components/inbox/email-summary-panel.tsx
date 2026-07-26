@@ -112,7 +112,7 @@ export function EmailSummaryPanel({
   const loading = booting || (pending && !summary);
 
   return (
-    <div className="rounded-2xl border border-border/80 bg-gradient-to-b from-surface/90 to-elevated/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="rounded-2xl border border-border bg-surface p-4 shadow-soft">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-wide text-secondary">

@@ -49,14 +49,14 @@ export function ChatSidebar({
       ) : null}
       <aside
         className={[
-          "z-50 flex w-72 shrink-0 flex-col border-r border-border bg-surface/90 backdrop-blur",
+          "z-50 flex w-72 shrink-0 flex-col border-r border-border bg-surface",
           "fixed inset-y-0 left-0 transition duration-200 lg:static lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         ].join(" ")}
       >
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-2">
-            <IconSparkles className="h-4 w-4 text-accent" />
+            <IconSparkles className="h-4 w-4 text-primary" />
             <span className="text-sm font-semibold">AI Chat</span>
           </div>
           <Badge variant="accent">{creditBalance.toLocaleString()} credits</Badge>

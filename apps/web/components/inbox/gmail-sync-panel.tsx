@@ -160,7 +160,7 @@ export function GmailSyncPanel({
   const isRunning = progress?.status === "running" || pending || polling;
 
   return (
-    <div className="w-full min-w-[280px] space-y-3 rounded-2xl border border-border/80 bg-gradient-to-b from-surface/90 to-elevated/40 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="w-full min-w-[280px] space-y-3 rounded-2xl border border-border bg-surface p-4 shadow-soft">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-wide text-secondary">
@@ -216,7 +216,7 @@ export function GmailSyncPanel({
         </div>
         <div className="h-2 overflow-hidden rounded-full bg-background/80 ring-1 ring-border/60">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-accent/80 via-accent to-accent/70 transition-all duration-500 ease-out"
+            className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
             style={{ width: `${percent}%` }}
           />
         </div>

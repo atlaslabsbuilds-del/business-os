@@ -157,7 +157,7 @@ export function SmartReplyPanel({
   const loading = pending || mode !== "idle";
 
   return (
-    <div className="space-y-4 rounded-2xl border border-border/80 bg-gradient-to-b from-surface/90 to-elevated/30 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+    <div className="space-y-4 rounded-2xl border border-border bg-surface p-4 shadow-soft">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-wide text-secondary">
@@ -185,7 +185,7 @@ export function SmartReplyPanel({
               onClick={() => setStyle(item.id)}
               className={`rounded-xl border px-3 py-2 text-left transition ${
                 active
-                  ? "border-accent/40 bg-accent-muted/40 text-foreground"
+                  ? "border-primary/40 bg-primary-muted text-foreground"
                   : "border-border bg-elevated/40 text-secondary hover:text-foreground"
               }`}
             >
@@ -256,7 +256,7 @@ export function SmartReplyPanel({
             }}
             rows={8}
             placeholder="Generate a reply or write your own…"
-            className="w-full rounded-xl border border-border bg-background/60 px-3 py-2 text-sm text-foreground outline-none ring-accent/40 placeholder:text-muted focus:ring-2"
+            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none ring-primary/40 placeholder:text-muted focus:ring-2"
             disabled={loading && mode === "sending"}
           />
         </label>
@@ -295,7 +295,7 @@ export function SmartReplyPanel({
                   }}
                   className={`w-full rounded-xl border px-3 py-2 text-left transition ${
                     activeDraftId === draft.id
-                      ? "border-accent/40 bg-accent-muted/30"
+                      ? "border-primary/40 bg-primary-muted"
                       : "border-border/70 bg-elevated/40 hover:border-border"
                   }`}
                 >

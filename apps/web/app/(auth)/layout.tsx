@@ -13,13 +13,13 @@ export default function AuthLayout({
             href="/"
             className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground transition duration-200 hover:text-secondary"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent text-xs font-bold text-white shadow-soft">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white shadow-soft">
               B
             </span>
             Business OS
           </Link>
         </div>
-        <div className="rounded-2xl border border-border bg-surface/90 p-6 shadow-elevated backdrop-blur-sm sm:p-8">
+        <div className="rounded-2xl border border-border bg-surface p-6 shadow-elevated sm:p-8 pbos-animate-scale">
           {children}
         </div>
       </div>

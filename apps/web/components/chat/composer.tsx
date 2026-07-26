@@ -51,9 +51,9 @@ export function Composer({
   }
 
   return (
-    <div className="border-t border-border bg-background/80 px-4 py-4 backdrop-blur sm:px-6">
+    <div className="border-t border-border bg-background px-4 py-4 sm:px-6">
       <div className="mx-auto max-w-3xl">
-        <div className="rounded-2xl border border-border bg-surface/80 shadow-soft">
+        <div className="rounded-2xl border border-border bg-surface shadow-soft">
           <textarea
             ref={textareaRef}
             value={value}
