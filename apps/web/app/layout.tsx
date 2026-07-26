@@ -4,8 +4,20 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Business OS",
-  description: "AI Business Operating System",
+  title: {
+    default: "Business OS",
+    template: "%s | Business OS",
+  },
+  description:
+    "AI-native Business Operating System — one workspace, one AI, one subscription for CRM, Inbox, Content, Social, Calendar, Finance, and AI Studio.",
+  keywords: [
+    "Business OS",
+    "AI operating system",
+    "CRM",
+    "AI inbox",
+    "content OS",
+    "workspace",
+  ],
 };
 
 export default function RootLayout({

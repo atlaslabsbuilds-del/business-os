@@ -5,12 +5,10 @@ import {
   CalendarDays,
   CheckCircle2,
   Clock3,
-  ExternalLink,
   Link2,
   Mail,
   Plus,
   Sparkles,
-  Users,
 } from "lucide-react";
 import { Badge } from "@repo/ui/badge";
 import { Button } from "@repo/ui/button";
