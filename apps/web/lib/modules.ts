@@ -59,7 +59,7 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     label: "Website & Landing Pages",
     description: "Build websites, landing pages, link-in-bio pages, media kits, and forms.",
     route: "/website",
-    status: "coming_soon",
+    status: "active",
     origin: "pbos",
     capabilities: ["Website builder", "Landing pages", "Media kit", "Forms"],
   },

@@ -19,6 +19,7 @@
     "./dashboard": "./src/dashboard.ts",
     "./content": "./src/content.ts",
     "./social": "./src/social.ts",
+    "./website": "./src/website.ts",
     "./crm": "./src/crm.ts",
     "./inbox": "./src/inbox.ts",
     "./gmail": "./src/gmail.ts",

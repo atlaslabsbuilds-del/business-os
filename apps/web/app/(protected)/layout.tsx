@@ -1,6 +1,7 @@
 import { AppShell } from "@repo/ui/app-shell";
 import {
   IconBriefcase,
+  IconGlobe,
   IconLayout,
   IconMail,
   IconPen,
@@ -76,6 +77,11 @@ export default async function ProtectedLayout({
           href: "/social",
           label: "Social OS",
           icon: <IconShare />,
+        },
+        {
+          href: "/website",
+          label: "Website OS",
+          icon: <IconGlobe />,
         },
         {
           href: "/team",

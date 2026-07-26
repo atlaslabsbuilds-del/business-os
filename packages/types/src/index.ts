@@ -124,6 +124,21 @@ export {
 } from "./social";
 
 export type {
+  WebsiteProjectType,
+  WebsiteProject,
+  WebsiteBlock,
+  WebsitePage,
+  WebsiteLink,
+  WebsiteForm,
+  WebsiteDomain,
+  WebsiteDashboardStats,
+  CreateWebsiteProjectInput,
+  GenerateWebsiteInput,
+} from "./website";
+
+export { websiteProjectTypeSchema, createWebsiteProjectSchema, generateWebsiteSchema } from "./website";
+
+export type {
   Database,
   Json,
   Tables,

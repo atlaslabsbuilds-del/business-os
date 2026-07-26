@@ -1554,6 +1554,213 @@ export type Database = {
         };
         Relationships: [];
       };
+      website_projects: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          created_by: string;
+          name: string;
+          project_type: string;
+          template: string;
+          status: "draft" | "published" | "archived";
+          slug: string;
+          theme: Json;
+          settings: Json;
+          analytics: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          created_by: string;
+          name: string;
+          project_type?: string;
+          template?: string;
+          status?: "draft" | "published" | "archived";
+          slug: string;
+          theme?: Json;
+          settings?: Json;
+          analytics?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          created_by?: string;
+          name?: string;
+          project_type?: string;
+          template?: string;
+          status?: "draft" | "published" | "archived";
+          slug?: string;
+          theme?: Json;
+          settings?: Json;
+          analytics?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      website_pages: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          project_id: string;
+          created_by: string;
+          title: string;
+          slug: string;
+          blocks: Json;
+          seo: Json;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          project_id: string;
+          created_by: string;
+          title: string;
+          slug: string;
+          blocks?: Json;
+          seo?: Json;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          project_id?: string;
+          created_by?: string;
+          title?: string;
+          slug?: string;
+          blocks?: Json;
+          seo?: Json;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      website_links: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          project_id: string;
+          created_by: string;
+          label: string;
+          url: string;
+          icon: string | null;
+          sort_order: number;
+          clicks: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          project_id: string;
+          created_by: string;
+          label: string;
+          url: string;
+          icon?: string | null;
+          sort_order?: number;
+          clicks?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          project_id?: string;
+          created_by?: string;
+          label?: string;
+          url?: string;
+          icon?: string | null;
+          sort_order?: number;
+          clicks?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      website_forms: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          project_id: string | null;
+          created_by: string;
+          name: string;
+          form_type: string;
+          fields: Json;
+          submissions: number;
+          active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          project_id?: string | null;
+          created_by: string;
+          name: string;
+          form_type?: string;
+          fields?: Json;
+          submissions?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          project_id?: string | null;
+          created_by?: string;
+          name?: string;
+          form_type?: string;
+          fields?: Json;
+          submissions?: number;
+          active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      website_domains: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          project_id: string | null;
+          domain: string;
+          status: string;
+          ssl_status: string;
+          dns_instructions: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          project_id?: string | null;
+          domain: string;
+          status?: string;
+          ssl_status?: string;
+          dns_instructions?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          project_id?: string | null;
+          domain?: string;
+          status?: string;
+          ssl_status?: string;
+          dns_instructions?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

@@ -61,6 +61,14 @@ export const IconShare = icon(
   "IconShare",
 );
 
+export const IconGlobe = icon(
+  <>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18M12 3c2.4 2.5 3.5 5.5 3.5 9S14.4 18.5 12 21c-2.4-2.5-3.5-5.5-3.5-9S9.6 5.5 12 3Z" />
+  </>,
+  "IconGlobe",
+);
+
 export const IconSearch = icon(
   <>
     <circle cx="11" cy="11" r="7" />
