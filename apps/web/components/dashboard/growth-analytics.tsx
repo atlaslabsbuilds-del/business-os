@@ -29,9 +29,9 @@ export function GrowthAnalytics({ snapshot }: { snapshot: DashboardSnapshot }) {
                 {metric.value.toLocaleString()}
               </span>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-elevated">
+            <div className="h-2 overflow-hidden rounded-full bg-elevated/80">
               <div
-                className="h-full rounded-full bg-primary transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-700 ease-out"
                 style={{
                   width: `${Math.max(metric.value === 0 ? 0 : 6, (metric.value / max) * 100)}%`,
                 }}

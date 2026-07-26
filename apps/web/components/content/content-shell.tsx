@@ -29,6 +29,7 @@ import {
   saveBrandVoiceAction,
 } from "../../app/(protected)/actions/content";
 import { formatRelative } from "../dashboard/format";
+import { TabNav } from "../app/tab-nav";
 import { EmptyState, SectionShell } from "../dashboard/section-shell";
 
 type Tab = "overview" | "generator" | "calendar" | "drafts" | "voice" | "library" | "templates";
@@ -59,49 +60,42 @@ export function ContentShell({
   const [tab, setTab] = useState<Tab>("overview");
 
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <div>
-          <Badge variant="accent" className="gap-1.5">
-            <Sparkles className="h-3 w-3" aria-hidden />
-            Content OS
-          </Badge>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">Content that sounds like you.</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">
-            Plan, write, schedule, and learn from your content in one workspace.
-            Your brand voice keeps every AI draft consistent.
-          </p>
-        </div>
-        <Button className="gap-2" onClick={() => setTab("generator")}>
-          <WandSparkles className="h-4 w-4" aria-hidden />
-          Generate content
-        </Button>
-      </header>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <div className="bos-gradient-border bos-glass-strong bos-noise relative overflow-hidden rounded-[24px] p-6 pbos-animate-rise">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.08),transparent_55%)]" aria-hidden />
+        <header className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <Badge variant="accent" className="gap-1.5">
+              <Sparkles className="h-3 w-3" aria-hidden />
+              Content OS
+            </Badge>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight">Content that sounds like you.</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">
+              Plan, write, schedule, and learn from your content in one workspace. Your brand voice keeps
+              every AI draft consistent.
+            </p>
+          </div>
+          <Button className="gap-2" onClick={() => setTab("generator")}>
+            <WandSparkles className="h-4 w-4" aria-hidden />
+            Generate content
+          </Button>
+        </header>
+      </div>
 
-      <nav className="flex gap-1 overflow-x-auto border-b border-border pb-px" aria-label="Content OS">
-        {[
-          ["overview", "Dashboard"],
-          ["generator", "AI Generator"],
-          ["calendar", "Calendar"],
-          ["drafts", "Drafts"],
-          ["voice", "Brand voice"],
-          ["library", "Library"],
-          ["templates", "Templates"],
-        ].map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => setTab(id as Tab)}
-            className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm transition ${
-              tab === id
-                ? "border-primary text-foreground"
-                : "border-transparent text-secondary hover:text-foreground"
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
+      <TabNav
+        label="Content OS"
+        active={tab}
+        onChange={(id) => setTab(id as Tab)}
+        items={[
+          { id: "overview", label: "Dashboard" },
+          { id: "generator", label: "AI Generator" },
+          { id: "calendar", label: "Calendar" },
+          { id: "drafts", label: "Drafts" },
+          { id: "voice", label: "Brand voice" },
+          { id: "library", label: "Library" },
+          { id: "templates", label: "Templates" },
+        ]}
+      />
 
       {tab === "overview" ? <Overview stats={stats} items={items} onTab={setTab} /> : null}
       {tab === "generator" ? <Generator voiceConfigured={Boolean(voice)} /> : null}

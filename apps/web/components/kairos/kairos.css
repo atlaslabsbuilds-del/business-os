@@ -1,0 +1,29 @@
+.kairos-root {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.kairos-gpu {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+.kairos-ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 1px solid rgba(249, 115, 22, 0.45);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kairos-root[data-reduced="true"] .kairos-orbit,
+  .kairos-root[data-reduced="true"] .kairos-halo-spin,
+  .kairos-root[data-reduced="true"] .kairos-particle {
+    animation: none !important;
+  }
+}

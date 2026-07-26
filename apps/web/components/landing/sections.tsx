@@ -24,6 +24,7 @@ import {
 import { Button } from "@repo/ui/button";
 import { COMPARISON_ROWS, PRICING_PLANS } from "../../lib/pricing";
 import { PlanCreditsBlock } from "../pricing/plan-credits-block";
+import { KairosAvatar } from "../kairos/kairos-avatar";
 import { StartFreeLink } from "./ai-assistant-widget";
 import { Reveal } from "./atmosphere";
 import { useLandingInteractions } from "./landing-interactions";
@@ -254,16 +255,23 @@ export function AiCommandCenter() {
     return () => window.clearInterval(timer);
   }, [prompt]);
 
+  const kairosState =
+    typed.length === 0
+      ? "thinking"
+      : typed.length < (responses[prompt] ?? "").length
+        ? "speaking"
+        : "idle";
+
   return (
     <section className="relative px-5 py-20 sm:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <Reveal>
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">AI Command Center</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Meet Kairos</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
             Ask once. Act across the business.
           </h2>
           <p className="mt-4 text-sm leading-6 text-secondary">
-            The assistant is not a chatbot bolted on the side. It has workspace memory, module tools, and the ability to move work forward.
+            Kairos is not a chatbot bolted on the side. Your AI Business Copilot has workspace memory, module tools, and the ability to move work forward.
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             {prompts.map((item) => (
@@ -282,9 +290,9 @@ export function AiCommandCenter() {
         </Reveal>
         <Reveal delay={0.1}>
           <div className="landing-glass-strong landing-gradient-border rounded-[28px] p-5">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Sparkles className="h-4 w-4 text-primary" aria-hidden />
-              Business OS Assistant
+            <div className="flex items-center gap-3 text-sm font-medium">
+              <KairosAvatar size="sm" state={kairosState} interactive aria-label="Kairos" />
+              <span>Kairos · AI Business Copilot</span>
             </div>
             <div className="mt-5 rounded-2xl border border-white/5 bg-white/[0.02] p-4 text-sm text-foreground">
               {prompt}

@@ -20,7 +20,7 @@ const items = [
   { label: "Dashboard", href: "/dashboard", group: "Product", action: "link" as const },
   { label: "CRM", href: "/crm", group: "Product", action: "link" as const },
   { label: "Inbox", href: "/inbox", group: "Product", action: "link" as const },
-  { label: "Ask AI Assistant", href: "#ai-assist", group: "Tools", action: "assistant" as const },
+  { label: "Ask Kairos", href: "#ai-assist", group: "Tools", action: "assistant" as const },
   { label: "Toggle Accent Theme", href: "#theme", group: "Easter egg", action: "theme" as const },
 ];
 

@@ -18,6 +18,7 @@ import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
 import type { WebsiteDashboardStats, WebsiteDomain, WebsiteForm, WebsiteLink, WebsitePage, WebsiteProject } from "@repo/types";
 import { generateWebsiteAction } from "../../app/(protected)/actions/website";
+import { TabNav } from "../app/tab-nav";
 import { EmptyState, SectionShell } from "../dashboard/section-shell";
 
 type Tab = "overview" | "builder" | "links" | "media" | "portfolio" | "forms" | "domains";
@@ -39,17 +40,47 @@ export function WebsiteShell({
   domains: WebsiteDomain[];
 }) {
   const [tab, setTab] = useState<Tab>("overview");
-  return <div className="space-y-6">
-    <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><Badge variant="accent" className="gap-1.5"><Sparkles className="h-3 w-3" aria-hidden /> Website & Landing Pages OS</Badge><h1 className="mt-3 text-3xl font-semibold tracking-tight">Make your best work easy to find.</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">Build a polished website, landing page, link in bio, media kit, or portfolio from one responsive workspace.</p></div><Button onClick={() => setTab("builder")} className="gap-2"><Sparkles className="h-4 w-4" aria-hidden /> Generate website</Button></header>
-    <nav className="flex gap-1 overflow-x-auto border-b border-border pb-px" aria-label="Website OS">{[["overview","Dashboard"],["builder","AI Builder"],["links","Link in Bio"],["media","Media Kit"],["portfolio","Portfolio"],["forms","Forms"],["domains","Domains"]].map(([id,label]) => <button key={id} type="button" onClick={() => setTab(id as Tab)} className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm transition ${tab === id ? "border-primary text-foreground" : "border-transparent text-secondary hover:text-foreground"}`}>{label}</button>)}</nav>
-    {tab === "overview" ? <Overview stats={stats} projects={projects} onTab={setTab} /> : null}
-    {tab === "builder" ? <Builder onCreated={() => setTab("overview")} /> : null}
-    {tab === "links" ? <Links links={links} /> : null}
-    {tab === "media" ? <MediaKit /> : null}
-    {tab === "portfolio" ? <Portfolio pages={pages} /> : null}
-    {tab === "forms" ? <Forms forms={forms} /> : null}
-    {tab === "domains" ? <Domains domains={domains} /> : null}
-  </div>;
+  return (
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <div className="bos-gradient-border bos-glass-strong bos-noise relative overflow-hidden rounded-[24px] p-6 pbos-animate-rise">
+        <header className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <Badge variant="accent" className="gap-1.5">
+              <Sparkles className="h-3 w-3" aria-hidden /> Website & Landing Pages OS
+            </Badge>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight">Make your best work easy to find.</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">
+              Build a polished website, landing page, link in bio, media kit, or portfolio from one responsive workspace.
+            </p>
+          </div>
+          <Button onClick={() => setTab("builder")} className="gap-2">
+            <Sparkles className="h-4 w-4" aria-hidden /> Generate website
+          </Button>
+        </header>
+      </div>
+      <TabNav
+        label="Website OS"
+        active={tab}
+        onChange={(id) => setTab(id as Tab)}
+        items={[
+          { id: "overview", label: "Dashboard" },
+          { id: "builder", label: "AI Builder" },
+          { id: "links", label: "Link in Bio" },
+          { id: "media", label: "Media Kit" },
+          { id: "portfolio", label: "Portfolio" },
+          { id: "forms", label: "Forms" },
+          { id: "domains", label: "Domains" },
+        ]}
+      />
+      {tab === "overview" ? <Overview stats={stats} projects={projects} onTab={setTab} /> : null}
+      {tab === "builder" ? <Builder onCreated={() => setTab("overview")} /> : null}
+      {tab === "links" ? <Links links={links} /> : null}
+      {tab === "media" ? <MediaKit /> : null}
+      {tab === "portfolio" ? <Portfolio pages={pages} /> : null}
+      {tab === "forms" ? <Forms forms={forms} /> : null}
+      {tab === "domains" ? <Domains domains={domains} /> : null}
+    </div>
+  );
 }
 
 function Overview({ stats, projects, onTab }: { stats: WebsiteDashboardStats; projects: WebsiteProject[]; onTab: (tab: Tab) => void }) {

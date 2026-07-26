@@ -5,6 +5,7 @@ import { Badge } from "@repo/ui/badge";
 import { Button } from "@repo/ui/button";
 import type { EmailThreadSummary } from "@repo/types";
 import { getEmailThreadSummaryAction } from "../../app/(protected)/actions/inbox";
+import { KairosAvatar, KairosThinkingMessage } from "../kairos/kairos-avatar";
 
 function priorityVariant(
   priority: EmailThreadSummary["priority"],
@@ -114,21 +115,29 @@ export function EmailSummaryPanel({
   return (
     <div className="rounded-2xl border border-border bg-surface p-4 shadow-soft">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="space-y-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-secondary">
-            AI email summary
-          </p>
-          <div className="flex flex-wrap items-center gap-2">
-            {summary ? (
-              <Badge variant={priorityVariant(summary.priority)}>
-                Priority · {priorityLabel(summary.priority)}
-              </Badge>
-            ) : null}
-            {summary ? (
-              <Badge variant="default">
-                {cached ? "Cached" : "Fresh"}
-              </Badge>
-            ) : null}
+        <div className="flex items-start gap-3">
+          <KairosAvatar
+            size="sm"
+            state={loading ? "thinking" : error ? "error" : summary ? "success" : "idle"}
+            aria-label="Kairos"
+          />
+          <div className="space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-secondary">
+              Kairos email summary
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {summary ? (
+                <Badge variant={priorityVariant(summary.priority)}>
+                  Priority · {priorityLabel(summary.priority)}
+                </Badge>
+              ) : null}
+              {summary ? (
+                <Badge variant="default">
+                  {cached ? "Cached" : "Fresh"}
+                </Badge>
+              ) : null}
+            </div>
+            {loading ? <KairosThinkingMessage state="thinking" /> : null}
           </div>
         </div>
         <Button

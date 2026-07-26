@@ -3,8 +3,9 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./button";
-import { IconClose, IconMenu, IconSearch } from "./icons";
+import { IconClose, IconMenu } from "./icons";
 import { cn } from "./utils";
 
 export type AppShellNavItem = {
@@ -22,8 +23,13 @@ export type AppShellProps = {
   signOutAction?: string;
   sidebarTop?: React.ReactNode;
   toolbar?: React.ReactNode;
+  searchSlot?: React.ReactNode;
+  sidebarFooter?: React.ReactNode;
+  helpSlot?: React.ReactNode;
   children: React.ReactNode;
 };
+
+const SIDEBAR_KEY = "bos-sidebar-collapsed";
 
 export function AppShell({
   brand = "Business OS",
@@ -34,131 +40,197 @@ export function AppShell({
   signOutAction = "/auth/signout",
   sidebarTop,
   toolbar,
+  searchSlot,
+  sidebarFooter,
+  helpSlot,
   children,
 }: AppShellProps) {
   const pathname = usePathname();
-  const [open, setOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(false);
 
   React.useEffect(() => {
-    setOpen(false);
+    setMobileOpen(false);
   }, [pathname]);
 
+  React.useEffect(() => {
+    const stored = localStorage.getItem(SIDEBAR_KEY);
+    if (stored === "1") setCollapsed(true);
+  }, []);
+
+  const toggleCollapsed = () => {
+    setCollapsed((value) => {
+      const next = !value;
+      localStorage.setItem(SIDEBAR_KEY, next ? "1" : "0");
+      return next;
+    });
+  };
+
+  function NavLinks({ compact = false }: { compact?: boolean }) {
+    return (
+      <>
+        {navItems.map((item) => {
+          const active =
+            pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              title={compact ? item.label : undefined}
+              className={cn(
+                "group relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition-[background-color,color,box-shadow] duration-200 ease-out",
+                active
+                  ? "bg-primary-muted text-foreground shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--primary)_24%,transparent)]"
+                  : "text-secondary hover:bg-elevated/80 hover:text-foreground",
+                compact && "justify-center px-2.5",
+              )}
+            >
+              {active ? (
+                <span
+                  className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-primary"
+                  aria-hidden
+                />
+              ) : null}
+              <span className={cn("shrink-0", active && "text-primary")}>{item.icon}</span>
+              {!compact ? <span className="truncate">{item.label}</span> : null}
+            </Link>
+          );
+        })}
+      </>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="bos-atmosphere min-h-screen text-foreground">
       <div className="flex min-h-screen">
-        <aside className="hidden w-60 shrink-0 border-r border-border bg-surface lg:flex lg:flex-col">
-          <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-[11px] font-semibold text-white">
+        <aside
+          className={cn(
+            "bos-glass bos-noise relative hidden shrink-0 flex-col border-r border-border/80 lg:flex",
+            collapsed ? "w-[72px]" : "w-60",
+            "transition-[width] duration-300 ease-out",
+          )}
+        >
+          <div
+            className={cn(
+              "flex h-14 items-center border-b border-border/60",
+              collapsed ? "justify-center px-2" : "gap-2.5 px-4",
+            )}
+          >
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-[11px] font-bold text-white shadow-soft">
               B
             </span>
-            <Link
-              href={brandHref}
-              className="text-sm font-semibold tracking-tight text-foreground transition duration-200 hover:text-secondary"
-            >
-              {brand}
-            </Link>
+            {!collapsed ? (
+              <Link
+                href={brandHref}
+                className="min-w-0 truncate text-sm font-semibold tracking-tight transition duration-200 hover:text-secondary"
+              >
+                {brand}
+              </Link>
+            ) : null}
           </div>
-          {sidebarTop ? (
-            <div className="border-b border-border p-3">{sidebarTop}</div>
+
+          {sidebarTop && !collapsed ? (
+            <div className="border-b border-border/60 p-3">{sidebarTop}</div>
           ) : null}
-          <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Primary">
-            {navItems.map((item) => {
-              const active =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-[background-color,color] duration-200 ease-out",
-                    active
-                      ? "bg-primary-muted text-foreground"
-                      : "text-secondary hover:bg-elevated hover:text-foreground",
-                  )}
-                >
-                  {item.icon}
-                  {item.label}
-                </Link>
-              );
-            })}
+
+          <nav
+            className={cn("flex flex-1 flex-col gap-1 overflow-y-auto p-3", collapsed && "px-2")}
+            aria-label="Primary"
+          >
+            <NavLinks compact={collapsed} />
           </nav>
-          <div className="border-t border-border p-3">
-            <p className="truncate px-2 text-xs text-muted">{userEmail ?? "Signed in"}</p>
+
+          <div className="border-t border-border/60 p-3">
+            {!collapsed && sidebarFooter ? (
+              <div className="mb-3">{sidebarFooter}</div>
+            ) : null}
+            {!collapsed ? (
+              <p className="truncate px-2 text-xs text-muted">{userEmail ?? "Signed in"}</p>
+            ) : null}
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              className={cn(
+                "mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-border/60 bg-elevated/50 px-2 py-2 text-xs text-secondary transition hover:text-foreground",
+                collapsed && "px-0",
+              )}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {collapsed ? (
+                <ChevronRight className="h-4 w-4" aria-hidden />
+              ) : (
+                <>
+                  <ChevronLeft className="h-4 w-4" aria-hidden />
+                  <span>Collapse</span>
+                </>
+              )}
+            </button>
           </div>
         </aside>
 
-        {open ? (
-          <div className="fixed inset-0 z-40 lg:hidden">
+        {mobileOpen ? (
+          <div className="fixed inset-0 z-50 lg:hidden">
             <button
               type="button"
-              className="absolute inset-0 bg-black/60"
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm pbos-animate-fade"
               aria-label="Close navigation"
-              onClick={() => setOpen(false)}
+              onClick={() => setMobileOpen(false)}
             />
-            <aside className="absolute inset-y-0 left-0 flex w-72 flex-col border-r border-border bg-surface shadow-elevated">
-              <div className="flex h-14 items-center justify-between border-b border-border px-4">
+            <aside className="bos-glass-strong absolute inset-y-0 left-0 flex w-72 flex-col pbos-animate-rise shadow-elevated">
+              <div className="flex h-14 items-center justify-between border-b border-border/60 px-4">
                 <span className="text-sm font-semibold">{brand}</span>
                 <Button
                   variant="ghost"
                   size="sm"
                   aria-label="Close menu"
-                  onClick={() => setOpen(false)}
+                  onClick={() => setMobileOpen(false)}
                 >
                   <IconClose />
                 </Button>
               </div>
               {sidebarTop ? (
-                <div className="border-b border-border p-3">{sidebarTop}</div>
+                <div className="border-b border-border/60 p-3">{sidebarTop}</div>
               ) : null}
-              <nav className="flex flex-1 flex-col gap-1 p-3">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-secondary transition duration-200 hover:bg-elevated hover:text-foreground"
-                  >
-                    {item.icon}
-                    {item.label}
-                  </Link>
-                ))}
+              <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+                <NavLinks />
               </nav>
+              {sidebarFooter ? (
+                <div className="border-t border-border/60 p-3">{sidebarFooter}</div>
+              ) : null}
             </aside>
           </div>
         ) : null}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-background px-4">
+          <header className="bos-glass sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-border/60 px-3 sm:gap-3 sm:px-4">
             <Button
               variant="ghost"
               size="sm"
               className="lg:hidden"
               aria-label="Open menu"
-              onClick={() => setOpen(true)}
+              onClick={() => setMobileOpen(true)}
             >
               <IconMenu />
             </Button>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-foreground">{title}</p>
+              <p className="truncate text-sm font-medium">{title}</p>
             </div>
-            <div className="hidden items-center gap-2 rounded-xl border border-border bg-elevated px-3 py-1.5 text-xs text-muted sm:flex">
-              <IconSearch className="h-3.5 w-3.5" />
-              <span>Search</span>
-              <kbd className="ml-2 rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] text-secondary">
-                ⌘K
-              </kbd>
-            </div>
-            {toolbar}
-            <form action={signOutAction} method="post">
+            {searchSlot}
+            <div className="flex items-center gap-1.5 sm:gap-2">{toolbar}</div>
+            <form action={signOutAction} method="post" className="hidden sm:block">
               <Button type="submit" variant="ghost" size="sm">
                 Sign out
               </Button>
             </form>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+          <main className="relative flex-1 p-4 sm:p-6 lg:p-8">
+            <div className="pbos-animate-rise">{children}</div>
+          </main>
         </div>
       </div>
+      {helpSlot}
     </div>
   );
 }

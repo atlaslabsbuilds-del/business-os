@@ -29,6 +29,7 @@ import {
   generateSocialAction,
 } from "../../app/(protected)/actions/social";
 import { formatDateTime, formatRelative } from "../dashboard/format";
+import { TabNav } from "../app/tab-nav";
 import { EmptyState, SectionShell } from "../dashboard/section-shell";
 
 type Tab = "overview" | "accounts" | "composer" | "queue" | "engagement" | "analytics" | "team";
@@ -53,21 +54,37 @@ export function SocialShell({
 }) {
   const [tab, setTab] = useState<Tab>("overview");
   return (
-    <div className="space-y-6">
-      <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
-        <div>
-          <Badge variant="accent" className="gap-1.5"><Sparkles className="h-3 w-3" aria-hidden /> Social Media OS</Badge>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">Your voice, everywhere.</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">Connect your channels, turn ideas into posts, and keep your publishing queue moving.</p>
-        </div>
-        <Button className="gap-2" onClick={() => setTab("composer")}><Plus className="h-4 w-4" aria-hidden /> Create post</Button>
-      </header>
-      <nav className="flex gap-1 overflow-x-auto border-b border-border pb-px" aria-label="Social Media OS">
-        {[
-          ["overview", "Dashboard"], ["accounts", "Accounts"], ["composer", "Create post"],
-          ["queue", "Queue & Calendar"], ["engagement", "Engagement"], ["analytics", "Analytics"], ["team", "Team"],
-        ].map(([id, label]) => <button key={id} type="button" onClick={() => setTab(id as Tab)} className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm transition ${tab === id ? "border-primary text-foreground" : "border-transparent text-secondary hover:text-foreground"}`}>{label}</button>)}
-      </nav>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <div className="bos-gradient-border bos-glass-strong bos-noise relative overflow-hidden rounded-[24px] p-6 pbos-animate-rise">
+        <header className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <Badge variant="accent" className="gap-1.5">
+              <Sparkles className="h-3 w-3" aria-hidden /> Social Media OS
+            </Badge>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight">Your voice, everywhere.</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">
+              Connect your channels, turn ideas into posts, and keep your publishing queue moving.
+            </p>
+          </div>
+          <Button className="gap-2" onClick={() => setTab("composer")}>
+            <Plus className="h-4 w-4" aria-hidden /> Create post
+          </Button>
+        </header>
+      </div>
+      <TabNav
+        label="Social Media OS"
+        active={tab}
+        onChange={(id) => setTab(id as Tab)}
+        items={[
+          { id: "overview", label: "Dashboard" },
+          { id: "accounts", label: "Accounts" },
+          { id: "composer", label: "Create post" },
+          { id: "queue", label: "Queue & Calendar" },
+          { id: "engagement", label: "Engagement" },
+          { id: "analytics", label: "Analytics" },
+          { id: "team", label: "Team" },
+        ]}
+      />
       {tab === "overview" ? <Overview stats={stats} posts={posts} engagement={engagement} onTab={setTab} /> : null}
       {tab === "accounts" ? <Accounts accounts={accounts} /> : null}
       {tab === "composer" ? <Composer onSaved={() => setTab("queue")} /> : null}
@@ -116,7 +133,7 @@ function Composer({ onSaved }: { onSaved: () => void }) {
   const [pending, startTransition] = useTransition();
   function generate() { startTransition(async () => { setError(null); const result = await generateSocialAction({ platform, prompt }); if (!result.ok) setError(result.error); else { setBody(result.data.content); setMessage("AI draft ready. Edit before saving."); } }); }
   function save(status: "draft" | "scheduled") { startTransition(async () => { setError(null); const result = await createSocialPostAction({ title: title || `${platform} post`, body, platforms: [platform], status, scheduledAt: status === "scheduled" && schedule ? new Date(schedule).toISOString() : null }); if (!result.ok) setError(result.error); else { setMessage(status === "scheduled" ? "Post scheduled." : "Draft saved."); if (status === "scheduled") onSaved(); } }); }
-  return <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]"><SectionShell title="AI Assistant" description="Generate captions, hashtags, rewrites, and repurposed posts." elevated><div className="space-y-4"><label className="block space-y-1.5"><span className="text-xs uppercase tracking-wide text-muted">Platform</span><select value={platform} onChange={(event) => setPlatform(event.target.value as SocialPlatform)} className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary">{platforms.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label><label className="block space-y-1.5"><span className="text-xs uppercase tracking-wide text-muted">Brief</span><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={9} placeholder="Share an idea, source content, or goal for this post." className="w-full rounded-xl border border-border bg-elevated px-3 py-2 text-sm outline-none placeholder:text-muted focus:ring-2 focus:ring-primary" /></label><Button onClick={generate} loading={pending} disabled={!prompt.trim()} className="w-full gap-1.5"><Sparkles className="h-4 w-4" aria-hidden /> Generate</Button></div></SectionShell><SectionShell title="Post editor" description="Edit, save as draft, or schedule."><div className="space-y-3"><input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Post title" className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary" /><textarea value={body} onChange={(event) => setBody(event.target.value)} rows={14} placeholder="Generated copy will appear here." className="w-full rounded-xl border border-border bg-elevated px-3 py-2 text-sm leading-6 outline-none placeholder:text-muted focus:ring-2 focus:ring-primary" /><label className="block space-y-1.5"><span className="text-xs uppercase tracking-wide text-muted">Schedule time</span><input type="datetime-local" value={schedule} onChange={(event) => setSchedule(event.target.value)} className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary" /></label><div className="flex flex-wrap gap-2"><Button size="sm" variant="secondary" onClick={() => save("draft")} loading={pending} disabled={!body.trim()}>Save draft</Button><Button size="sm" onClick={() => save("scheduled")} loading={pending} disabled={!body.trim() || !schedule} className="gap-1.5"><CalendarDays className="h-4 w-4" aria-hidden /> Schedule</Button></div>{message ? <p className="text-sm text-success">{message}</p> : null}{error ? <p className="text-sm text-error">{error}</p> : null}</div></SectionShell></div>;
+  return <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]"><SectionShell title="Kairos" description="Your AI copilot for captions, hashtags, rewrites, and repurposed posts." elevated><div className="space-y-4"><label className="block space-y-1.5"><span className="text-xs uppercase tracking-wide text-muted">Platform</span><select value={platform} onChange={(event) => setPlatform(event.target.value as SocialPlatform)} className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary">{platforms.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}</select></label><label className="block space-y-1.5"><span className="text-xs uppercase tracking-wide text-muted">Brief</span><textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows={9} placeholder="Share an idea, source content, or goal for this post." className="w-full rounded-xl border border-border bg-elevated px-3 py-2 text-sm outline-none placeholder:text-muted focus:ring-2 focus:ring-primary" /></label><Button onClick={generate} loading={pending} disabled={!prompt.trim()} className="w-full gap-1.5"><Sparkles className="h-4 w-4" aria-hidden /> Generate with Kairos</Button></div></SectionShell><SectionShell title="Post editor" description="Edit, save as draft, or schedule."><div className="space-y-3"><input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Post title" className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary" /><textarea value={body} onChange={(event) => setBody(event.target.value)} rows={14} placeholder="Generated copy will appear here." className="w-full rounded-xl border border-border bg-elevated px-3 py-2 text-sm leading-6 outline-none placeholder:text-muted focus:ring-2 focus:ring-primary" /><label className="block space-y-1.5"><span className="text-xs uppercase tracking-wide text-muted">Schedule time</span><input type="datetime-local" value={schedule} onChange={(event) => setSchedule(event.target.value)} className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary" /></label><div className="flex flex-wrap gap-2"><Button size="sm" variant="secondary" onClick={() => save("draft")} loading={pending} disabled={!body.trim()}>Save draft</Button><Button size="sm" onClick={() => save("scheduled")} loading={pending} disabled={!body.trim() || !schedule} className="gap-1.5"><CalendarDays className="h-4 w-4" aria-hidden /> Schedule</Button></div>{message ? <p className="text-sm text-success">{message}</p> : null}{error ? <p className="text-sm text-error">{error}</p> : null}</div></SectionShell></div>;
 }
 
 function Queue({ posts }: { posts: SocialPost[] }) {

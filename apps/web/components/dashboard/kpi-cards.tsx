@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/card";
 import type { DashboardSnapshot } from "@repo/types";
+import { AnimatedMetric } from "../app/animated-metric";
 import { formatCurrency } from "./format";
 
 export function KpiCards({ snapshot }: { snapshot: DashboardSnapshot }) {
@@ -68,18 +69,26 @@ export function KpiCards({ snapshot }: { snapshot: DashboardSnapshot }) {
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 pbos-stagger">
       {items.map((item) => (
         <Link key={item.title} href={item.href} className="block">
-          <Card className="group h-full transition duration-200 hover:border-primary/40 hover:bg-elevated">
-            <CardHeader>
+          <Card className="bos-float group relative h-full overflow-hidden transition duration-300 hover:border-primary/35">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100"
+              style={{
+                background:
+                  "radial-gradient(circle at top right, rgba(249,115,22,0.08), transparent 55%)",
+              }}
+              aria-hidden
+            />
+            <CardHeader className="relative">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle>{item.title}</CardTitle>
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-muted text-primary transition duration-200 group-hover:scale-105">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-muted text-primary transition duration-300 group-hover:scale-105 group-hover:shadow-[0_0_24px_rgba(249,115,22,0.2)]">
                   {item.icon}
                 </span>
               </div>
               <CardDescription>{item.hint}</CardDescription>
             </CardHeader>
-            <p className="text-3xl font-semibold tracking-tight text-foreground">
-              {item.value}
+            <p className="relative px-6 pb-6 text-3xl font-semibold tracking-tight text-foreground">
+              <AnimatedMetric value={item.value} />
             </p>
           </Card>
         </Link>

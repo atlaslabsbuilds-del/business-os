@@ -1,4 +1,3 @@
-import { AppShell } from "@repo/ui/app-shell";
 import {
   IconBriefcase,
   IconCalendar,
@@ -11,8 +10,7 @@ import {
   IconSparkles,
   IconUsers,
 } from "@repo/ui/icons";
-import { InviteMemberModal } from "../../components/workspace/invite-member-modal";
-import { WorkspaceSwitcher } from "../../components/workspace/workspace-switcher";
+import { ProtectedAppShell } from "../../components/app/protected-app-shell";
 import { resolveActiveWorkspace } from "../../lib/workspace-context";
 
 export const dynamic = "force-dynamic";
@@ -31,77 +29,28 @@ export default async function ProtectedLayout({
   const canInvite = active.role === "owner" || active.role === "admin";
 
   return (
-    <AppShell
-      brand="Business OS"
-      brandHref="/dashboard"
-      title={active.workspace.name}
-      userEmail={email}
-      sidebarTop={
-        <WorkspaceSwitcher
-          workspaces={memberships}
-          activeWorkspaceId={active.workspace.id}
-        />
-      }
-      toolbar={
-        <InviteMemberModal
-          workspaceId={active.workspace.id}
-          canInvite={canInvite}
-        />
-      }
+    <ProtectedAppShell
+      workspaceName={active.workspace.name}
+      workspaceId={active.workspace.id}
+      email={email}
+      role={active.role}
+      canInvite={canInvite}
+      memberships={memberships}
+      activeWorkspaceId={active.workspace.id}
       navItems={[
-        {
-          href: "/dashboard",
-          label: "Dashboard",
-          icon: <IconLayout />,
-        },
-        {
-          href: "/chat",
-          label: "Chat",
-          icon: <IconSparkles />,
-        },
-        {
-          href: "/crm",
-          label: "CRM",
-          icon: <IconBriefcase />,
-        },
-        {
-          href: "/inbox",
-          label: "Inbox",
-          icon: <IconMail />,
-        },
-        {
-          href: "/content",
-          label: "Content OS",
-          icon: <IconPen />,
-        },
-        {
-          href: "/social",
-          label: "Social OS",
-          icon: <IconShare />,
-        },
-        {
-          href: "/website",
-          label: "Website OS",
-          icon: <IconGlobe />,
-        },
-        {
-          href: "/calendar",
-          label: "Calendar OS",
-          icon: <IconCalendar />,
-        },
-        {
-          href: "/team",
-          label: "Team",
-          icon: <IconUsers />,
-        },
-        {
-          href: "/settings",
-          label: "Settings",
-          icon: <IconSettings />,
-        },
+        { href: "/dashboard", label: "Dashboard", icon: <IconLayout /> },
+        { href: "/chat", label: "Chat", icon: <IconSparkles /> },
+        { href: "/crm", label: "CRM", icon: <IconBriefcase /> },
+        { href: "/inbox", label: "Inbox", icon: <IconMail /> },
+        { href: "/content", label: "Content OS", icon: <IconPen /> },
+        { href: "/social", label: "Social OS", icon: <IconShare /> },
+        { href: "/website", label: "Website OS", icon: <IconGlobe /> },
+        { href: "/calendar", label: "Calendar OS", icon: <IconCalendar /> },
+        { href: "/team", label: "Team", icon: <IconUsers /> },
+        { href: "/settings", label: "Settings", icon: <IconSettings /> },
       ]}
     >
       {children}
-    </AppShell>
+    </ProtectedAppShell>
   );
 }

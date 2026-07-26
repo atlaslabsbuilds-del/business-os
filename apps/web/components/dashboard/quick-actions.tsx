@@ -11,8 +11,8 @@ import { SectionShell } from "./section-shell";
 
 const ACTIONS = [
   {
-    label: "Ask AI",
-    description: "Open the assistant",
+    label: "Ask Kairos",
+    description: "Open your AI copilot",
     href: "/chat",
     icon: Bot,
   },

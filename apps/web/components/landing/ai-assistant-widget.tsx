@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { MessageSquare, Minimize2, Send, Sparkles, X } from "lucide-react";
+import { Minimize2, Send, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@repo/ui/button";
+import { KAIROS_WELCOME } from "../../lib/kairos";
+import { KairosAvatar } from "../kairos/kairos-avatar";
+import { KairosThinkingMessage } from "../kairos/kairos-avatar";
+import { deriveKairosChatState } from "../kairos/use-kairos-state";
 import { useLandingInteractions } from "./landing-interactions";
 
 const SUGGESTIONS = [
@@ -16,7 +20,7 @@ const SUGGESTIONS = [
 
 const DEMO_REPLIES: Record<string, string> = {
   default:
-    "I can help across CRM, Inbox, Content, and Calendar. This is a demo assistant—connect your workspace for live actions.",
+    "I'm Kairos — your AI Business Copilot. This is a demo on the marketing site. Connect your workspace for live CRM, Inbox, and Content actions.",
   "Summarize my inbox":
     "Demo: 8 threads need replies, 2 invoices detected, 1 meeting request queued for Calendar.",
   "Draft a launch plan":
@@ -30,16 +34,21 @@ const DEMO_REPLIES: Record<string, string> = {
 export function AiAssistantWidget() {
   const { assistantMinimized, toggleAssistant, minimizeAssistant, isOverlayOpen } = useLandingInteractions();
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([
-    {
-      role: "assistant",
-      text: "Hi — I'm your Business OS assistant. Ask about pipeline, inbox, content, or launches.",
-    },
-  ]);
+  const [messages, setMessages] = useState<{ role: "user" | "assistant"; text: string }[]>([]);
   const [typing, setTyping] = useState(false);
+  const [opened, setOpened] = useState(false);
+
+  const kairosState = deriveKairosChatState({
+    isStreaming: typing,
+    streamingContent: typing ? "…" : "",
+    draft: input,
+    error: null,
+    phase: null,
+  });
 
   useEffect(() => {
     if (assistantMinimized) return;
+    setOpened(true);
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") minimizeAssistant();
     };
@@ -62,7 +71,7 @@ export function AiAssistantWidget() {
         },
       ]);
       setTyping(false);
-    }, 700);
+    }, 1400);
   }
 
   return (
@@ -74,21 +83,24 @@ export function AiAssistantWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 340, damping: 28 }}
-            className="landing-glass-strong fixed bottom-24 right-5 z-[75] flex w-[min(380px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[24px] shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:bottom-28"
+            className="landing-glass-strong fixed bottom-24 right-5 z-[75] flex w-[min(400px,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-[24px] shadow-[0_24px_80px_rgba(0,0,0,0.5)] sm:bottom-28"
             role="complementary"
-            aria-label="AI assistant"
+            aria-label="Ask Kairos"
           >
             <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
-              <p className="flex items-center gap-2 text-sm font-semibold">
-                <Sparkles className="h-4 w-4 text-primary" aria-hidden />
-                AI Assistant
-              </p>
+              <div className="flex items-center gap-3">
+                <KairosAvatar size="sm" state={kairosState} interactive aria-label="" />
+                <div>
+                  <p className="text-sm font-semibold">Kairos</p>
+                  <p className="text-[11px] text-muted">AI Business Copilot</p>
+                </div>
+              </div>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
                   onClick={minimizeAssistant}
                   className="rounded-lg p-1.5 text-muted transition hover:bg-white/5 hover:text-foreground"
-                  aria-label="Minimize assistant"
+                  aria-label="Minimize Kairos"
                 >
                   <Minimize2 className="h-4 w-4" />
                 </button>
@@ -96,12 +108,25 @@ export function AiAssistantWidget() {
                   type="button"
                   onClick={minimizeAssistant}
                   className="rounded-lg p-1.5 text-muted transition hover:bg-white/5 hover:text-foreground"
-                  aria-label="Close assistant"
+                  aria-label="Close Kairos"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
             </div>
+
+            {messages.length === 0 && opened ? (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="border-b border-white/5 px-4 py-4 text-center"
+              >
+                <p className="text-sm font-semibold">{KAIROS_WELCOME.greeting}</p>
+                <p className="mt-1 text-xs text-primary">{KAIROS_WELCOME.subtitle}</p>
+                <p className="mt-2 text-xs leading-5 text-secondary">{KAIROS_WELCOME.body}</p>
+              </motion.div>
+            ) : null}
+
             <div className="max-h-64 space-y-3 overflow-y-auto px-4 py-3">
               {messages.map((message, index) => (
                 <div
@@ -115,9 +140,7 @@ export function AiAssistantWidget() {
                   {message.text}
                 </div>
               ))}
-              {typing ? (
-                <p className="text-xs text-muted">Assistant is typing…</p>
-              ) : null}
+              <KairosThinkingMessage state={kairosState} />
             </div>
             <div className="flex flex-wrap gap-1.5 border-t border-white/5 px-4 py-2">
               {SUGGESTIONS.map((item) => (
@@ -141,7 +164,7 @@ export function AiAssistantWidget() {
               <input
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-                placeholder="Ask anything…"
+                placeholder="Ask Kairos anything…"
                 className="flex-1 rounded-xl bg-white/[0.03] px-3 py-2 text-sm outline-none ring-1 ring-white/5 focus:ring-primary/30"
               />
               <Button type="submit" size="sm" className="px-3">
@@ -149,7 +172,7 @@ export function AiAssistantWidget() {
               </Button>
             </form>
             <p className="border-t border-white/5 px-4 py-2 text-[10px] text-muted">
-              Demo assistant · responses are simulated until you connect a workspace.
+              Demo · simulated responses on the marketing site
             </p>
           </motion.aside>
         ) : null}
@@ -160,11 +183,11 @@ export function AiAssistantWidget() {
         onClick={toggleAssistant}
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.98 }}
-        className="landing-assistant-fab fixed bottom-5 right-5 z-[74] flex items-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(249,115,22,0.35)]"
-        aria-label={assistantMinimized ? "Open AI assistant" : "Toggle AI assistant"}
+        className="landing-assistant-fab fixed bottom-5 right-5 z-[74] flex items-center gap-2.5 rounded-full bg-primary py-2 pl-2 pr-4 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(249,115,22,0.35)]"
+        aria-label={assistantMinimized ? "Ask Kairos" : "Toggle Kairos"}
       >
-        <MessageSquare className="h-4 w-4" aria-hidden />
-        <span className="hidden sm:inline">Ask AI</span>
+        <KairosAvatar size="xs" state="idle" aria-label="" />
+        <span className="hidden sm:inline">Ask Kairos</span>
       </motion.button>
     </>
   );

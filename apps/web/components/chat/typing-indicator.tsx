@@ -1,11 +1,12 @@
 "use client";
 
+import { KairosAvatar, KairosThinkingMessage } from "../kairos/kairos-avatar";
+
 export function TypingIndicator() {
   return (
-    <div className="flex items-center gap-1.5 px-1 py-2">
-      <span className="h-2 w-2 animate-pulse rounded-full bg-primary/70 [animation-delay:0ms]" />
-      <span className="h-2 w-2 animate-pulse rounded-full bg-primary/70 [animation-delay:150ms]" />
-      <span className="h-2 w-2 animate-pulse rounded-full bg-primary/70 [animation-delay:300ms]" />
+    <div className="flex items-center gap-3 px-1 py-2">
+      <KairosAvatar size="sm" state="thinking" aria-label="Kairos is thinking" />
+      <KairosThinkingMessage state="thinking" />
     </div>
   );
 }

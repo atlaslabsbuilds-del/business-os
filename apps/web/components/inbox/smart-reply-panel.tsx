@@ -11,6 +11,7 @@ import {
   sendSmartReplyAction,
   updateSmartReplyDraftAction,
 } from "../../app/(protected)/actions/inbox";
+import { KairosAvatar, KairosThinkingMessage } from "../kairos/kairos-avatar";
 
 const STYLES: Array<{ id: SmartReplyStyle; label: string; hint: string }> = [
   { id: "professional", label: "Professional", hint: "Polished & clear" },
@@ -155,17 +156,29 @@ export function SmartReplyPanel({
   }
 
   const loading = pending || mode !== "idle";
+  const kairosState =
+    mode === "generating"
+      ? "thinking"
+      : error
+        ? "error"
+        : success
+          ? "success"
+          : "idle";
 
   return (
     <div className="space-y-4 rounded-2xl border border-border bg-surface p-4 shadow-soft">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-secondary">
-            AI smart reply
-          </p>
-          <p className="text-sm text-muted">
-            Generate a reply, edit it, then send. Gmail draft is created first.
-          </p>
+        <div className="flex items-start gap-3">
+          <KairosAvatar size="sm" state={kairosState} aria-label="Kairos" />
+          <div className="space-y-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-secondary">
+              Kairos smart reply
+            </p>
+            <p className="text-sm text-muted">
+              Generate a reply, edit it, then send. Gmail draft is created first.
+            </p>
+            {mode === "generating" ? <KairosThinkingMessage state="thinking" /> : null}
+          </div>
         </div>
         {!isGmail ? (
           <Badge variant="warning">Gmail required to send</Badge>

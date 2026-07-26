@@ -14,6 +14,8 @@ import {
   renameChatConversationAction,
 } from "../../app/(protected)/actions/chat";
 import { streamChatRequest } from "../../lib/chat-stream";
+import { KairosCompanion } from "../kairos/kairos-companion";
+import { deriveKairosChatState } from "../kairos/use-kairos-state";
 import { ChatSidebar } from "./chat-sidebar";
 import { Composer } from "./composer";
 import { EmptyState } from "./empty-state";
@@ -70,6 +72,7 @@ export function ChatLayout({
   const [usageLabel, setUsageLabel] = React.useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [kairosPhase, setKairosPhase] = React.useState<"success" | "completed" | null>(null);
   const abortRef = React.useRef<AbortController | null>(null);
   const searchTimer = React.useRef<number | null>(null);
 
@@ -129,6 +132,8 @@ export function ChatLayout({
 
     let conversationId = input.conversationId;
     let assistantContent = "";
+
+    let streamOk = true;
 
     if (!input.regenerate) {
       const tempUser = createLocalMessage({
@@ -190,6 +195,7 @@ export function ChatLayout({
               });
             }
             if (event.type === "error") {
+              streamOk = false;
               setError(event.message);
             }
           },
@@ -197,6 +203,7 @@ export function ChatLayout({
       );
       await refreshConversations(searchQuery || undefined);
     } catch (streamError) {
+      streamOk = false;
       if (streamError instanceof Error && streamError.name === "AbortError") {
         if (assistantContent) {
           setMessages((prev) => [
@@ -217,12 +224,20 @@ export function ChatLayout({
       setIsStreaming(false);
       setStreamingContent("");
       abortRef.current = null;
+      if (streamOk) {
+        setKairosPhase("success");
+        window.setTimeout(() => {
+          setKairosPhase("completed");
+          window.setTimeout(() => setKairosPhase(null), 1200);
+        }, 900);
+      }
     }
   }
 
   async function handleSubmit() {
     const text = draft.trim();
     if (!text || isStreaming) return;
+    setKairosPhase(null);
     await runStream({ message: text, conversationId: activeId });
   }
 
@@ -275,6 +290,14 @@ export function ChatLayout({
     }
   }
 
+  const kairosState = deriveKairosChatState({
+    isStreaming,
+    streamingContent,
+    draft,
+    error,
+    phase: kairosPhase,
+  });
+
   return (
     <div className="-mx-4 -my-4 flex h-[calc(100vh-3.5rem)] overflow-hidden sm:-mx-6 lg:-mx-8 lg:h-[calc(100vh-4rem)]">
       <ChatSidebar
@@ -308,7 +331,7 @@ export function ChatLayout({
               <h1 className="text-sm font-semibold text-foreground">
                 {activeId
                   ? conversations.find((c) => c.id === activeId)?.title ?? "Chat"
-                  : "New conversation"}
+                  : "Ask Kairos"}
               </h1>
               {usageLabel ? (
                 <p className="text-xs text-muted">{usageLabel}</p>
@@ -323,9 +346,18 @@ export function ChatLayout({
           </div>
         ) : null}
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex flex-1 overflow-hidden">
+          <aside className="bos-glass hidden w-44 shrink-0 flex-col items-center border-r border-border/60 px-3 py-6 lg:flex xl:w-52">
+            <KairosCompanion
+              state={kairosState}
+              showWelcome={messages.length === 0 && !isStreaming}
+              compact
+            />
+          </aside>
+          <div className="flex-1 overflow-y-auto">
           {messages.length === 0 && !isStreaming ? (
             <EmptyState
+              kairosState={kairosState}
               onSuggestion={(text) => {
                 setDraft(text);
               }}
@@ -347,8 +379,10 @@ export function ChatLayout({
               streamingContent={streamingContent}
               isStreaming={isStreaming}
               onRegenerate={handleRegenerate}
+              kairosState={kairosState}
             />
           )}
+          </div>
         </div>
 
         <Composer

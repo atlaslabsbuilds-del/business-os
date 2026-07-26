@@ -16,22 +16,55 @@ import { Card } from "@repo/ui/card";
 import type { CalendarAvailability, CalendarBookingLink, CalendarDashboardStats, CalendarMeetingNote, InboxCalendarEvent } from "@repo/types";
 import { createBookingLinkAction } from "../../app/(protected)/actions/calendar";
 import { formatDateTime } from "../dashboard/format";
+import { TabNav } from "../app/tab-nav";
 import { EmptyState, SectionShell } from "../dashboard/section-shell";
 
 type Tab = "overview" | "calendar" | "booking" | "availability" | "meetings" | "notes";
 
 export function CalendarShell({ stats, events, links, availability, notes }: { stats: CalendarDashboardStats; events: InboxCalendarEvent[]; links: CalendarBookingLink[]; availability: CalendarAvailability | null; notes: CalendarMeetingNote[] }) {
   const [tab, setTab] = useState<Tab>("overview");
-  return <div className="space-y-6">
-    <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><Badge variant="accent" className="gap-1.5"><CalendarDays className="h-3 w-3" aria-hidden /> Calendar & Booking OS</Badge><h1 className="mt-3 text-3xl font-semibold tracking-tight">Make time for meaningful work.</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">One place for availability, booking links, meetings, reminders, notes, and follow-up.</p></div><Button onClick={() => setTab("booking")} className="gap-2"><Plus className="h-4 w-4" aria-hidden /> Create booking link</Button></header>
-    <nav className="flex gap-1 overflow-x-auto border-b border-border pb-px" aria-label="Calendar OS">{[["overview","Dashboard"],["calendar","Calendar"],["booking","Booking links"],["availability","Availability"],["meetings","Meetings"],["notes","Meeting notes"]].map(([id,label]) => <button key={id} type="button" onClick={() => setTab(id as Tab)} className={`whitespace-nowrap border-b-2 px-3 py-2.5 text-sm transition ${tab === id ? "border-primary text-foreground" : "border-transparent text-secondary hover:text-foreground"}`}>{label}</button>)}</nav>
-    {tab === "overview" ? <Overview stats={stats} events={events} links={links} notes={notes} onTab={setTab} /> : null}
-    {tab === "calendar" ? <CalendarView events={events} /> : null}
-    {tab === "booking" ? <Booking links={links} onCreated={() => setTab("overview")} /> : null}
-    {tab === "availability" ? <Availability availability={availability} /> : null}
-    {tab === "meetings" ? <Meetings events={events} /> : null}
-    {tab === "notes" ? <Notes notes={notes} /> : null}
-  </div>;
+  return (
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <div className="bos-gradient-border bos-glass-strong bos-noise relative overflow-hidden rounded-[24px] p-6 pbos-animate-rise">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.08),transparent_55%)]" aria-hidden />
+        <header className="relative flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
+          <div>
+            <Badge variant="accent" className="gap-1.5">
+              <CalendarDays className="h-3 w-3" aria-hidden />
+              Calendar & Booking OS
+            </Badge>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight">Make time for meaningful work.</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-secondary">
+              One place for availability, booking links, meetings, reminders, notes, and follow-up.
+            </p>
+          </div>
+          <Button onClick={() => setTab("booking")} className="gap-2">
+            <Plus className="h-4 w-4" aria-hidden />
+            Create booking link
+          </Button>
+        </header>
+      </div>
+      <TabNav
+        label="Calendar OS"
+        active={tab}
+        onChange={(id) => setTab(id as Tab)}
+        items={[
+          { id: "overview", label: "Dashboard" },
+          { id: "calendar", label: "Calendar" },
+          { id: "booking", label: "Booking links" },
+          { id: "availability", label: "Availability" },
+          { id: "meetings", label: "Meetings" },
+          { id: "notes", label: "Meeting notes" },
+        ]}
+      />
+      {tab === "overview" ? <Overview stats={stats} events={events} links={links} notes={notes} onTab={setTab} /> : null}
+      {tab === "calendar" ? <CalendarView events={events} /> : null}
+      {tab === "booking" ? <Booking links={links} onCreated={() => setTab("overview")} /> : null}
+      {tab === "availability" ? <Availability availability={availability} /> : null}
+      {tab === "meetings" ? <Meetings events={events} /> : null}
+      {tab === "notes" ? <Notes notes={notes} /> : null}
+    </div>
+  );
 }
 
 function Overview({ stats, events, links, notes, onTab }: { stats: CalendarDashboardStats; events: InboxCalendarEvent[]; links: CalendarBookingLink[]; notes: CalendarMeetingNote[]; onTab: (tab: Tab) => void }) {

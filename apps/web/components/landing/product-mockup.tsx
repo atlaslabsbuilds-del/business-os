@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import { useTilt } from "./atmosphere";
+import { KairosAvatar } from "../kairos/kairos-avatar";
 
 const feeds = [
   { id: "crm", label: "CRM", text: "Acme Corp moved to Negotiation · $42,000" },
@@ -53,6 +54,8 @@ export function ProductMockup({ module = "dashboard" }: { module?: string }) {
   }, [feedIndex]);
 
   const active = feeds[feedIndex]!;
+  const kairosState =
+    aiLine.length === 0 ? "idle" : aiLine.length < fullAi.length ? "speaking" : "success";
 
   return (
     <motion.div
@@ -137,9 +140,9 @@ export function ProductMockup({ module = "dashboard" }: { module?: string }) {
 
               <div className="space-y-3">
                 <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-4">
-                  <div className="mb-3 flex items-center gap-2 text-sm font-medium">
-                    <Sparkles className="h-4 w-4 text-primary" aria-hidden />
-                    AI Assistant
+                  <div className="mb-3 flex items-center gap-2.5 text-sm font-medium">
+                    <KairosAvatar size="xs" state={kairosState} aria-label="Kairos" />
+                    Kairos
                   </div>
                   <p className="min-h-12 text-sm leading-6 text-secondary">
                     {aiLine}

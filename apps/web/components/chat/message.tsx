@@ -6,12 +6,15 @@ import remarkGfm from "remark-gfm";
 import { Button } from "@repo/ui/button";
 import { cn } from "@repo/ui/utils";
 import type { ChatMessage } from "@repo/types";
+import type { KairosState } from "../../lib/kairos";
+import { KairosAvatar } from "../kairos/kairos-avatar";
 
 type MessageProps = {
   message: ChatMessage;
   isStreaming?: boolean;
   onRegenerate?: () => void;
   canRegenerate?: boolean;
+  kairosState?: KairosState;
 };
 
 function CodeBlock({
@@ -58,6 +61,7 @@ export function Message({
   isStreaming,
   onRegenerate,
   canRegenerate,
+  kairosState = "idle",
 }: MessageProps) {
   const isUser = message.role === "user";
 
@@ -68,15 +72,18 @@ export function Message({
         isUser ? "bg-transparent" : "bg-surface/30",
       )}
     >
-      <div
-        className={cn(
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-semibold",
-          isUser
-            ? "bg-elevated text-secondary"
-            : "bg-primary-muted text-primary",
+      <div className="shrink-0">
+        {isUser ? (
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-elevated text-xs font-semibold text-secondary">
+            You
+          </div>
+        ) : (
+          <KairosAvatar
+            size="xs"
+            state={isStreaming ? "speaking" : kairosState}
+            aria-label="Kairos"
+          />
         )}
-      >
-        {isUser ? "You" : "AI"}
       </div>
       <div className="min-w-0 flex-1 space-y-2">
         <div className="prose prose-invert max-w-none text-sm leading-relaxed text-foreground/95 prose-headings:font-semibold prose-headings:text-foreground prose-p:text-foreground/90 prose-a:text-accent prose-code:rounded prose-code:bg-elevated prose-code:px-1.5 prose-code:py-0.5 prose-code:text-[13px] prose-pre:p-0 prose-pre:bg-transparent">

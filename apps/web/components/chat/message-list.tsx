@@ -1,6 +1,7 @@
 "use client";
 
 import type { ChatMessage } from "@repo/types";
+import type { KairosState } from "../../lib/kairos";
 import { Message } from "./message";
 import { TypingIndicator } from "./typing-indicator";
 
@@ -9,6 +10,7 @@ type MessageListProps = {
   streamingContent?: string;
   isStreaming?: boolean;
   onRegenerate?: () => void;
+  kairosState?: KairosState;
 };
 
 export function MessageList({
@@ -16,6 +18,7 @@ export function MessageList({
   streamingContent,
   isStreaming,
   onRegenerate,
+  kairosState = "idle",
 }: MessageListProps) {
   const visible = messages.filter((message) => message.role !== "system");
   const lastAssistantIndex = [...visible]
@@ -45,6 +48,7 @@ export function MessageList({
             isStreaming={showStreaming}
             canRegenerate={isLastAssistant && !isStreaming}
             onRegenerate={onRegenerate}
+            kairosState={isLastAssistant ? kairosState : "idle"}
           />
         );
       })}

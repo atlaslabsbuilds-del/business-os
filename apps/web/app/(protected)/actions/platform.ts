@@ -52,6 +52,41 @@ export async function globalSearchAction(
   }
 }
 
+export async function workspaceNotificationsAction(): Promise<
+  PlatformActionResult<{
+    notifications: Array<{
+      id: string;
+      title: string;
+      body: string | null;
+      module: string;
+      actionUrl: string | null;
+      readAt: string | null;
+      createdAt: string;
+    }>;
+  }>
+> {
+  const context = await resolveActiveWorkspace();
+  if (!context) {
+    return { ok: false, error: "Workspace required" };
+  }
+
+  try {
+    const snapshot = await getDashboardSnapshot({
+      workspaceId: context.active.workspace.id,
+      userId: context.userId,
+      membershipCount: context.memberships.length,
+      role: context.active.role,
+      workspaceName: context.active.workspace.name,
+    });
+    return { ok: true, data: { notifications: snapshot.notifications } };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Failed to load notifications",
+    };
+  }
+}
+
 export async function dashboardAiContextAction(): Promise<
   PlatformActionResult<{ context: string }>
 > {
