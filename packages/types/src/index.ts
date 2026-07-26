@@ -76,6 +76,31 @@ export {
 } from "./platform";
 
 export type {
+  KairosAgentId,
+  WorkspaceAiSettings,
+  KairosAgentRun,
+  AiOutputVersion,
+  WorkspaceOnboardingProgress,
+  WorkspaceAiSuggestion,
+  UpdateWorkspaceAiMemoryInput,
+  CreateKairosAgentRunInput,
+  CreateAiOutputVersionInput,
+} from "./kairos-platform";
+
+export {
+  kairosAgentIdSchema,
+  updateWorkspaceAiMemorySchema,
+  deleteWorkspaceAiMemorySchema,
+  setWorkspaceMemoryEnabledSchema,
+  createKairosAgentRunSchema,
+  createAiOutputVersionSchema,
+  renameAiOutputVersionSchema,
+  restoreAiOutputVersionSchema,
+  completeOnboardingStepSchema,
+  dismissAiSuggestionSchema,
+} from "./kairos-platform";
+
+export type {
   ContentType,
   ContentStatus,
   ContentAnalytics,

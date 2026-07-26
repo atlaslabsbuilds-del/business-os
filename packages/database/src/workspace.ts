@@ -231,7 +231,7 @@ export async function listWorkspaceMembers(
 export async function createInvitation(input: {
   workspaceId: string;
   email: string;
-  role: "admin" | "member";
+  role: Exclude<WorkspaceRole, "owner">;
   invitedBy: string;
 }): Promise<Invitation> {
   const supabase = await createServerClient();

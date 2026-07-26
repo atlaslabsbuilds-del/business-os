@@ -25,6 +25,8 @@ function mapActivityEvent(row: ActivityRow): WorkspaceActivityEvent {
 export async function listWorkspaceActivityEvents(input: {
   workspaceId: string;
   module?: string;
+  actorId?: string;
+  since?: string;
   limit?: number;
   client?: SupabaseClient<Database>;
 }): Promise<WorkspaceActivityEvent[]> {
@@ -38,6 +40,12 @@ export async function listWorkspaceActivityEvents(input: {
 
   if (input.module) {
     builder = builder.eq("module", input.module);
+  }
+  if (input.actorId) {
+    builder = builder.eq("actor_id", input.actorId);
+  }
+  if (input.since) {
+    builder = builder.gte("created_at", input.since);
   }
 
   const { data, error } = await builder;

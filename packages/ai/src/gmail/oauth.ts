@@ -1,3 +1,5 @@
+import { createHmac, timingSafeEqual } from "node:crypto";
+
 const GOOGLE_AUTH = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN = "https://oauth2.googleapis.com/token";
 const GOOGLE_USERINFO = "https://www.googleapis.com/oauth2/v2/userinfo";
@@ -226,7 +228,15 @@ export function encodeOAuthState(input: {
   provider: "gmail";
   displayName?: string | null;
 }): string {
-  return Buffer.from(JSON.stringify(input), "utf8").toString("base64url");
+  const payload = {
+    ...input,
+    issuedAt: Date.now(),
+    expiresAt: Date.now() + 10 * 60 * 1000,
+  };
+  const encoded = Buffer.from(JSON.stringify(payload), "utf8").toString(
+    "base64url",
+  );
+  return `${encoded}.${signOAuthState(encoded)}`;
 }
 
 export function decodeOAuthState(state: string): {
@@ -235,18 +245,23 @@ export function decodeOAuthState(state: string): {
   provider: "gmail";
   displayName?: string | null;
 } {
-  const parsed = JSON.parse(
-    Buffer.from(state, "base64url").toString("utf8"),
-  ) as {
+  const [encoded, signature] = state.split(".");
+  if (!encoded || !signature || !verifyOAuthState(encoded, signature)) {
+    throw new Error("Invalid OAuth state");
+  }
+  const parsed = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8")) as {
     workspaceId?: string;
     userId?: string;
     provider?: string;
     displayName?: string | null;
+    expiresAt?: number;
   };
   if (
     !parsed.workspaceId ||
     !parsed.userId ||
-    parsed.provider !== "gmail"
+    parsed.provider !== "gmail" ||
+    !parsed.expiresAt ||
+    parsed.expiresAt < Date.now()
   ) {
     throw new Error("Invalid OAuth state");
   }
@@ -256,4 +271,28 @@ export function decodeOAuthState(state: string): {
     provider: "gmail",
     displayName: parsed.displayName,
   };
+}
+
+function oauthStateSecret(): string {
+  const secret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+  if (!secret) throw new Error("OAuth state secret is not configured");
+  return secret;
+}
+
+function signOAuthState(payload: string): string {
+  return createHmac("sha256", oauthStateSecret())
+    .update(payload)
+    .digest("base64url");
+}
+
+function verifyOAuthState(payload: string, signature: string): boolean {
+  try {
+    const expected = Buffer.from(signOAuthState(payload), "utf8");
+    const actual = Buffer.from(signature, "utf8");
+    return (
+      expected.length === actual.length && timingSafeEqual(expected, actual)
+    );
+  } catch {
+    return false;
+  }
 }

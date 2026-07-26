@@ -8,6 +8,7 @@ import {
   requiresAdmin,
 } from "./constants";
 import { userHasAdminAccess } from "./roles";
+import { consumeRateLimit } from "./rate-limit";
 
 export type MiddlewareAuthOptions = {
   loginPath?: string;
@@ -77,6 +78,44 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
   const checkWorkspaceOnboarding = options.checkWorkspaceOnboarding ?? true;
 
   return async function middleware(request: NextRequest) {
+    const authRateLimitedPaths = [
+      "/signin",
+      "/signup",
+      "/forgot-password",
+      "/reset-password",
+    ];
+    if (
+      request.method === "POST" &&
+      authRateLimitedPaths.some(
+        (path) =>
+          request.nextUrl.pathname === path ||
+          request.nextUrl.pathname.startsWith(`${path}/`),
+      )
+    ) {
+      const forwardedFor = request.headers.get("x-forwarded-for");
+      const clientKey =
+        forwardedFor?.split(",")[0]?.trim() ??
+        request.headers.get("x-real-ip") ??
+        "unknown";
+      const result = consumeRateLimit(
+        `auth:${request.nextUrl.pathname}:${clientKey}`,
+        12,
+        60_000,
+      );
+      if (!result.allowed) {
+        return new NextResponse(
+          JSON.stringify({ error: "Too many requests. Try again later." }),
+          {
+            status: 429,
+            headers: {
+              "content-type": "application/json",
+              "retry-after": String(result.retryAfterSeconds),
+            },
+          },
+        );
+      }
+    }
+
     const { response, user, supabase } = await updateSession(request);
     const { pathname } = request.nextUrl;
 
@@ -117,6 +156,18 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
         return redirectForRequest(request, url);
       }
       return response;
+    }
+
+    // Supabase may create an authenticated session before email confirmation.
+    // Keep the verification route reachable, but do not allow unverified
+    // accounts to access workspace data or invoke server actions.
+    const isVerificationRoute =
+      pathname === "/verify-email" || pathname.startsWith("/verify-email/");
+    if (user && !user.email_confirmed_at && !isVerificationRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/verify-email";
+      url.search = "";
+      return redirectForRequest(request, url);
     }
 
     const isPublic = isPublicRoute(pathname);

@@ -146,7 +146,7 @@ export type Database = {
           id: string;
           workspace_id: string;
           user_id: string;
-          role: "owner" | "admin" | "member";
+          role: "owner" | "admin" | "manager" | "member" | "guest";
           created_at: string;
           updated_at: string;
         };
@@ -154,7 +154,7 @@ export type Database = {
           id?: string;
           workspace_id: string;
           user_id: string;
-          role?: "owner" | "admin" | "member";
+          role?: "owner" | "admin" | "manager" | "member" | "guest";
           created_at?: string;
           updated_at?: string;
         };
@@ -162,7 +162,7 @@ export type Database = {
           id?: string;
           workspace_id?: string;
           user_id?: string;
-          role?: "owner" | "admin" | "member";
+          role?: "owner" | "admin" | "manager" | "member" | "guest";
           created_at?: string;
           updated_at?: string;
         };
@@ -173,7 +173,7 @@ export type Database = {
           id: string;
           workspace_id: string;
           email: string;
-          role: "owner" | "admin" | "member";
+          role: "owner" | "admin" | "manager" | "member" | "guest";
           status: "pending" | "accepted" | "revoked" | "expired";
           invited_by: string;
           token: string;
@@ -185,7 +185,7 @@ export type Database = {
           id?: string;
           workspace_id: string;
           email: string;
-          role?: "owner" | "admin" | "member";
+          role?: "owner" | "admin" | "manager" | "member" | "guest";
           status?: "pending" | "accepted" | "revoked" | "expired";
           invited_by: string;
           token?: string;
@@ -197,7 +197,7 @@ export type Database = {
           id?: string;
           workspace_id?: string;
           email?: string;
-          role?: "owner" | "admin" | "member";
+          role?: "owner" | "admin" | "manager" | "member" | "guest";
           status?: "pending" | "accepted" | "revoked" | "expired";
           invited_by?: string;
           token?: string;
@@ -1824,6 +1824,228 @@ export type Database = {
         };
         Relationships: [];
       };
+      security_audit_logs: {
+        Row: {
+          id: string;
+          workspace_id: string | null;
+          actor_user_id: string | null;
+          event_type: string;
+          resource_type: string | null;
+          resource_id: string | null;
+          ip_hash: string | null;
+          user_agent: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id?: string | null;
+          actor_user_id?: string | null;
+          event_type: string;
+          resource_type?: string | null;
+          resource_id?: string | null;
+          ip_hash?: string | null;
+          user_agent?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string | null;
+          actor_user_id?: string | null;
+          event_type?: string;
+          resource_type?: string | null;
+          resource_id?: string | null;
+          ip_hash?: string | null;
+          user_agent?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      workspace_ai_settings: {
+        Row: {
+          workspace_id: string;
+          memory_enabled: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          workspace_id: string;
+          memory_enabled?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          workspace_id?: string;
+          memory_enabled?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      kairos_agent_runs: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          agent_id: string;
+          title: string;
+          prompt: string;
+          status: string;
+          result_summary: string | null;
+          created_by: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          agent_id: string;
+          title: string;
+          prompt?: string;
+          status?: string;
+          result_summary?: string | null;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          agent_id?: string;
+          title?: string;
+          prompt?: string;
+          status?: string;
+          result_summary?: string | null;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      ai_output_versions: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          entity_type: string;
+          entity_id: string | null;
+          title: string;
+          content: string;
+          version_number: number;
+          is_current: boolean;
+          created_by: string | null;
+          parent_version_id: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          entity_type: string;
+          entity_id?: string | null;
+          title?: string;
+          content?: string;
+          version_number?: number;
+          is_current?: boolean;
+          created_by?: string | null;
+          parent_version_id?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          entity_type?: string;
+          entity_id?: string | null;
+          title?: string;
+          content?: string;
+          version_number?: number;
+          is_current?: boolean;
+          created_by?: string | null;
+          parent_version_id?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      workspace_onboarding_progress: {
+        Row: {
+          workspace_id: string;
+          completed_steps: Json;
+          celebrated_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          workspace_id: string;
+          completed_steps?: Json;
+          celebrated_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          workspace_id?: string;
+          completed_steps?: Json;
+          celebrated_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      workspace_ai_suggestions: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          module: string;
+          title: string;
+          body: string;
+          action_label: string | null;
+          action_url: string | null;
+          severity: string;
+          dismissed_at: string | null;
+          created_by: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          module?: string;
+          title: string;
+          body?: string;
+          action_label?: string | null;
+          action_url?: string | null;
+          severity?: string;
+          dismissed_at?: string | null;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          module?: string;
+          title?: string;
+          body?: string;
+          action_label?: string | null;
+          action_url?: string | null;
+          severity?: string;
+          dismissed_at?: string | null;
+          created_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -1869,7 +2091,7 @@ export type Database = {
     };
     Enums: {
       app_role: "user" | "admin" | "owner";
-      workspace_role: "owner" | "admin" | "member";
+      workspace_role: "owner" | "admin" | "manager" | "member" | "guest";
       invitation_status: "pending" | "accepted" | "revoked" | "expired";
       crm_lifecycle_stage: "lead" | "qualified" | "customer" | "churned" | "other";
       crm_deal_stage: "qualified" | "proposal" | "negotiation" | "won" | "lost";

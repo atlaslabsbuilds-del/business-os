@@ -1,5 +1,14 @@
 import { z } from "zod";
 
+const strongPassword = z
+  .string()
+  .min(12, "Password must be at least 12 characters")
+  .max(72, "Password must be at most 72 characters")
+  .regex(/[a-z]/, "Password must include a lowercase letter")
+  .regex(/[A-Z]/, "Password must include an uppercase letter")
+  .regex(/[0-9]/, "Password must include a number")
+  .regex(/[^A-Za-z0-9]/, "Password must include a symbol");
+
 export const appRoleSchema = z.enum(["user", "admin", "owner"]);
 export type AppRole = z.infer<typeof appRoleSchema>;
 
@@ -57,10 +66,7 @@ export type UserRoleRecord = {
 
 export const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(72, "Password must be at most 72 characters"),
+  password: strongPassword,
 });
 
 export const signUpSchema = z
@@ -71,11 +77,8 @@ export const signUpSchema = z
       .min(1, "Full name is required")
       .max(120, "Full name must be at most 120 characters"),
     email: z.string().trim().email("Enter a valid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(72, "Password must be at most 72 characters"),
-    confirmPassword: z.string().min(8, "Confirm your password"),
+    password: strongPassword,
+    confirmPassword: z.string().min(12, "Confirm your password"),
   })
   .refine((value) => value.password === value.confirmPassword, {
     message: "Passwords do not match",
@@ -88,11 +91,8 @@ export const forgotPasswordSchema = z.object({
 
 export const resetPasswordSchema = z
   .object({
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(72, "Password must be at most 72 characters"),
-    confirmPassword: z.string().min(8, "Confirm your password"),
+    password: strongPassword,
+    confirmPassword: z.string().min(12, "Confirm your password"),
   })
   .refine((value) => value.password === value.confirmPassword, {
     message: "Passwords do not match",

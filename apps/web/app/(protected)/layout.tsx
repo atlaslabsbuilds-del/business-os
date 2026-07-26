@@ -39,6 +39,7 @@ export default async function ProtectedLayout({
       activeWorkspaceId={active.workspace.id}
       navItems={[
         { href: "/dashboard", label: "Dashboard", icon: <IconLayout /> },
+        { href: "/ai", label: "AI Studio", icon: <IconSparkles /> },
         { href: "/chat", label: "Chat", icon: <IconSparkles /> },
         { href: "/crm", label: "CRM", icon: <IconBriefcase /> },
         { href: "/inbox", label: "Inbox", icon: <IconMail /> },

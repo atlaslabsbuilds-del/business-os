@@ -6,31 +6,7 @@ const require = createRequire(import.meta.url);
 const { loadEnvConfig } = require("@next/env");
 
 const appDir = path.dirname(fileURLToPath(import.meta.url));
-const { loadedEnvFiles } = loadEnvConfig(appDir);
-
-function mask(value) {
-  if (!value) return "UNDEFINED";
-  if (value.length <= 12) return "[SET]";
-  return `${value.slice(0, 24)}… (len=${value.length})`;
-}
-
-console.log("\n[admin] Environment loading");
-console.log(`[admin] appDir: ${appDir}`);
-console.log(
-  `[admin] loaded env files: ${
-    loadedEnvFiles.length
-      ? loadedEnvFiles.map((file) => path.resolve(appDir, file.path)).join(", ")
-      : "(none)"
-  }`,
-);
-console.log(`[admin] NEXT_PUBLIC_SUPABASE_URL=${mask(process.env.NEXT_PUBLIC_SUPABASE_URL)}`);
-console.log(
-  `[admin] NEXT_PUBLIC_SUPABASE_ANON_KEY=${mask(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)}`,
-);
-console.log(
-  `[admin] SUPABASE_SERVICE_ROLE_KEY=${mask(process.env.SUPABASE_SERVICE_ROLE_KEY)}`,
-);
-console.log("");
+loadEnvConfig(appDir);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -46,6 +22,21 @@ const nextConfig = {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co; frame-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
+          ...(process.env.NODE_ENV === "production" ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }] : []),
+        ],
+      },
+    ];
   },
 };
 

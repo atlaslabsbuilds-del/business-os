@@ -21,6 +21,23 @@ import { emailThreadSummarySchema } from "@repo/types";
 import { createServerClient } from "./server";
 
 type AccountRow = Database["public"]["Tables"]["inbox_accounts"]["Row"];
+type AccountView = Pick<
+  AccountRow,
+  | "id"
+  | "workspace_id"
+  | "provider"
+  | "email"
+  | "display_name"
+  | "scopes"
+  | "status"
+  | "last_synced_at"
+  | "history_id"
+  | "sync_error"
+  | "metadata"
+  | "created_by"
+  | "created_at"
+  | "updated_at"
+>;
 type ThreadRow = Database["public"]["Tables"]["inbox_threads"]["Row"];
 type MessageRow = Database["public"]["Tables"]["inbox_messages"]["Row"];
 type LabelRow = Database["public"]["Tables"]["inbox_labels"]["Row"];
@@ -93,7 +110,7 @@ export function parseEmailThreadSummary(
   return parsed.success ? parsed.data : null;
 }
 
-function mapAccount(row: AccountRow): InboxAccount {
+function mapAccount(row: AccountView): InboxAccount {
   return {
     id: row.id,
     workspaceId: row.workspace_id,
@@ -241,7 +258,9 @@ export async function listInboxAccounts(input: {
   const supabase = await clientOrDefault(input.client);
   const { data, error } = await supabase
     .from("inbox_accounts")
-    .select("*")
+    .select(
+      "id, workspace_id, provider, email, display_name, scopes, status, last_synced_at, history_id, sync_error, metadata, created_by, created_at, updated_at",
+    )
     .eq("workspace_id", input.workspaceId)
     .order("updated_at", { ascending: false });
   if (error) throw new Error(`Failed to list inbox accounts: ${error.message}`);
@@ -275,7 +294,9 @@ export async function connectInboxAccount(input: {
       },
       { onConflict: "workspace_id,provider,email" },
     )
-    .select("*")
+    .select(
+      "id, workspace_id, provider, email, display_name, scopes, status, last_synced_at, history_id, sync_error, metadata, created_by, created_at, updated_at",
+    )
     .single();
   if (error || !data) {
     throw new Error(

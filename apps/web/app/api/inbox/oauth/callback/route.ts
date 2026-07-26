@@ -10,6 +10,8 @@ import {
 import { upsertGmailAccountTokens } from "@repo/database/gmail";
 import { createAdminClient } from "@repo/database/admin";
 import { getPublicSupabaseEnv } from "@repo/database/env";
+import { getUser } from "@repo/auth/server";
+import { getMembershipRole } from "@repo/database/workspace";
 
 /**
  * Google OAuth callback — exchanges code, stores tokens, redirects to accounts.
@@ -38,7 +40,6 @@ export async function GET(request: NextRequest) {
 
   if (oauthError) {
     accountsUrl.searchParams.set("oauth", "error");
-    accountsUrl.searchParams.set("message", oauthError);
     return redirectWithSession(request, accountsUrl);
   }
 
@@ -51,6 +52,15 @@ export async function GET(request: NextRequest) {
     const decoded = decodeOAuthState(state);
     if (decoded.provider !== "gmail") {
       accountsUrl.searchParams.set("oauth", "unsupported");
+      return redirectWithSession(request, accountsUrl);
+    }
+    const sessionUser = await getUser();
+    if (
+      !sessionUser ||
+      sessionUser.id !== decoded.userId ||
+      !(await getMembershipRole(decoded.workspaceId, sessionUser.id))
+    ) {
+      accountsUrl.searchParams.set("oauth", "error");
       return redirectWithSession(request, accountsUrl);
     }
 
@@ -108,10 +118,10 @@ export async function GET(request: NextRequest) {
     accountsUrl.searchParams.set("email", userInfo.email);
     return redirectWithSession(request, accountsUrl);
   } catch (err) {
-    const message = err instanceof Error ? err.message : "oauth_failed";
-    console.error("[gmail.oauth] callback failed", { message });
+    console.error("[gmail.oauth] callback failed", {
+      error: err instanceof Error ? err.message : "oauth_failed",
+    });
     accountsUrl.searchParams.set("oauth", "error");
-    accountsUrl.searchParams.set("message", message.slice(0, 300));
     return redirectWithSession(request, accountsUrl);
   }
 }

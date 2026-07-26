@@ -608,6 +608,22 @@ export async function runGmailSyncJob(input: {
   accountId: string;
   full?: boolean;
 }) {
+  const ctx = await requireGmailContext();
+  const parsed = gmailSyncSchema.safeParse({
+    accountId: input.accountId,
+    full: input.full,
+  });
+  if (!parsed.success) {
+    throw new Error("Invalid Gmail sync request");
+  }
+  if (input.workspaceId !== ctx.workspaceId || input.userId !== ctx.userId) {
+    throw new Error("Forbidden");
+  }
   ensureGmailAiToolsRegistered();
-  return syncGmailAccount(input);
+  return syncGmailAccount({
+    workspaceId: ctx.workspaceId,
+    userId: ctx.userId,
+    accountId: parsed.data.accountId,
+    full: parsed.data.full,
+  });
 }

@@ -17,5 +17,9 @@ export async function GET(request: NextRequest) {
       id: result.user.id,
       email: result.user.email,
     },
+  }, {
+    headers: {
+      "cache-control": "no-store",
+    },
   });
 }

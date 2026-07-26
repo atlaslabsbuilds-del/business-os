@@ -129,11 +129,11 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
   {
     id: "ai_studio",
     label: "AI Studio",
-    description: "Build AI agents, workflows, prompt libraries, and automations.",
-    route: "/chat",
-    status: "foundation",
+    description: "Kairos memory, agents, command center, activity, and version history.",
+    route: "/ai",
+    status: "active",
     origin: "actora",
-    capabilities: ["AI Assistant", "Agents", "Prompts", "Automations"],
+    capabilities: ["AI Assistant", "Agents", "Memory", "Commands", "Versions"],
   },
   {
     id: "analytics",

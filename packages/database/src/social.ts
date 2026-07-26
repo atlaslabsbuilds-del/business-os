@@ -14,6 +14,18 @@ import { createServerClient } from "./server";
 
 type Client = SupabaseClient<Database>;
 type AccountRow = Database["public"]["Tables"]["social_accounts"]["Row"];
+type AccountView = Pick<
+  AccountRow,
+  | "id"
+  | "workspace_id"
+  | "platform"
+  | "handle"
+  | "display_name"
+  | "status"
+  | "external_id"
+  | "created_at"
+  | "updated_at"
+>;
 type PostRow = Database["public"]["Tables"]["social_posts"]["Row"];
 type EngagementRow = Database["public"]["Tables"]["social_engagement"]["Row"];
 
@@ -37,7 +49,7 @@ function postAnalytics(value: Json): SocialPostAnalytics {
   };
 }
 
-function mapAccount(row: AccountRow): SocialAccount {
+function mapAccount(row: AccountView): SocialAccount {
   return {
     id: row.id,
     workspaceId: row.workspace_id,
@@ -96,7 +108,9 @@ export async function listSocialAccounts(input: {
   const supabase = await clientOrDefault(input.client);
   const { data, error } = await supabase
     .from("social_accounts")
-    .select("*")
+    .select(
+      "id, workspace_id, platform, handle, display_name, status, external_id, created_at, updated_at",
+    )
     .eq("workspace_id", input.workspaceId)
     .order("platform");
   if (error) throw new Error(`Failed to list social accounts: ${error.message}`);

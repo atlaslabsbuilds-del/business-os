@@ -1,4 +1,5 @@
 import { getUser } from "@repo/auth/server";
+import { consumeRateLimit } from "@repo/auth/rate-limit";
 import {
   createChatService,
   createChatGateway,
@@ -73,6 +74,17 @@ export async function POST(request: Request) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const rateLimit = consumeRateLimit(`ai:${user.id}`, 30, 60_000);
+  if (!rateLimit.allowed) {
+    return Response.json(
+      { error: "Too many AI requests. Please try again shortly." },
+      {
+        status: 429,
+        headers: { "retry-after": String(rateLimit.retryAfterSeconds) },
+      },
+    );
+  }
+
   const context = await resolveActiveWorkspace();
   if (!context) {
     return Response.json({ error: "No active workspace" }, { status: 403 });
@@ -118,8 +130,13 @@ export async function POST(request: Request) {
 
     return createSseResponse(stream);
   } catch (error) {
+    console.error("[chat.stream]", {
+      userId: user.id,
+      workspaceId: context.active.workspace.id,
+      error: error instanceof Error ? error.message : "unknown error",
+    });
     return Response.json(
-      { error: error instanceof Error ? error.message : "Chat failed" },
+      { error: "Chat failed. Please try again." },
       { status: 500 },
     );
   }

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getUser } from "@repo/auth/server";
+import { consumeRateLimit } from "@repo/auth/rate-limit";
 import {
   listGmailAccountSecrets,
 } from "@repo/database/gmail";
@@ -10,6 +12,16 @@ import {
   syncGmailAccount,
 } from "../../../../../lib/gmail-sync";
 import { ensureGmailAiToolsRegistered } from "../../../../../lib/gmail-ai";
+
+const syncBodySchema = z.object({
+  accountId: z.string().uuid().optional(),
+  full: z.boolean().optional(),
+  background: z.boolean().optional(),
+});
+const cronBodySchema = syncBodySchema.extend({
+  workspaceId: z.string().uuid(),
+  userId: z.string().uuid(),
+});
 
 /**
  * GET — poll Gmail sync progress for an account (workspace-scoped via RLS).
@@ -26,7 +38,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const accountId = searchParams.get("accountId");
-  if (!accountId) {
+  if (!accountId || !z.string().uuid().safeParse(accountId).success) {
     return NextResponse.json(
       { ok: false, error: "accountId required" },
       { status: 400 },
@@ -57,19 +69,23 @@ export async function POST(request: Request) {
 
   try {
     if (isCron) {
-      const body = (await request.json()) as {
-        workspaceId: string;
-        userId: string;
-        accountId?: string;
-        full?: boolean;
-        background?: boolean;
-      };
-      if (!body.workspaceId || !body.userId) {
+      let rawBody: unknown;
+      try {
+        rawBody = await request.json();
+      } catch {
         return NextResponse.json(
-          { ok: false, error: "workspaceId and userId required" },
+          { ok: false, error: "Invalid JSON body" },
           { status: 400 },
         );
       }
+      const parsedBody = cronBodySchema.safeParse(rawBody);
+      if (!parsedBody.success) {
+        return NextResponse.json(
+          { ok: false, error: "Invalid sync request" },
+          { status: 400 },
+        );
+      }
+      const body = parsedBody.data;
       if (body.accountId && body.background) {
         const started = await startGmailSyncInBackground({
           workspaceId: body.workspaceId,
@@ -109,16 +125,38 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
     }
+    const rateLimit = consumeRateLimit(`gmail-sync:${user.id}`, 10, 60_000);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { ok: false, error: "Too many sync requests. Try again later." },
+        {
+          status: 429,
+          headers: { "retry-after": String(rateLimit.retryAfterSeconds) },
+        },
+      );
+    }
     const context = await resolveActiveWorkspace();
     if (!context) {
       return NextResponse.json({ ok: false, error: "No workspace" }, { status: 400 });
     }
 
-    const body = (await request.json().catch(() => ({}))) as {
-      accountId?: string;
-      full?: boolean;
-      background?: boolean;
-    };
+    let rawBody: unknown;
+    try {
+      rawBody = await request.json();
+    } catch {
+      return NextResponse.json(
+        { ok: false, error: "Invalid JSON body" },
+        { status: 400 },
+      );
+    }
+    const parsedBody = syncBodySchema.safeParse(rawBody);
+    if (!parsedBody.success) {
+      return NextResponse.json(
+        { ok: false, error: "Invalid sync request" },
+        { status: 400 },
+      );
+    }
+    const body = parsedBody.data;
 
     const workspaceId = context.active.workspace.id;
     if (body.accountId && body.background) {
@@ -155,10 +193,13 @@ export async function POST(request: Request) {
     }
     return NextResponse.json({ ok: true, results });
   } catch (error) {
+    console.error("[gmail.sync]", {
+      error: error instanceof Error ? error.message : "unknown error",
+    });
     return NextResponse.json(
       {
         ok: false,
-        error: error instanceof Error ? error.message : "Sync failed",
+        error: "Sync failed. Please try again.",
       },
       { status: 500 },
     );

@@ -13,6 +13,9 @@ import {
   TodaysAgenda,
   WelcomeHeader,
 } from "../../../components/dashboard";
+import { ActivityTimeline } from "../../../components/ai/activity-timeline";
+import { KairosSuggestions } from "../../../components/ai/kairos-suggestions";
+import { OnboardingChecklist } from "../../../components/ai/onboarding-checklist";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +46,9 @@ export default async function DashboardPage() {
 
       <KpiCards snapshot={snapshot} />
 
+      <OnboardingChecklist compact />
+      <KairosSuggestions />
+
       <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
         <AiCommandCenter snapshot={snapshot} />
         <TodaysAgenda snapshot={snapshot} />
@@ -63,6 +69,21 @@ export default async function DashboardPage() {
         <QuickActions />
         <NotificationsPanel snapshot={snapshot} />
       </div>
+
+      <section className="space-y-3">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+              Workspace timeline
+            </p>
+            <h2 className="text-lg font-semibold">Recent activity</h2>
+          </div>
+          <a href="/ai/activity" className="text-xs font-semibold text-primary hover:underline">
+            Open full timeline
+          </a>
+        </div>
+        <ActivityTimeline initialEvents={snapshot.activity.slice(0, 12)} />
+      </section>
     </div>
   );
 }

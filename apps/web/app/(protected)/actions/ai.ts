@@ -1,6 +1,9 @@
 "use server";
 
 import { z } from "zod";
+import { getUser } from "@repo/auth/server";
+import { getMembershipRole } from "@repo/database/workspace";
+import { resolveActiveWorkspace } from "../../../lib/workspace-context";
 import {
   AGENT_SYSTEM_PROMPT,
   completionInputSchema,
@@ -28,6 +31,16 @@ export type AiActionResult<T> =
   | { ok: true; data: T }
   | { ok: false; error: string };
 
+async function requireAiContext() {
+  const user = await getUser();
+  if (!user) throw new Error("Unauthorized");
+  const context = await resolveActiveWorkspace();
+  if (!context) throw new Error("Forbidden");
+  const role = await getMembershipRole(context.active.workspace.id, user.id);
+  if (!role) throw new Error("Forbidden");
+  return { userId: user.id, workspaceId: context.active.workspace.id };
+}
+
 /**
  * Infrastructure server action: non-streaming completion.
  * Product modules should wrap this with their own authorization + prompts.
@@ -43,6 +56,14 @@ export async function aiCompleteAction(
     cost: { totalCost: number };
   }>
 > {
+  try {
+    await requireAiContext();
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Unauthorized",
+    };
+  }
   const parsed = completionInputSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -97,6 +118,14 @@ const sessionSchema = z.object({
 export async function aiChatTurnAction(
   input: unknown,
 ): Promise<AiActionResult<{ sessionId: string; reply: string }>> {
+  try {
+    await requireAiContext();
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Unauthorized",
+    };
+  }
   const parsed = sessionSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -134,6 +163,14 @@ export async function aiAgentRunAction(
     steps: Array<{ goal: string; status: string; toolName?: string }>;
   }>
 > {
+  try {
+    await requireAiContext();
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Unauthorized",
+    };
+  }
   const parsed = agentObjectiveSchema.safeParse(input);
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
@@ -166,6 +203,14 @@ export async function aiAgentRunAction(
 export async function aiRenderPromptAction(input: unknown): Promise<
   AiActionResult<{ prompt: string }>
 > {
+  try {
+    await requireAiContext();
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Unauthorized",
+    };
+  }
   const schema = z.object({
     templateId: z.enum(["summarize", "extractJson", "classify", "rewrite"]),
     values: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])),

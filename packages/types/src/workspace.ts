@@ -1,6 +1,12 @@
 import { z } from "zod";
 
-export const workspaceRoleSchema = z.enum(["owner", "admin", "member"]);
+export const workspaceRoleSchema = z.enum([
+  "owner",
+  "admin",
+  "manager",
+  "member",
+  "guest",
+]);
 export type WorkspaceRole = z.infer<typeof workspaceRoleSchema>;
 
 export const invitationStatusSchema = z.enum([
@@ -65,7 +71,7 @@ export const createWorkspaceSchema = z.object({
 
 export const inviteMemberSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
-  role: z.enum(["admin", "member"]),
+  role: z.enum(["admin", "manager", "member", "guest"]),
 });
 
 export const updateWorkspaceSchema = z.object({

@@ -24,7 +24,9 @@
     "./crm": "./src/crm.ts",
     "./inbox": "./src/inbox.ts",
     "./gmail": "./src/gmail.ts",
-    "./ai-reply-drafts": "./src/ai-reply-drafts.ts"
+    "./ai-reply-drafts": "./src/ai-reply-drafts.ts",
+    "./security": "./src/security.ts",
+    "./kairos-intelligence": "./src/kairos-intelligence.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
