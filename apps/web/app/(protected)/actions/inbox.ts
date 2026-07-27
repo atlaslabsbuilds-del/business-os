@@ -1,6 +1,7 @@
 "use server";
 
 import { getUser } from "@repo/auth/server";
+import { getSiteUrl } from "@repo/auth/site-url";
 import { getMembershipRole } from "@repo/database/workspace";
 import {
   assignInboxLabel,
@@ -166,7 +167,7 @@ export async function connectInboxAccountAction(
     const redirectUri =
       parsed.data.provider === "gmail"
         ? getGmailOAuthRedirectUri()
-        : `${(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "")}/api/inbox/oauth/callback`;
+        : `${getSiteUrl()}/api/inbox/oauth/callback`;
     if (parsed.data.provider === "gmail") {
       console.info(
         "[gmail.oauth] connectInboxAccountAction redirect_uri (exact):",

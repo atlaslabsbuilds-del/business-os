@@ -11,6 +11,7 @@ import { upsertGmailAccountTokens } from "@repo/database/gmail";
 import { createAdminClient } from "@repo/database/admin";
 import { getPublicSupabaseEnv } from "@repo/database/env";
 import { getUser } from "@repo/auth/server";
+import { getSiteUrl } from "@repo/auth/site-url";
 import { getMembershipRole } from "@repo/database/workspace";
 
 /**
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
   const state = url.searchParams.get("state");
   const oauthError = url.searchParams.get("error");
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = getSiteUrl(request.nextUrl.origin);
   const accountsUrl = new URL("/inbox/accounts", siteUrl);
 
   console.info("[gmail.oauth] callback hit", {

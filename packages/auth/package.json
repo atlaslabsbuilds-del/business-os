@@ -8,6 +8,8 @@
     "./middleware": "./src/middleware.ts",
     "./server": "./src/server.ts",
     "./client": "./src/client.ts",
+    "./oauth-callback": "./src/oauth-callback.ts",
+    "./site-url": "./src/site-url.ts",
     "./roles": "./src/roles.ts",
     "./jwt": "./src/jwt.ts",
     "./rate-limit": "./src/rate-limit.ts"

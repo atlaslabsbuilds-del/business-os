@@ -48,11 +48,12 @@ function requireGoogleOAuthEnv() {
  * this value character-for-character.
  */
 export function getGmailOAuthRedirectUri(siteUrl?: string): string {
-  const raw = (
-    siteUrl ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    "http://localhost:3000"
-  ).trim();
+  const raw = (siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL)?.trim();
+  if (!raw) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL is required for Gmail OAuth redirect URI",
+    );
+  }
 
   let origin: string;
   try {
@@ -74,8 +75,10 @@ export function describeGmailOAuthConfig(siteUrl?: string): {
   scopes: string[];
   googleCloudMustAllow: string;
 } {
-  const site =
-    (siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").trim();
+  const site = (siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL)?.trim();
+  if (!site) {
+    throw new Error("NEXT_PUBLIC_SITE_URL is required for Gmail OAuth");
+  }
   const redirectUri = getGmailOAuthRedirectUri(siteUrl);
   return {
     redirectUri,

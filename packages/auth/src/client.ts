@@ -7,6 +7,9 @@ import type {
   SignInInput,
   SignUpInput,
 } from "@repo/types/auth";
+import { buildAuthCallbackUrl, getSiteUrl } from "./site-url";
+
+export { buildAuthCallbackUrl, getSiteUrl };
 
 export async function signInWithPassword(input: SignInInput) {
   const supabase = createBrowserClient();
@@ -45,12 +48,17 @@ export async function signUpWithPassword(
   return data;
 }
 
-export async function signInWithGoogle(redirectTo: string) {
+export async function signInWithGoogle(
+  redirectTo?: string,
+  nextPath = "/dashboard",
+) {
   const supabase = createBrowserClient();
+  const callbackUrl =
+    redirectTo ?? buildAuthCallbackUrl(nextPath, getSiteUrl());
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo,
+      redirectTo: callbackUrl,
       queryParams: {
         access_type: "offline",
         prompt: "consent",

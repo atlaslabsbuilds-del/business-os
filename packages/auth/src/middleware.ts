@@ -1,7 +1,8 @@
-import { createMiddlewareClient } from "@repo/database/middleware";
+import { createMiddlewareClient, copySessionCookies } from "@repo/database/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   ADMIN_ROUTES,
+  AUTH_CALLBACK_PATH,
   ONBOARDING_PATH,
   isGuestOnlyRoute,
   isPublicRoute,
@@ -14,7 +15,6 @@ export type MiddlewareAuthOptions = {
   loginPath?: string;
   /** When true (default), every non-public route requires authentication. */
   protectAllRoutes?: boolean;
-  allowPublicHome?: boolean;
   checkWorkspaceOnboarding?: boolean;
 };
 
@@ -35,10 +35,13 @@ function isRscRequest(request: NextRequest): boolean {
 
 /**
  * Redirects that Server Actions / RSC can understand.
- * A plain HTML redirect to /signin causes:
- * "An unexpected response was received from the server."
+ * Copies refreshed Supabase session cookies onto redirect responses.
  */
-function redirectForRequest(request: NextRequest, destination: URL) {
+function redirectForRequest(
+  request: NextRequest,
+  destination: URL,
+  sessionResponse?: NextResponse,
+) {
   if (isServerActionRequest(request) || isRscRequest(request)) {
     return new NextResponse(null, {
       status: 303,
@@ -47,7 +50,12 @@ function redirectForRequest(request: NextRequest, destination: URL) {
       },
     });
   }
-  return NextResponse.redirect(destination);
+
+  const redirect = NextResponse.redirect(destination);
+  if (sessionResponse) {
+    copySessionCookies(sessionResponse, redirect);
+  }
+  return redirect;
 }
 
 export async function updateSession(request: NextRequest) {
@@ -78,9 +86,29 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
   const checkWorkspaceOnboarding = options.checkWorkspaceOnboarding ?? true;
 
   return async function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // If Supabase returns the OAuth code to Site URL (/), forward it to the
+    // App Router callback so exchangeCodeForSession can run.
+    const oauthCode = request.nextUrl.searchParams.get("code");
+    if (
+      oauthCode &&
+      pathname !== AUTH_CALLBACK_PATH &&
+      !pathname.startsWith(`${AUTH_CALLBACK_PATH}/`) &&
+      !pathname.startsWith("/api/")
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = AUTH_CALLBACK_PATH;
+      if (!url.searchParams.has("next")) {
+        url.searchParams.set("next", "/dashboard");
+      }
+      return NextResponse.redirect(url);
+    }
+
     const authRateLimitedPaths = [
       "/signin",
       "/signup",
+      "/login",
       "/forgot-password",
       "/reset-password",
     ];
@@ -117,11 +145,16 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
     }
 
     const { response, user, supabase } = await updateSession(request);
-    const { pathname } = request.nextUrl;
+
+    // Alias /login → /signin (guests) or /dashboard (authenticated).
+    if (pathname === "/login" || pathname.startsWith("/login/")) {
+      const url = request.nextUrl.clone();
+      url.pathname = user ? "/dashboard" : loginPath;
+      url.search = "";
+      return redirectForRequest(request, url, response);
+    }
 
     if (isGuestOnlyRoute(pathname) && user) {
-      // After Gmail OAuth, middleware may briefly send users to /signin with
-      // oauth=connected — bounce authenticated users back to the intended page.
       const nextParam = request.nextUrl.searchParams.get("next");
       const oauth = request.nextUrl.searchParams.get("oauth");
       const url = request.nextUrl.clone();
@@ -140,11 +173,11 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
           if (email) url.searchParams.set("email", email);
           if (message) url.searchParams.set("message", message);
         }
-        return redirectForRequest(request, url);
+        return redirectForRequest(request, url, response);
       }
       url.pathname = "/dashboard";
       url.search = "";
-      return redirectForRequest(request, url);
+      return redirectForRequest(request, url, response);
     }
 
     if (pathname === "/reset-password" || pathname.startsWith("/reset-password/")) {
@@ -153,21 +186,26 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
         url.pathname = loginPath;
         url.search = "";
         url.searchParams.set("next", pathname);
-        return redirectForRequest(request, url);
+        return redirectForRequest(request, url, response);
       }
       return response;
     }
 
-    // Supabase may create an authenticated session before email confirmation.
-    // Keep the verification route reachable, but do not allow unverified
-    // accounts to access workspace data or invoke server actions.
     const isVerificationRoute =
       pathname === "/verify-email" || pathname.startsWith("/verify-email/");
     if (user && !user.email_confirmed_at && !isVerificationRoute) {
       const url = request.nextUrl.clone();
       url.pathname = "/verify-email";
       url.search = "";
-      return redirectForRequest(request, url);
+      return redirectForRequest(request, url, response);
+    }
+
+    // Authenticated users should never linger on the marketing homepage.
+    if (user && pathname === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      url.search = "";
+      return redirectForRequest(request, url, response);
     }
 
     const isPublic = isPublicRoute(pathname);
@@ -176,8 +214,6 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
 
     if (needsAuth && !user) {
       const url = request.nextUrl.clone();
-      // Preserve destination path in `next`; carry oauth status so reconnect
-      // messaging survives a session gap without breaking Server Actions.
       const oauth = url.searchParams.get("oauth");
       const email = url.searchParams.get("email");
       const message = url.searchParams.get("message");
@@ -187,7 +223,7 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
       if (oauth) url.searchParams.set("oauth", oauth);
       if (email) url.searchParams.set("email", email);
       if (message) url.searchParams.set("message", message);
-      return redirectForRequest(request, url);
+      return redirectForRequest(request, url, response);
     }
 
     if (user && checkWorkspaceOnboarding && !isPublic) {
@@ -204,14 +240,14 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
         const url = request.nextUrl.clone();
         url.pathname = ONBOARDING_PATH;
         url.search = "";
-        return redirectForRequest(request, url);
+        return redirectForRequest(request, url, response);
       }
 
       if (hasWorkspace && onOnboarding) {
         const url = request.nextUrl.clone();
         url.pathname = "/dashboard";
         url.search = "";
-        return redirectForRequest(request, url);
+        return redirectForRequest(request, url, response);
       }
     }
 
@@ -230,7 +266,7 @@ export function createAdminMiddleware() {
         if (isAdmin) {
           const url = request.nextUrl.clone();
           url.pathname = "/";
-          return NextResponse.redirect(url);
+          return redirectForRequest(request, url, response);
         }
       }
       return response;
@@ -248,14 +284,14 @@ export function createAdminMiddleware() {
       const url = request.nextUrl.clone();
       url.pathname = ADMIN_ROUTES.login;
       url.searchParams.set("next", pathname);
-      return redirectForRequest(request, url);
+      return redirectForRequest(request, url, response);
     }
 
     const isAdmin = await userHasAdminAccess(user.id, supabase);
     if (!isAdmin) {
       const url = request.nextUrl.clone();
       url.pathname = ADMIN_ROUTES.unauthorized;
-      return redirectForRequest(request, url);
+      return redirectForRequest(request, url, response);
     }
 
     return response;

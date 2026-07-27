@@ -8,6 +8,7 @@ export const GUEST_ONLY_ROUTES = [
   "/signin",
   "/signup",
   "/forgot-password",
+  "/login",
 ] as const;
 
 export const AUTH_ROUTES = [
@@ -40,22 +41,23 @@ export const ADMIN_ROUTES = {
   unauthorized: "/unauthorized",
 } as const;
 
+function matchesRoute(pathname: string, route: string): boolean {
+  if (route === "/") {
+    return pathname === "/";
+  }
+  return pathname === route || pathname.startsWith(`${route}/`);
+}
+
 export function isAuthRoute(pathname: string): boolean {
-  return AUTH_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
+  return AUTH_ROUTES.some((route) => matchesRoute(pathname, route));
 }
 
 export function isGuestOnlyRoute(pathname: string): boolean {
-  return GUEST_ONLY_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
+  return GUEST_ONLY_ROUTES.some((route) => matchesRoute(pathname, route));
 }
 
 export function isPublicRoute(pathname: string): boolean {
-  return PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
+  return PUBLIC_ROUTES.some((route) => matchesRoute(pathname, route));
 }
 
 export function isProtectedPath(

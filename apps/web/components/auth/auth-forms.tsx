@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
+  buildAuthCallbackUrl,
   requestPasswordReset,
   signInWithGoogle,
   signInWithPassword,
@@ -21,13 +22,6 @@ import { Button } from "@repo/ui/button";
 import { FormField } from "@repo/ui/form-field";
 import { Input } from "@repo/ui/input";
 import { PasswordInput } from "@repo/ui/password-input";
-
-function getSiteUrl() {
-  if (typeof window !== "undefined") {
-    return window.location.origin;
-  }
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-}
 
 function fieldErrors(error: { issues: { path: PropertyKey[]; message: string }[] }) {
   const result: Record<string, string> = {};
@@ -118,7 +112,7 @@ export function SignInForm() {
           <span className="bg-surface px-2 text-muted">Or</span>
         </div>
       </div>
-      <GoogleButton label="Continue with Google" />
+      <GoogleButton label="Continue with Google" nextPath={nextPath} />
       <p className="text-center text-sm text-secondary">
         No account?{" "}
         <Link
@@ -139,7 +133,7 @@ export function SignupForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
   const redirectTo = useMemo(
-    () => `${getSiteUrl()}/auth/callback?next=/verify-email`,
+    () => buildAuthCallbackUrl("/verify-email"),
     [],
   );
 
@@ -202,7 +196,7 @@ export function SignupForm() {
           <span className="bg-surface px-2 text-muted">Or</span>
         </div>
       </div>
-      <GoogleButton label="Sign up with Google" />
+      <GoogleButton label="Sign up with Google" nextPath="/dashboard" />
       <p className="text-center text-sm text-secondary">
         Already have an account?{" "}
         <Link
@@ -222,7 +216,7 @@ export function ForgotPasswordForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
   const redirectTo = useMemo(
-    () => `${getSiteUrl()}/auth/callback?next=/reset-password`,
+    () => buildAuthCallbackUrl("/reset-password"),
     [],
   );
 
@@ -321,13 +315,15 @@ export function ResetPasswordForm() {
   );
 }
 
-function GoogleButton({ label }: { label: string }) {
+function GoogleButton({
+  label,
+  nextPath = "/dashboard",
+}: {
+  label: string;
+  nextPath?: string;
+}) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
-  const redirectTo = useMemo(
-    () => `${getSiteUrl()}/auth/callback?next=/dashboard`,
-    [],
-  );
 
   return (
     <div className="grid gap-2">
@@ -341,7 +337,7 @@ function GoogleButton({ label }: { label: string }) {
           setError(null);
           startTransition(async () => {
             try {
-              const data = await signInWithGoogle(redirectTo);
+              const data = await signInWithGoogle(undefined, nextPath);
               if (data.url) {
                 window.location.assign(data.url);
               }
