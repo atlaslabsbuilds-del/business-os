@@ -1,5 +1,5 @@
 /**
- * @repo/ai — reusable AI infrastructure for Business OS.
+ * @repo/ai — reusable AI infrastructure for VanderBase.
  *
  * Provider abstraction, gateway routing, memory, embeddings, vectors,
  * tools, and agent runtime. No product/business features live here.

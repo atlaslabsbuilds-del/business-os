@@ -39,7 +39,7 @@ export function InteractiveSandbox() {
             Drag a workflow. Feel the OS connect.
           </h2>
           <p className="mt-4 text-sm leading-6 text-secondary">
-            Move cards between modules to simulate how Business OS routes work—no signup required.
+            Move cards between modules to simulate how VanderBase routes work—no signup required.
           </p>
         </Reveal>
 

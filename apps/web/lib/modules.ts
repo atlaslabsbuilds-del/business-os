@@ -1,6 +1,6 @@
 export type PersonalBrandModuleStatus = "active" | "foundation" | "coming_soon";
 
-export type PersonalBrandModuleOrigin = "actora" | "advora" | "pbos";
+export type PersonalBrandModuleOrigin = "vanderbase" | "pbos";
 
 export type PersonalBrandModule = {
   id:
@@ -78,7 +78,7 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     description: "Capture, score, and convert leads through forms, funnels, and CRM context.",
     route: "/crm/leads",
     status: "foundation",
-    origin: "actora",
+    origin: "vanderbase",
     capabilities: ["Leads", "Forms", "Scoring", "Funnels"],
   },
   {
@@ -114,7 +114,7 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     description: "Create campaigns, broadcasts, automations, and audience segments.",
     route: "/email",
     status: "coming_soon",
-    origin: "advora",
+    origin: "vanderbase",
     capabilities: ["Campaigns", "Broadcasts", "Automation", "Segments"],
   },
   {
@@ -132,7 +132,7 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     description: "Kairos memory, agents, command center, activity, and version history.",
     route: "/ai",
     status: "active",
-    origin: "actora",
+    origin: "vanderbase",
     capabilities: ["AI Assistant", "Agents", "Memory", "Commands", "Versions"],
   },
   {

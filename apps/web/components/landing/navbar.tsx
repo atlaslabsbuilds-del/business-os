@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@repo/ui/button";
 import { StartFreeLink } from "./ai-assistant-widget";
+import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
 const links = [
   { href: "#features", label: "Features" },
@@ -34,10 +35,11 @@ export function LandingNavbar({
     >
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-8">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white shadow-soft">
-            B
+          <VanderBaseLogo compact priority />
+          <span className="text-sm font-semibold uppercase tracking-[0.18em]">
+            <span className="text-white">VANDER</span>
+            <span className="text-primary">BASE</span>
           </span>
-          <span className="text-sm font-semibold tracking-tight">Business OS</span>
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">

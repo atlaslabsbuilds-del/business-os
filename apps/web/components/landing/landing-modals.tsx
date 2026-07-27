@@ -328,7 +328,7 @@ function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
           <p className="text-[11px] text-secondary">/mo</p>
         </div>
         <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4 text-center">
-          <p className="text-xs text-primary">Business OS Builder</p>
+          <p className="text-xs text-primary">VanderBase Builder</p>
           <p className="mt-1 text-2xl font-semibold">${builderMonthly}</p>
           <p className="text-[11px] text-secondary">/mo</p>
         </div>

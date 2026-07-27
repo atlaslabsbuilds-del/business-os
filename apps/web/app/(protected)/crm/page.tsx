@@ -26,7 +26,7 @@ export default async function CrmDashboardPage() {
   return (
     <CrmShell
       title="CRM Dashboard"
-      description="Actora foundation — contacts, pipeline, and activity in one workspace-aware surface."
+      description="VanderBase foundation — contacts, pipeline, and activity in one workspace-aware surface."
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard title="Contacts" value={stats.contacts} hint="People in this workspace" />

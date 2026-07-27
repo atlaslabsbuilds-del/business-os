@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AdminLoginForm } from "../../components/auth/admin-login-form";
 import { Spinner } from "@repo/ui/spinner";
 
@@ -12,10 +13,17 @@ export default function AdminLoginPage() {
             href="/login"
             className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white shadow-soft">
-              B
+            <Image
+              src="/branding/vanderbase-logo.png"
+              alt="VanderBase"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-xl object-cover"
+            />
+            <span className="uppercase tracking-[0.18em]">
+              <span className="text-white">VANDER</span>
+              <span className="text-primary">BASE</span>
             </span>
-            Business OS
           </Link>
           <p className="mt-3 text-xs uppercase tracking-[0.14em] text-muted">Admin</p>
         </div>

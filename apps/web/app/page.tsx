@@ -3,21 +3,23 @@ import { LandingPage } from "../components/landing/landing-page";
 import "./landing.css";
 
 export const metadata: Metadata = {
-  title: "Business OS — Run Your Entire Business With One AI Operating System",
-  description:
-    "One workspace. One AI. One subscription. Business OS unifies CRM, Inbox, Content, Social, Calendar, Finance, Analytics, and AI Studio.",
+  title: "VanderBase — The AI-Native Business OS",
+  description: "The AI-native Business OS for modern businesses.",
   openGraph: {
-    title: "Business OS",
-    description:
-      "The AI-native operating system for founders and modern teams. One workspace. One AI. One subscription.",
+    title: "VanderBase — The AI-Native Business OS",
+    description: "The AI-native Business OS for modern businesses.",
+    url: "/",
+    siteName: "VanderBase",
     type: "website",
+    images: [{ url: "/branding/vanderbase-icon-512.png", width: 512, height: 512, alt: "VanderBase" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Business OS",
-    description:
-      "Run your entire business with one AI operating system.",
+    title: "VanderBase — The AI-Native Business OS",
+    description: "The AI-native Business OS for modern businesses.",
+    images: ["/branding/vanderbase-icon-512.png"],
   },
+  alternates: { canonical: "/" },
 };
 
 export default function HomePage() {

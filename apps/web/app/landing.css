@@ -1,12 +1,12 @@
 /* Landing experience — Obsidian + Orange product surface */
 
 .landing-root {
-  --landing-orange: #f97316;
+  --landing-orange: #FF7A00;
   --landing-glow: rgba(249, 115, 22, 0.22);
   position: relative;
   isolation: isolate;
   overflow-x: clip;
-  background: #0b0b0f;
+  background: #0B0B0B;
   color: #fff;
   scroll-behavior: smooth;
 }
@@ -17,7 +17,7 @@
 }
 
 .landing-root ::selection {
-  background: color-mix(in srgb, #f97316 42%, transparent);
+  background: color-mix(in srgb, #FF7A00 42%, transparent);
 }
 
 .landing-aurora {
@@ -108,7 +108,7 @@
   left: 0;
   height: 2px;
   z-index: 80;
-  background: linear-gradient(90deg, #ea580c, #fb923c);
+  background: linear-gradient(90deg, #E66E00, #FFB15C);
   transform-origin: left;
 }
 
@@ -121,7 +121,7 @@
 
 .landing-glass-strong {
   background: color-mix(in srgb, #16161d 84%, transparent);
-  border: 1px solid color-mix(in srgb, #f97316 22%, #2a2a35);
+  border: 1px solid color-mix(in srgb, #FF7A00 22%, #2a2a35);
   backdrop-filter: blur(22px) saturate(1.25);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.05) inset,
@@ -213,7 +213,7 @@
 }
 
 .integration-card:hover {
-  border-color: color-mix(in srgb, #f97316 28%, #2a2a35);
+  border-color: color-mix(in srgb, #FF7A00 28%, #2a2a35);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.06) inset,
     0 0 0 1px rgba(249, 115, 22, 0.1),

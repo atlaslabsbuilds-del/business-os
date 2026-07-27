@@ -11,7 +11,7 @@ export default async function AdminHomePage() {
 
   return (
     <AppShell
-      brand="Business OS"
+      brand="VanderBase"
       brandHref="/"
       title="Admin"
       userEmail={user.email}

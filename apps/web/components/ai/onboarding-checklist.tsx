@@ -56,7 +56,7 @@ export function OnboardingChecklist({
             </p>
             <h3 className="mt-1 text-lg font-semibold">Launch checklist</h3>
             <p className="mt-1 text-sm text-secondary">
-              Complete these steps to unlock the full Business OS experience.
+              Complete these steps to unlock the full VanderBase experience.
             </p>
           </div>
           <div className="text-right">

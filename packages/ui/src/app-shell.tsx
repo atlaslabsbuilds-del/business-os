@@ -16,6 +16,7 @@ export type AppShellNavItem = {
 
 export type AppShellProps = {
   brand?: string;
+  brandMark?: React.ReactNode;
   brandHref?: string;
   title?: string;
   userEmail?: string | null;
@@ -32,7 +33,8 @@ export type AppShellProps = {
 const SIDEBAR_KEY = "bos-sidebar-collapsed";
 
 export function AppShell({
-  brand = "Business OS",
+  brand = "VanderBase",
+  brandMark,
   brandHref = "/",
   title = "Workspace",
   userEmail,
@@ -117,9 +119,11 @@ export function AppShell({
               collapsed ? "justify-center px-2" : "gap-2.5 px-4",
             )}
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-[11px] font-bold text-white shadow-soft">
-              B
-            </span>
+            {brandMark ?? (
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-[11px] font-bold text-white shadow-soft">
+                VB
+              </span>
+            )}
             {!collapsed ? (
               <Link
                 href={brandHref}

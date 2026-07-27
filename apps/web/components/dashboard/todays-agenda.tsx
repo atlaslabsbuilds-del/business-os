@@ -9,7 +9,7 @@ export function TodaysAgenda({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
     <SectionShell
       title="Today's Agenda"
-      description="Tasks and meetings due today from Actora Inbox."
+      description="Tasks and meetings due today from VanderBase Inbox."
       actionHref="/inbox/calendar"
       actionLabel="Calendar"
     >

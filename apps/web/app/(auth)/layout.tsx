@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { VanderBaseLogo } from "../../components/branding/vanderbase-logo";
 
 export default function AuthLayout({
   children,
@@ -13,10 +14,11 @@ export default function AuthLayout({
             href="/"
             className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground transition duration-200 hover:text-secondary"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white shadow-soft">
-              B
+            <VanderBaseLogo compact priority />
+            <span className="uppercase tracking-[0.18em]">
+              <span className="text-white">VANDER</span>
+              <span className="text-primary">BASE</span>
             </span>
-            Business OS
           </Link>
         </div>
         <div className="rounded-2xl border border-border bg-surface p-6 shadow-elevated sm:p-8 pbos-animate-scale">

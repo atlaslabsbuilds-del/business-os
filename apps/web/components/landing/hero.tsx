@@ -6,6 +6,7 @@ import { Button } from "@repo/ui/button";
 import { MagneticButton, Reveal } from "./atmosphere";
 import { StartFreeLink } from "./ai-assistant-widget";
 import { ProductMockup } from "./product-mockup";
+import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
 export function LandingHero({
   onOpenDemo,
@@ -18,22 +19,24 @@ export function LandingHero({
     <section className="relative px-5 pb-16 pt-28 sm:px-8 sm:pt-32">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mx-auto max-w-4xl text-center">
+          <VanderBaseLogo className="mx-auto" priority />
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             className="text-sm font-semibold tracking-[0.28em] text-primary"
           >
-            BUSINESS OS
+            VANDERBASE
           </motion.p>
           <h1 className="mt-5 text-balance text-4xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-            Run Your Entire Business
+            The AI-Native Business OS
             <span className="block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-              With One AI Operating System.
+              Powered by Kairos.
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-secondary sm:text-lg">
-            One workspace. One AI. One subscription. Everything your business needs.
+            One intelligent workspace for CRM, Marketing, AI Inbox, Analytics, Calendar,
+            Automations and more — powered by Kairos.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <MagneticButton>

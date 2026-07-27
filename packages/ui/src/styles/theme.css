@@ -5,7 +5,7 @@
   color-scheme: dark;
 
   /* Core surfaces */
-  --background: #0b0b0f;
+  --background: #0B0B0B;
   --surface: #16161d;
   --elevated: #1c1c26;
   --border: #2a2a35;
@@ -16,9 +16,9 @@
   --muted: #71717a;
 
   /* Brand — primary + accent */
-  --primary: #f97316;
-  --primary-hover: #ea670c;
-  --primary-muted: color-mix(in srgb, #f97316 16%, transparent);
+  --primary: #FF7A00;
+  --primary-hover: #E66E00;
+  --primary-muted: color-mix(in srgb, #FF7A00 16%, transparent);
   --accent: #fb923c;
   --accent-hover: #fdba74;
   --accent-muted: color-mix(in srgb, #fb923c 16%, transparent);

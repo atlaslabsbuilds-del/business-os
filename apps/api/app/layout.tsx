@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Business OS API",
-  description: "API application for the Business OS platform",
+  title: "VanderBase API",
+  description: "The VanderBase API.",
 };
 
 export default function RootLayout({

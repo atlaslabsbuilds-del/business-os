@@ -134,7 +134,7 @@ function buildInsights(input: {
   if (insights.length === 0) {
     insights.push({
       title: "Workspace foundation is healthy",
-      body: "Your Actora systems are connected. Open Chat, CRM, or Inbox to grow the OS.",
+      body: "Your VanderBase systems are connected. Open Chat, CRM, or Inbox to grow the OS.",
       module: "dashboard",
       severity: "success",
       actionUrl: "/chat",

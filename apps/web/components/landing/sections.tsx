@@ -30,9 +30,10 @@ import { Reveal } from "./atmosphere";
 import { useLandingInteractions } from "./landing-interactions";
 import { IntegrationsShowcase } from "./integrations-showcase";
 import { ProductMockup } from "./product-mockup";
+import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
 const features = [
-  { id: "crm", title: "CRM", body: "Contacts, deals, tags, and pipeline in one Actora-ready system.", icon: Briefcase },
+  { id: "crm", title: "CRM", body: "Contacts, deals, tags, and pipeline in one VanderBase-ready system.", icon: Briefcase },
   { id: "inbox", title: "AI Inbox", body: "Summaries, smart replies, and meeting detection that stay in context.", icon: Mail },
   { id: "chat", title: "AI Chat", body: "A workspace-aware assistant with tools, memory, and credits.", icon: MessageSquare },
   { id: "content", title: "Content OS", body: "Draft, plan, and publish from a single content system.", icon: PenLine },
@@ -71,7 +72,7 @@ const testimonials = [
 ];
 
 const faqs: [string, string][] = [
-  ["Is this a new SaaS or an extension of Business OS?", "Business OS is one platform. Actora and Advora capabilities live inside the same workspace, billing, auth, and AI layer."],
+  ["What is VanderBase?", "VanderBase is one AI-native platform with CRM, Inbox, Content, Calendar, Analytics, and Kairos in the same workspace."],
   ["What can I do on the Free plan?", "Start with one workspace, 25 AI credits/month, and the essentials across CRM, Inbox, and Content OS."],
   ["How do AI credits work?", "Credits are shared across the workspace for AI features like chat, summaries, drafts, forecasting, and agents."],
   ["Can teams collaborate?", "Yes. Higher plans unlock team collaboration, roles, unlimited workspaces, and enterprise controls."],
@@ -135,7 +136,7 @@ export function OneBusinessOs() {
     <section className="relative px-5 py-20 sm:px-8" id="about">
       <div className="mx-auto max-w-7xl">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">One Business OS</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">One VanderBase</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
             Stop stitching tools. Start running the company.
           </h2>
@@ -168,7 +169,7 @@ export function OneBusinessOs() {
           </Reveal>
           <Reveal delay={0.15}>
             <div className="landing-glass-strong landing-gradient-border rounded-3xl p-6">
-              <p className="text-sm font-semibold text-primary">Business OS</p>
+              <p className="text-sm font-semibold text-primary">VanderBase</p>
               <div className="mt-5 space-y-3">
                 {["One Login", "One Workspace", "One Subscription", "One AI"].map((item, index) => (
                   <motion.div
@@ -590,7 +591,7 @@ export function PricingSection() {
                     <PlanCreditsBlock plan={plan} highlighted={plan.popular} />
                   </div>
                   {plan.id === "enterprise" ? (
-                    <Link href="mailto:sales@business-os.example" className="mt-5 block">
+                    <Link href="mailto:sales@vanderbase.example" className="mt-5 block">
                       <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
                         Contact sales
                       </Button>
@@ -793,10 +794,11 @@ export function LandingFooter() {
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-xs font-bold text-white">
-              B
+            <VanderBaseLogo compact />
+            <span className="text-sm font-semibold uppercase tracking-[0.18em]">
+              <span className="text-white">VANDER</span>
+              <span className="text-primary">BASE</span>
             </span>
-            <span className="text-sm font-semibold">Business OS</span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-secondary">
             The AI-native operating system for founders, operators, and modern teams.
@@ -818,7 +820,7 @@ export function LandingFooter() {
         ))}
       </div>
       <p className="mx-auto mt-12 max-w-7xl text-xs text-muted">
-        © {new Date().getFullYear()} Business OS. Built for one workspace, one AI, one subscription.
+        ©️ 2026 VanderBase. All rights reserved.
       </p>
     </footer>
   );

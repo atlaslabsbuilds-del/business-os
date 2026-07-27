@@ -1,4 +1,4 @@
--- Actora Gmail integration: sync cursors, AI classification, upsert indexes
+-- VanderBase Gmail integration: sync cursors, AI classification, upsert indexes
 
 alter table public.inbox_accounts
   add column if not exists history_id text;

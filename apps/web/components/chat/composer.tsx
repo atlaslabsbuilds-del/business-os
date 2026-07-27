@@ -59,7 +59,7 @@ export function Composer({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Message Business OS AI…"
+            placeholder="Message Kairos…"
             rows={1}
             disabled={disabled}
             className={cn(

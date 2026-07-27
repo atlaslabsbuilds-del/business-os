@@ -1,4 +1,4 @@
--- Actora CRM foundation: workspace-scoped contacts, companies, deals, activities, notes, tags
+-- VanderBase CRM foundation: workspace-scoped contacts, companies, deals, activities, notes, tags
 
 do $$
 begin

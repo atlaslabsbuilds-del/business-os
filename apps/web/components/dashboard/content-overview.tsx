@@ -9,7 +9,7 @@ export function ContentOverview({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
     <SectionShell
       title="Content Overview"
-      description="Actora communication signals until Advora Content OS ships."
+      description="VanderBase communication signals until VanderBase Content OS ships."
       actionHref="/inbox"
       actionLabel="Inbox"
     >

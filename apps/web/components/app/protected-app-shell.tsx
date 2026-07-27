@@ -14,6 +14,7 @@ import { AppQuickActionsPanel } from "./app-quick-actions-panel";
 import { AppToastStack } from "./app-toast-stack";
 import { PageTransition } from "./page-transition";
 import { KairosFab } from "../kairos/kairos-fab";
+import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
 export function ProtectedAppShell({
   workspaceName,
@@ -39,7 +40,8 @@ export function ProtectedAppShell({
   return (
     <AppChromeProvider>
       <AppShell
-        brand="Business OS"
+        brand="VANDERBASE"
+        brandMark={<VanderBaseLogo compact />}
         brandHref="/dashboard"
         title={workspaceName}
         userEmail={email}

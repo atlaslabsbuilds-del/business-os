@@ -94,7 +94,7 @@ export function createInboxSmartReply(input: {
         messages: [
           {
             role: "system",
-            content: `You write email replies for a Business OS CRM inbox.
+            content: `You write email replies for a VanderBase CRM inbox.
 Style: ${style}.
 ${STYLE_GUIDANCE[style]}
 Return only the reply body (no subject line, no markdown fences).

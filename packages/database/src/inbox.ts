@@ -966,12 +966,12 @@ export async function seedDemoInbox(input: {
     {
       subject: "Welcome to your unified inbox",
       snippet: "Your demo inbox is ready with sample threads.",
-      participants: [{ email: "team@actora.ai", name: "Actora Team" }],
+      participants: [{ email: "team@vanderbase.ai", name: "VanderBase Team" }],
       meetingDetected: false,
       messages: [
         {
-          fromEmail: "team@actora.ai",
-          fromName: "Actora Team",
+          fromEmail: "team@vanderbase.ai",
+          fromName: "VanderBase Team",
           bodyText:
             "Welcome! This is a demo thread so you can explore inbox features without connecting OAuth.",
         },

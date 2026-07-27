@@ -4,8 +4,8 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Business OS Admin",
-  description: "Admin panel for the Business OS platform",
+  title: "VanderBase Admin",
+  description: "VanderBase administration console.",
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
--- Business OS initial auth/identity schema
+-- VanderBase initial auth/identity schema
 -- Apply with Supabase CLI or SQL editor.
 
 create extension if not exists "pgcrypto";

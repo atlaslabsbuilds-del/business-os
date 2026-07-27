@@ -1,4 +1,4 @@
--- Actora AI Inbox foundation: unified mail, labels, attachments, tasks, calendar
+-- VanderBase AI Inbox foundation: unified mail, labels, attachments, tasks, calendar
 
 do $$
 begin

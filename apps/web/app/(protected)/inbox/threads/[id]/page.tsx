@@ -185,7 +185,7 @@ export default async function InboxThreadPage({ params }: Props) {
             <CardHeader>
               <CardTitle>CRM context</CardTitle>
               <CardDescription>
-                Customer signal from Actora CRM
+                Customer signal from VanderBase CRM
               </CardDescription>
             </CardHeader>
             {contact ? (
