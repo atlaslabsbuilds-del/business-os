@@ -1,4 +1,4 @@
--- Personal Brand OS Content OS foundation.
+-- VanderBase Content OS foundation.
 -- Content records, brand voice, assets, and reusable templates.
 
 create table if not exists public.content_items (

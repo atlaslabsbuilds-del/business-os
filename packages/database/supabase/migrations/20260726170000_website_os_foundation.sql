@@ -1,4 +1,4 @@
--- Personal Brand OS Website & Landing Pages foundation.
+-- VanderBase Website & Landing Pages foundation.
 
 create table if not exists public.website_projects (
   id uuid primary key default gen_random_uuid(),

@@ -52,7 +52,7 @@ export function QuickActions() {
   return (
     <SectionShell
       title="Quick Actions"
-      description="Jump into the highest-leverage VanderBase workflows."
+      description="Jump into the highest-leverage workspace workflows."
     >
       <div className="grid gap-2 sm:grid-cols-2">
         {ACTIONS.map((action) => {

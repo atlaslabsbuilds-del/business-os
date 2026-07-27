@@ -33,7 +33,7 @@ import { ProductMockup } from "./product-mockup";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
 const features = [
-  { id: "crm", title: "CRM", body: "Contacts, deals, tags, and pipeline in one VanderBase-ready system.", icon: Briefcase },
+  { id: "crm", title: "CRM", body: "Contacts, deals, tags, and pipeline in one native VanderBase system.", icon: Briefcase },
   { id: "inbox", title: "AI Inbox", body: "Summaries, smart replies, and meeting detection that stay in context.", icon: Mail },
   { id: "chat", title: "AI Chat", body: "A workspace-aware assistant with tools, memory, and credits.", icon: MessageSquare },
   { id: "content", title: "Content OS", body: "Draft, plan, and publish from a single content system.", icon: PenLine },

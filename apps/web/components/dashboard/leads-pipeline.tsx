@@ -10,7 +10,7 @@ export function LeadsPipeline({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
     <SectionShell
       title="Leads Pipeline"
-      description="Live CRM leads and deal stages from VanderBase."
+      description="Live CRM leads and deal stages across your workspace."
       actionHref="/crm/leads"
       actionLabel="CRM leads"
     >

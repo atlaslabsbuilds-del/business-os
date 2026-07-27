@@ -29,6 +29,7 @@ type ChatLayoutProps = {
   initialModel: string;
   initialProvider: AiProviderId;
   initialCreditBalance: number;
+  initialPrompt?: string;
 };
 
 function createLocalMessage(input: {
@@ -56,13 +57,14 @@ export function ChatLayout({
   initialModel,
   initialProvider,
   initialCreditBalance,
+  initialPrompt,
 }: ChatLayoutProps) {
   const [conversations, setConversations] = React.useState(initialConversations);
   const [activeId, setActiveId] = React.useState<string | undefined>(
     initialConversationId,
   );
   const [messages, setMessages] = React.useState<ChatMessage[]>(initialMessages);
-  const [draft, setDraft] = React.useState("");
+  const [draft, setDraft] = React.useState(initialPrompt ?? "");
   const [model, setModel] = React.useState(initialModel);
   const [provider, setProvider] = React.useState<AiProviderId>(initialProvider);
   const [creditBalance, setCreditBalance] = React.useState(initialCreditBalance);

@@ -16,7 +16,7 @@ export function GrowthAnalytics({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
     <SectionShell
       title="Growth Analytics"
-      description="Cross-module momentum across VanderBase CRM, Inbox, Chat, and Workspace."
+      description="Cross-module momentum across CRM, Inbox, Chat, and Workspace."
       actionHref="/crm"
       actionLabel="CRM overview"
     >

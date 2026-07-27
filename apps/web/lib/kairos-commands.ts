@@ -9,6 +9,38 @@ export type KairosCommand = {
 
 export const KAIROS_COMMANDS: KairosCommand[] = [
   {
+    id: "open-marketing",
+    label: "Open Marketing",
+    description: "Navigate to the Marketing workspace.",
+    href: "/marketing",
+    keywords: ["open marketing", "marketing", "campaigns"],
+    module: "nav",
+  },
+  {
+    id: "open-customers",
+    label: "Open Customers",
+    description: "Navigate to Customers / CRM contacts.",
+    href: "/customers",
+    keywords: ["open customers", "customers", "clients", "contacts"],
+    module: "crm",
+  },
+  {
+    id: "open-inbox",
+    label: "Open Inbox",
+    description: "Navigate to AI Inbox.",
+    href: "/inbox",
+    keywords: ["open inbox", "inbox", "email", "mail"],
+    module: "inbox",
+  },
+  {
+    id: "open-analytics",
+    label: "Open Analytics",
+    description: "Navigate to Analytics.",
+    href: "/analytics",
+    keywords: ["open analytics", "analytics", "insights", "metrics"],
+    module: "nav",
+  },
+  {
     id: "summarize-emails",
     label: "Summarize today's emails",
     description: "Open Inbox and ask Kairos for a daily email digest.",

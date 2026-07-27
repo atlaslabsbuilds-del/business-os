@@ -14,7 +14,7 @@ export function CrmShell({
 }) {
   return (
     <ModulePageShell
-      badge="VanderBase CRM"
+      badge="CRM"
       title={title}
       description={description}
       actions={actions}

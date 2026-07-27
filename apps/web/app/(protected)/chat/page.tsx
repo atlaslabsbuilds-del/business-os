@@ -8,7 +8,7 @@ import { resolveActiveWorkspace } from "../../../lib/workspace-context";
 export const dynamic = "force-dynamic";
 
 type ChatPageProps = {
-  searchParams: Promise<{ c?: string }>;
+  searchParams: Promise<{ c?: string; prompt?: string }>;
 };
 
 export default async function ChatPage({ searchParams }: ChatPageProps) {
@@ -19,6 +19,7 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
 
   const params = await searchParams;
   const conversationId = params.c;
+  const initialPrompt = params.prompt?.trim() || undefined;
 
   const [conversations, credits] = await Promise.all([
     listConversations({
@@ -57,6 +58,7 @@ export default async function ChatPage({ searchParams }: ChatPageProps) {
       initialModel={activeModel}
       initialProvider={activeProvider}
       initialCreditBalance={credits.balance}
+      initialPrompt={initialPrompt}
     />
   );
 }

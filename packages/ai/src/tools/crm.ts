@@ -90,7 +90,7 @@ export type CrmToolDeps = {
 };
 
 /**
- * Registers VanderBase CRM tools for the AI Tool Registry.
+ * Registers CRM tools for the AI Tool Registry.
  * Every CRM capability the model needs is exposed here.
  */
 export function createCrmTools(deps: CrmToolDeps = {}): RegisteredTool[] {

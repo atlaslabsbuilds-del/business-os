@@ -10,7 +10,7 @@ export function buildDashboardAiContext(snapshot: DashboardSnapshot): string {
     .join("\n");
 
   return [
-    "Personal Brand OS workspace dashboard context:",
+    "VanderBase workspace dashboard context:",
     `Workspace: ${snapshot.workspace.name}`,
     `Revenue pipeline: ${snapshot.kpis.revenue}`,
     `Won revenue: ${snapshot.finance.wonValue}`,

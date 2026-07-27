@@ -1,4 +1,4 @@
--- Personal Brand OS shared platform primitives.
+-- VanderBase shared platform primitives.
 -- Workspace-scoped notifications, activity, and persisted AI memory.
 
 create table if not exists public.workspace_notifications (

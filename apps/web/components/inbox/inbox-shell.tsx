@@ -14,7 +14,7 @@ export function InboxShell({
 }) {
   return (
     <ModulePageShell
-      badge="VanderBase Inbox"
+      badge="Inbox"
       title={title}
       description={description}
       actions={actions}

@@ -279,7 +279,7 @@ export function createInboxSummarizer(input: {
       messages: [
         {
           role: "system",
-          content: `You are an enterprise email analyst for a VanderBase CRM inbox.
+          content: `You are an enterprise email analyst for the VanderBase inbox.
 Summarize the ENTIRE email conversation (all messages, not only the latest).
 Return ONLY valid JSON with this exact shape:
 {

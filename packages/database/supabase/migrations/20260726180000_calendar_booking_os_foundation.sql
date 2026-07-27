@@ -1,4 +1,4 @@
--- Personal Brand OS Calendar & Booking foundation.
+-- VanderBase Calendar & Booking foundation.
 
 create table if not exists public.calendar_booking_links (
   id uuid primary key default gen_random_uuid(),

@@ -185,7 +185,7 @@ export default async function InboxThreadPage({ params }: Props) {
             <CardHeader>
               <CardTitle>CRM context</CardTitle>
               <CardDescription>
-                Customer signal from VanderBase CRM
+                Customer signal from CRM
               </CardDescription>
             </CardHeader>
             {contact ? (

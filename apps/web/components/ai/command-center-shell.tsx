@@ -28,7 +28,7 @@ export function CommandCenterShell() {
               Tell Kairos what to do next
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-secondary">
-              Run workspace commands, jump into agents, or open Spotlight with ⌘K.
+              Natural language navigation, workspace search, and Kairos chat — press ⌘K anytime.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <div className="relative min-w-[260px] flex-1">
@@ -36,7 +36,13 @@ export function CommandCenterShell() {
                 <input
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
-                  placeholder="Try: Summarize todays emails"
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      openCommand();
+                    }
+                  }}
+                  placeholder='Try: Open Marketing'
                   className="h-12 w-full rounded-2xl border border-border/70 bg-elevated/50 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
@@ -46,7 +52,7 @@ export function CommandCenterShell() {
                 className="inline-flex h-12 items-center gap-2 rounded-2xl bg-primary px-4 text-sm font-semibold text-white"
               >
                 <Sparkles className="h-4 w-4" aria-hidden />
-                Open Spotlight
+                Open Command Center
               </button>
             </div>
           </div>

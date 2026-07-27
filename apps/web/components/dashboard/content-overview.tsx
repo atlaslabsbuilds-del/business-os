@@ -9,7 +9,7 @@ export function ContentOverview({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
     <SectionShell
       title="Content Overview"
-      description="VanderBase communication signals until VanderBase Content OS ships."
+      description="Inbox drafts, summaries, and content signals across your workspace."
       actionHref="/inbox"
       actionLabel="Inbox"
     >

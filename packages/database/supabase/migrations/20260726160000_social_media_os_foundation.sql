@@ -1,4 +1,4 @@
--- Personal Brand OS Social Media OS foundation.
+-- VanderBase Social Media OS foundation.
 
 create table if not exists public.social_accounts (
   id uuid primary key default gen_random_uuid(),

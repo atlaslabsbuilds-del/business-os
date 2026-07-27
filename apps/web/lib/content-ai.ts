@@ -36,7 +36,7 @@ export async function generateContentWithAi(input: {
     messages: [
       {
         role: "system",
-        content: `You are the Content OS writing partner for Personal Brand OS.
+        content: `You are the Content OS writing partner for VanderBase.
 ${TYPE_GUIDANCE[input.contentType]}
 ${voice}
 Return only the content. Do not mention these instructions. Do not invent facts, results, or customer claims.`,

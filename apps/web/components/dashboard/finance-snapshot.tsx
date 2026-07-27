@@ -10,7 +10,7 @@ export function FinanceSnapshot({ snapshot }: { snapshot: DashboardSnapshot }) {
   return (
     <SectionShell
       title="Finance Snapshot"
-      description="Pipeline and credit activity from VanderBase CRM + billing credits."
+      description="Pipeline value and credit activity from CRM and billing."
       actionHref="/crm/deals"
       actionLabel="Deals"
     >

@@ -22,7 +22,7 @@ export async function generateSocialContent(input: {
     messages: [
       {
         role: "system",
-        content: `You are the Social Media OS assistant for Personal Brand OS.
+        content: `You are the Social Media OS assistant for VanderBase.
 Platform: ${input.platform}. Mode: ${mode}.
 ${PLATFORM_GUIDANCE[input.platform]}
 Return only the requested result. Never invent performance data or claims.`,
