@@ -39,7 +39,13 @@ export function ProtectedAppShell({
   children: ReactNode;
 }) {
   return (
-    <AppChromeProvider>
+    <AppChromeProvider
+      workspaceContext={{
+        workspaceId,
+        organizationName: workspaceName,
+        userEmail: email,
+      }}
+    >
       <AppShell
         brand="VANDERBASE"
         brandMark={<VanderBaseLogo compact />}

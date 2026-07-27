@@ -149,12 +149,20 @@ export type DashboardSnapshot = {
   };
   kpis: {
     revenue: number;
+    revenueToday: number;
+    newCustomersToday: number;
     leads: number;
     openTasks: number;
     upcomingEvents: number;
     aiCredits: number;
     unread: number;
     openDeals: number;
+  };
+  today: {
+    revenue: number;
+    newCustomers: number;
+    pendingTasks: number;
+    meetings: number;
   };
   crm: {
     contacts: number;

@@ -111,12 +111,25 @@ export function LandingModals() {
               <IntegrationLogo id={overlay.payload.id} className="h-8 w-8" />
             </div>
             <div>
-              <h2 className="text-2xl font-semibold">{overlay.payload.name}</h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-2xl font-semibold">{overlay.payload.name}</h2>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+                    overlay.payload.available
+                      ? "bg-primary/12 text-primary ring-1 ring-primary/25"
+                      : "bg-white/[0.04] text-secondary ring-1 ring-white/10"
+                  }`}
+                >
+                  {overlay.payload.available ? "Available" : "Coming Soon"}
+                </span>
+              </div>
               <p className="mt-1 text-sm text-secondary">{overlay.payload.description}</p>
             </div>
           </div>
           <p className="mt-5 text-sm text-secondary">
-            {(INTEGRATION_DETAILS[overlay.payload.id] ?? INTEGRATION_DETAILS.default)!.sync}
+            {overlay.payload.available
+              ? (INTEGRATION_DETAILS[overlay.payload.id] ?? INTEGRATION_DETAILS.default)!.sync
+              : "This integration is on our roadmap. We're building connectors across sales, marketing, collaboration, finance, and development."}
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {overlay.payload.categories.map((category) => (
@@ -125,19 +138,27 @@ export function LandingModals() {
               </span>
             ))}
           </div>
-          <ul className="mt-5 space-y-2">
-            {(INTEGRATION_DETAILS[overlay.payload.id] ?? INTEGRATION_DETAILS.default)!.features.map((feature) => (
-              <li key={feature} className="rounded-xl border border-white/5 px-3 py-2 text-sm text-secondary">
-                {feature}
-              </li>
-            ))}
-          </ul>
-          <Link href="/signup" className="mt-6 inline-block" onClick={closeOverlay}>
-            <Button className="gap-2">
-              Connect in workspace
-              <ArrowRight className="h-4 w-4" aria-hidden />
-            </Button>
-          </Link>
+          {overlay.payload.available ? (
+            <>
+              <ul className="mt-5 space-y-2">
+                {(INTEGRATION_DETAILS[overlay.payload.id] ?? INTEGRATION_DETAILS.default)!.features.map((feature) => (
+                  <li key={feature} className="rounded-xl border border-white/5 px-3 py-2 text-sm text-secondary">
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup" className="mt-6 inline-block" onClick={closeOverlay}>
+                <Button className="gap-2">
+                  Connect in workspace
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Button>
+              </Link>
+            </>
+          ) : (
+            <p className="mt-6 rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-secondary">
+              Integration coming soon. Join the waitlist when you create your workspace.
+            </p>
+          )}
         </ModalShell>
       ) : null}
 

@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from
 import { Plug, Search, Zap } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import {
+  AVAILABLE_INTEGRATION_COUNT,
   filterIntegrations,
   INTEGRATION_FILTERS,
   INTEGRATIONS,
@@ -16,10 +17,32 @@ import { useLandingInteractions } from "./landing-interactions";
 
 const STATUS_STATS = [
   { label: "Integrations", value: INTEGRATIONS.length, suffix: "+" },
+  { label: "Available now", value: AVAILABLE_INTEGRATION_COUNT, suffix: "" },
   { label: "Avg sync", value: 2, suffix: "s", prefix: "<" },
   { label: "Uptime", value: 99.9, suffix: "%" },
-  { label: "API calls / day", value: 12, suffix: "M+" },
 ];
+
+function IntegrationStatusBadge({ available }: { available: boolean }) {
+  if (available) {
+    return (
+      <span className="rounded-full bg-primary/12 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary ring-1 ring-primary/25">
+        Available
+      </span>
+    );
+  }
+
+  return (
+    <span className="relative rounded-full bg-white/[0.04] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-secondary ring-1 ring-white/10">
+      Coming Soon
+      <span
+        role="tooltip"
+        className="integration-tooltip pointer-events-none absolute bottom-[calc(100%+8px)] right-0 z-20 w-max max-w-[180px] rounded-lg border border-white/10 bg-[#121218]/95 px-2.5 py-1.5 text-[10px] font-normal normal-case tracking-normal text-secondary opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100"
+      >
+        Integration coming soon.
+      </span>
+    </span>
+  );
+}
 
 function IntegrationCard({
   integration,
@@ -63,7 +86,10 @@ function IntegrationCard({
         onPointerLeave={onPointerLeave}
         style={{ rotateX: springX, rotateY: springY, transformPerspective: 900 }}
         whileHover={{ y: -6 }}
-        className="integration-card group relative w-full text-left"
+        className={`integration-card group relative w-full text-left ${
+          integration.available ? "" : "integration-card--soon"
+        }`}
+        aria-label={`${integration.name} — ${integration.available ? "Available" : "Coming Soon"}`}
       >
         <motion.div
           aria-hidden
@@ -74,12 +100,14 @@ function IntegrationCard({
         />
         <div className="relative flex h-full flex-col gap-4 p-5">
           <div className="flex items-start justify-between gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] ring-1 ring-white/10 transition group-hover:ring-primary/35">
+            <div
+              className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.04] ring-1 ring-white/10 transition group-hover:ring-primary/35 ${
+                integration.available ? "" : "opacity-80"
+              }`}
+            >
               <IntegrationLogo id={integration.id} className="h-7 w-7" />
             </div>
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-              Live
-            </span>
+            <IntegrationStatusBadge available={integration.available} />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">{integration.name}</h3>
@@ -97,10 +125,10 @@ function StatusBar() {
       <div className="integration-status-bar landing-glass-strong mx-auto mt-10 max-w-4xl rounded-3xl px-6 py-5">
         <div className="mb-4 flex items-center justify-center gap-2 text-xs font-medium text-secondary">
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-50" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
           </span>
-          All systems connected
+          {AVAILABLE_INTEGRATION_COUNT} live today · {INTEGRATIONS.length}+ in the library
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {STATUS_STATS.map((stat) => (
@@ -138,11 +166,11 @@ export function IntegrationsShowcase() {
             Integrations
           </p>
           <h2 className="mt-5 text-3xl font-semibold tracking-tight sm:text-5xl">
-            Your entire stack, wired into one operating system.
+            Works with your favorite tools
           </h2>
           <p className="mt-4 text-base leading-7 text-secondary sm:text-lg">
-            Connect AI, communication, CRM, payments, and dev tools in seconds. Search, filter, and
-            explore 50+ official integrations built for real workflows.
+            Connect the tools you already use. We&apos;re continuously adding new integrations
+            across sales, marketing, collaboration, finance, and development.
           </p>
         </Reveal>
 
@@ -205,6 +233,7 @@ export function IntegrationsShowcase() {
                     name: integration.name,
                     description: integration.description,
                     categories: integration.categories,
+                    available: integration.available,
                   })
                 }
               />
@@ -216,7 +245,13 @@ export function IntegrationsShowcase() {
           <Reveal className="mt-12 text-center">
             <p className="text-secondary">No integrations match your search. Try another keyword or category.</p>
           </Reveal>
-        ) : null}
+        ) : (
+          <Reveal delay={0.08} className="mt-10 text-center">
+            <p className="text-sm text-secondary">
+              More integrations are being added regularly.
+            </p>
+          </Reveal>
+        )}
       </div>
     </section>
   );

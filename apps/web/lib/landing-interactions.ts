@@ -20,6 +20,7 @@ export type IntegrationDetailPayload = {
   name: string;
   description: string;
   categories: string[];
+  available: boolean;
 };
 
 export type OverlayPayload = {

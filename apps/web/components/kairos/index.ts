@@ -2,5 +2,8 @@ export { KairosAvatar, KairosThinkingMessage } from "./kairos-avatar";
 export { KairosCompanion, KairosWelcome } from "./kairos-companion";
 export { KairosFab } from "./kairos-fab";
 export { KairosActionStatus } from "./kairos-action-status";
+export { KairosConfirmDialog } from "./kairos-confirm-dialog";
 export { KairosQuickCreateModal } from "./kairos-quick-create-modal";
+export { KairosWorkflowRunner } from "./kairos-workflow-runner";
+export { KairosWorkspaceObserver } from "./kairos-workspace-observer";
 export { KairosChromeOverlays } from "./kairos-chrome-overlays";

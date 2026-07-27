@@ -618,39 +618,52 @@ export async function listKairosSuggestionsAction(): Promise<
               title: "Follow up with this lead",
               body: `${snapshot.crm.openDeals} open deals need pipeline attention.`,
               actionLabel: "View deals",
-              actionUrl: "/crm/deals",
+              actionUrl: "/deals",
               severity: "info",
             },
           ]
         : []),
       {
-        module: "calendar",
-        title: "Schedule focus time",
-        body: "Protect deep work before the next wave of meetings.",
-        actionLabel: "Open Calendar",
-        actionUrl: "/calendar",
+        module: "kairos",
+        title: "Create a customer",
+        body: "Kairos can open a prefilled create form — try /customer or +customer.",
+        actionLabel: "Create",
+        actionUrl: "kairos://create-customer",
         severity: "info",
       },
       {
-        module: "dashboard",
-        title:
-          snapshot.finance.wonValue > 0
-            ? "Revenue momentum"
-            : "Build your first win",
-        body:
-          snapshot.finance.wonValue > 0
-            ? `Won pipeline value is $${snapshot.finance.wonValue.toLocaleString()}.`
-            : "Close your first deal to unlock finance insights.",
-        actionLabel: "Open CRM",
-        actionUrl: "/crm",
+        module: "kairos",
+        title: "Onboard a new lead",
+        body: "Multi-step workflow: customer → deal → follow-up task.",
+        actionLabel: "Start workflow",
+        actionUrl: "kairos://workflow-onboard-lead",
         severity: "success",
       },
       {
-        module: "content",
-        title: "Post today at 6 PM",
-        body: "Content Agent can draft a LinkedIn post in your brand voice.",
-        actionLabel: "Generate",
-        actionUrl: "/ai/agents?agent=content",
+        module: "analytics",
+        title: "Show today's revenue",
+        body:
+          snapshot.finance.wonValue > 0
+            ? `Won pipeline value is $${snapshot.finance.wonValue.toLocaleString()}.`
+            : "Review analytics and pipeline value with Kairos.",
+        actionLabel: "Show revenue",
+        actionUrl: "kairos://today-revenue",
+        severity: "success",
+      },
+      {
+        module: "kairos",
+        title: "Set a reminder",
+        body: "Capture a follow-up before it slips — due in 24 hours by default.",
+        actionLabel: "Remind me",
+        actionUrl: "kairos://create-reminder",
+        severity: "info",
+      },
+      {
+        module: "marketing",
+        title: "Launch Advora",
+        body: "Open Advora for AI marketing campaigns. Kairos will confirm before leaving.",
+        actionLabel: "Open Advora",
+        actionUrl: "kairos://open-marketing",
         severity: "info",
       },
     ];

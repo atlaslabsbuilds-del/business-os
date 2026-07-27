@@ -103,6 +103,21 @@ export function AiCommandCenter({ snapshot }: { snapshot: DashboardSnapshot }) {
               Review leads
             </Button>
           </Link>
+          <Link href="/analytics?focus=revenue">
+            <Button size="sm" variant="ghost">
+              Review analytics
+            </Button>
+          </Link>
+          <Link href="/marketing">
+            <Button size="sm" variant="ghost">
+              Open Advora
+            </Button>
+          </Link>
+          <Link href="/ai/activity">
+            <Button size="sm" variant="ghost">
+              Continue yesterday&apos;s work
+            </Button>
+          </Link>
         </div>
       </div>
     </SectionShell>

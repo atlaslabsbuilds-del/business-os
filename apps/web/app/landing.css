@@ -220,6 +220,22 @@
     0 24px 60px rgba(0, 0, 0, 0.42);
 }
 
+.integration-card--soon:hover {
+  border-color: color-mix(in srgb, #ffffff 14%, #2a2a35);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 16px 40px rgba(0, 0, 0, 0.32);
+}
+
+.integration-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  border: 5px solid transparent;
+  border-top-color: color-mix(in srgb, #121218 95%, transparent);
+}
+
 .integration-status-bar {
   position: relative;
   overflow: hidden;

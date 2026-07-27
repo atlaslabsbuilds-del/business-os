@@ -28,7 +28,7 @@ export function CommandCenterShell() {
               Tell Kairos what to do next
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-secondary">
-              Natural language actions — navigate, search, create, and launch Advora. Press ⌘K anytime.
+              Natural language actions, slash commands, and multi-step workflows. Press ⌘K anytime.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <div className="relative min-w-[260px] flex-1">
@@ -48,7 +48,7 @@ export function CommandCenterShell() {
               </div>
               <button
                 type="button"
-                onClick={openCommand}
+                onClick={() => openCommand()}
                 className="inline-flex h-12 items-center gap-2 rounded-2xl bg-primary px-4 text-sm font-semibold text-white"
               >
                 <Sparkles className="h-4 w-4" aria-hidden />

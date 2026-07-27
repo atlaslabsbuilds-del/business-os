@@ -86,7 +86,11 @@ export function KairosMemoryPanel({
         ...prev,
       ]);
       setFact("");
-      pushToast({ title: "Memory saved", variant: "success" });
+      pushToast({
+        title: "Memory Updated",
+        description: "Kairos will use this context in future actions.",
+        variant: "success",
+      });
     });
   }
 

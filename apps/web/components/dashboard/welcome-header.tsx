@@ -28,7 +28,9 @@ export function WelcomeHeader({
             Command Center
           </Badge>
           <div>
-            <p className="text-sm text-secondary">{greetingForNow()}</p>
+            <p className="text-sm text-secondary">
+              {greetingForNow()}, {email?.split("@")[0] ?? "there"}
+            </p>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
               {workspaceName}
             </h1>

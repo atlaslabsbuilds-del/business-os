@@ -2,6 +2,7 @@ import type { DashboardInsight, DashboardSnapshot } from "@repo/types";
 import {
   contactDisplayName,
   getCrmDashboardStats,
+  listContacts,
   listDeals,
   listLeads,
 } from "./crm";
@@ -166,6 +167,7 @@ export async function getDashboardSnapshot(input: {
     memory,
     leads,
     deals,
+    contacts,
     threads,
     aiDrafts,
   ] = await Promise.all([
@@ -198,6 +200,7 @@ export async function getDashboardSnapshot(input: {
     }),
     listLeads({ workspaceId: input.workspaceId }),
     listDeals({ workspaceId: input.workspaceId }),
+    listContacts({ workspaceId: input.workspaceId }),
     listInboxThreads({ workspaceId: input.workspaceId }),
     listWorkspaceAiReplyDrafts({
       workspaceId: input.workspaceId,
@@ -214,6 +217,12 @@ export async function getDashboardSnapshot(input: {
   );
   const wonDeals = deals.filter((deal) => deal.stage === "won");
   const wonValue = wonDeals.reduce((sum, deal) => sum + deal.amount, 0);
+  const revenueToday = wonDeals
+    .filter((deal) => isToday(deal.updatedAt))
+    .reduce((sum, deal) => sum + deal.amount, 0);
+  const newCustomersToday = contacts.filter((contact) =>
+    isToday(contact.createdAt),
+  ).length;
 
   const pipeline = DEAL_STAGES.map((stage) => {
     const stageDeals = deals.filter((deal) => deal.stage === stage);
@@ -307,12 +316,20 @@ export async function getDashboardSnapshot(input: {
     },
     kpis: {
       revenue: crm.pipelineValue,
+      revenueToday,
+      newCustomersToday,
       leads: crm.leads,
       openTasks: inbox.tasksOpen,
       upcomingEvents: inbox.upcomingMeetings,
       aiCredits: credits.balance,
       unread: inbox.unread,
       openDeals: crm.openDeals,
+    },
+    today: {
+      revenue: revenueToday,
+      newCustomers: newCustomersToday,
+      pendingTasks: todayTasks.length,
+      meetings: todayEvents.length,
     },
     crm: {
       contacts: crm.contacts,

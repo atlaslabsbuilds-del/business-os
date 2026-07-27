@@ -2,6 +2,7 @@ import {
   listCompanies,
   listContacts,
   listDeals,
+  listNotes,
 } from "@repo/database/crm";
 import { listInboxTasks, listInboxThreads } from "@repo/database/inbox";
 import { listConversations } from "@repo/database/chat";
@@ -20,6 +21,7 @@ export type GlobalSearchModule =
   | "calendar"
   | "tasks"
   | "memory"
+  | "notes"
   | "agents"
   | "settings"
   | "command"
@@ -210,6 +212,25 @@ const memorySearchAdapter: GlobalSearchAdapter = {
   },
 };
 
+const notesSearchAdapter: GlobalSearchAdapter = {
+  module: "notes",
+  async search({ workspaceId, query, limit }) {
+    const notes = await listNotes({ workspaceId });
+    const q = query.toLowerCase();
+    return notes
+      .filter((note) => note.body.toLowerCase().includes(q))
+      .slice(0, limit)
+      .map((note) => ({
+        id: note.id,
+        module: "notes" as const,
+        type: "note",
+        title: note.body.slice(0, 80),
+        subtitle: "CRM note",
+        href: "/crm/notes",
+      }));
+  },
+};
+
 const NAV_ITEMS: GlobalSearchResult[] = [
   {
     id: "nav-dashboard",
@@ -333,6 +354,7 @@ export const globalSearchAdapters: GlobalSearchAdapter[] = [
   socialSearchAdapter,
   tasksSearchAdapter,
   memorySearchAdapter,
+  notesSearchAdapter,
 ];
 
 export async function globalSearch(input: {
