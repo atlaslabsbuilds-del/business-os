@@ -28,7 +28,7 @@ export function CommandCenterShell() {
               Tell Kairos what to do next
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-secondary">
-              Natural language navigation, workspace search, and Kairos chat — press ⌘K anytime.
+              Natural language actions — navigate, search, create, and launch Advora. Press ⌘K anytime.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <div className="relative min-w-[260px] flex-1">

@@ -14,6 +14,7 @@ import { AppQuickActionsPanel } from "./app-quick-actions-panel";
 import { AppToastStack } from "./app-toast-stack";
 import { PageTransition } from "./page-transition";
 import { KairosFab } from "../kairos/kairos-fab";
+import { KairosChromeOverlays } from "../kairos/kairos-chrome-overlays";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
 export function ProtectedAppShell({
@@ -67,6 +68,7 @@ export function ProtectedAppShell({
       <AppCommandPalette />
       <AppToastStack />
       <KairosFab />
+      <KairosChromeOverlays />
     </AppChromeProvider>
   );
 }

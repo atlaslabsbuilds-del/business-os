@@ -236,6 +236,14 @@ const NAV_ITEMS: GlobalSearchResult[] = [
     href: "/customers",
   },
   {
+    id: "nav-deals",
+    module: "nav",
+    type: "page",
+    title: "Deals",
+    subtitle: "CRM deal pipeline",
+    href: "/deals",
+  },
+  {
     id: "nav-analytics",
     module: "nav",
     type: "page",

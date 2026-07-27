@@ -9,14 +9,15 @@ import {
   CornerDownLeft,
   LayoutDashboard,
   Mail,
+  Megaphone,
   MessageSquare,
   PenLine,
+  Plus,
   Search,
   Settings,
   Sparkles,
   Terminal,
   Users,
-  Megaphone,
 } from "lucide-react";
 import {
   Command,
@@ -31,35 +32,51 @@ import {
 } from "@repo/ui/command";
 import { globalSearchAction } from "../../app/(protected)/actions/platform";
 import type { GlobalSearchResult } from "../../lib/global-search";
-import { KAIROS_COMMANDS } from "../../lib/kairos-commands";
 import {
-  KAIROS_NAV_TARGETS,
-  matchNaturalLanguageNav,
-  resolveAskKairosPrompt,
-  resolveNaturalLanguageNav,
-} from "../../lib/kairos-nl";
+  detectKairosIntent,
+  KAIROS_ACTION_CATALOG,
+  KAIROS_SUGGESTED_ACTIONS,
+  matchKairosActions,
+  type KairosAction,
+} from "../../lib/kairos-actions";
 import { useAppChrome } from "./app-chrome-provider";
 import { KairosAvatar } from "../kairos/kairos-avatar";
 
-const RECENT_KEY = "bos_spotlight_recent";
-const RECENT_NAV_KEY = "bos_spotlight_recent_nav";
+const RECENT_KEY = "bos_kairos_actions_recent";
 
-const SUGGESTED = [
-  { label: "Open Marketing", href: "/marketing", icon: Megaphone },
-  { label: "Open Customers", href: "/customers", icon: Users },
-  { label: "Open Inbox", href: "/inbox", icon: Mail },
-  { label: "Open Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Ask Kairos", href: "/chat", icon: Sparkles },
-  { label: "Command Center", href: "/ai", icon: Terminal },
-];
-
-const PINNED = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "CRM", href: "/crm", icon: Briefcase },
-  { label: "Calendar", href: "/calendar", icon: CalendarDays },
-  { label: "Content OS", href: "/content", icon: PenLine },
-  { label: "Settings", href: "/settings", icon: Settings },
-];
+function iconForAction(action: KairosAction) {
+  switch (action.id) {
+    case "open-crm":
+    case "create-deal":
+    case "open-deals":
+      return Briefcase;
+    case "open-inbox":
+    case "create-task":
+      return Mail;
+    case "open-customers":
+    case "create-customer":
+      return Users;
+    case "open-analytics":
+    case "today-revenue":
+    case "today-signups":
+      return BarChart3;
+    case "open-marketing":
+      return Megaphone;
+    case "open-settings":
+      return Settings;
+    case "open-calendar":
+      return CalendarDays;
+    case "open-dashboard":
+      return LayoutDashboard;
+    case "ask-kairos":
+    case "ask-prompt":
+      return Sparkles;
+    default:
+      if (action.kind === "search") return Search;
+      if (action.kind === "create") return Plus;
+      return Terminal;
+  }
+}
 
 function iconForModule(module: string) {
   switch (module) {
@@ -79,8 +96,6 @@ function iconForModule(module: string) {
       return CalendarDays;
     case "settings":
       return Settings;
-    case "nav":
-      return LayoutDashboard;
     default:
       return Search;
   }
@@ -96,7 +111,7 @@ export function CommandPaletteTrigger() {
       className="bos-glass hidden min-w-[200px] items-center gap-2 rounded-xl px-3 py-2 text-left text-xs text-muted transition hover:text-secondary sm:flex lg:min-w-[260px]"
     >
       <Search className="h-3.5 w-3.5 shrink-0" aria-hidden />
-      <span className="flex-1 truncate">Ask Kairos or search…</span>
+      <span className="flex-1 truncate">Ask Kairos or run an action…</span>
       <kbd className="rounded-md border border-border/60 bg-elevated/60 px-1.5 py-0.5 font-mono text-[10px] text-secondary">
         ⌘K
       </kbd>
@@ -105,23 +120,27 @@ export function CommandPaletteTrigger() {
 }
 
 export function AppCommandPalette() {
-  const { commandOpen, closeCommand, toggleCommand, openCommand } = useAppChrome();
+  const {
+    commandOpen,
+    closeCommand,
+    toggleCommand,
+    openCommand,
+    showActionStatus,
+    openQuickCreate,
+  } = useAppChrome();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GlobalSearchResult[]>([]);
-  const [recentCommandIds, setRecentCommandIds] = useState<string[]>([]);
-  const [recentNavIds, setRecentNavIds] = useState<string[]>([]);
+  const [recentIds, setRecentIds] = useState<string[]>([]);
   const [pending, startTransition] = useTransition();
+  const [executing, setExecuting] = useState(false);
 
   useEffect(() => {
     try {
-      const commands = window.localStorage.getItem(RECENT_KEY);
-      const nav = window.localStorage.getItem(RECENT_NAV_KEY);
-      if (commands) setRecentCommandIds(JSON.parse(commands) as string[]);
-      if (nav) setRecentNavIds(JSON.parse(nav) as string[]);
+      const raw = window.localStorage.getItem(RECENT_KEY);
+      if (raw) setRecentIds(JSON.parse(raw) as string[]);
     } catch {
-      setRecentCommandIds([]);
-      setRecentNavIds([]);
+      setRecentIds([]);
     }
   }, []);
 
@@ -140,12 +159,25 @@ export function AppCommandPalette() {
     if (!commandOpen) {
       setQuery("");
       setResults([]);
+      setExecuting(false);
     }
   }, [commandOpen]);
 
   const runSearch = useCallback((value: string) => {
     const trimmed = value.trim();
     if (trimmed.length < 1) {
+      setResults([]);
+      return;
+    }
+    // Skip remote search while intent is clearly a navigation/create command
+    const intent = detectKairosIntent(trimmed);
+    if (
+      intent &&
+      (intent.kind === "navigate" ||
+        intent.kind === "external" ||
+        intent.kind === "create" ||
+        intent.kind === "insight")
+    ) {
       setResults([]);
       return;
     }
@@ -157,14 +189,14 @@ export function AppCommandPalette() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => runSearch(query), 160);
+    const timer = window.setTimeout(() => runSearch(query), 140);
     return () => window.clearTimeout(timer);
   }, [query, runSearch]);
 
-  const rememberCommand = useCallback((commandId?: string) => {
-    if (!commandId) return;
-    setRecentCommandIds((current) => {
-      const next = [commandId, ...current.filter((id) => id !== commandId)].slice(0, 8);
+  const remember = useCallback((actionId?: string) => {
+    if (!actionId) return;
+    setRecentIds((current) => {
+      const next = [actionId, ...current.filter((id) => id !== actionId)].slice(0, 8);
       try {
         window.localStorage.setItem(RECENT_KEY, JSON.stringify(next));
       } catch {
@@ -174,73 +206,77 @@ export function AppCommandPalette() {
     });
   }, []);
 
-  const rememberNav = useCallback((navId?: string) => {
-    if (!navId) return;
-    setRecentNavIds((current) => {
-      const next = [navId, ...current.filter((id) => id !== navId)].slice(0, 8);
-      try {
-        window.localStorage.setItem(RECENT_NAV_KEY, JSON.stringify(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  }, []);
+  const executeAction = useCallback(
+    async (action: KairosAction) => {
+      if (executing) return;
+      setExecuting(true);
+      remember(action.id);
 
-  const navigate = useCallback(
-    (href: string, meta?: { commandId?: string; navId?: string }) => {
-      rememberCommand(meta?.commandId);
-      rememberNav(meta?.navId);
-      closeCommand();
-      router.push(href);
-    },
-    [closeCommand, rememberCommand, rememberNav, router],
-  );
-
-  const askKairos = useCallback(
-    (prompt?: string) => {
-      closeCommand();
-      if (prompt?.trim()) {
-        router.push(`/chat?prompt=${encodeURIComponent(prompt.trim())}`);
+      // Search stays in-palette: confirm, then show live results.
+      if (action.kind === "search" && action.searchQuery) {
+        await showActionStatus(action.confirmation, 700);
+        setQuery(action.searchQuery);
+        startTransition(async () => {
+          const response = await globalSearchAction({
+            query: action.searchQuery!,
+            limit: 16,
+          });
+          if (response.ok) setResults(response.data.results);
+        });
+        setExecuting(false);
         return;
       }
-      router.push("/chat");
+
+      closeCommand();
+      await showActionStatus(
+        action.confirmation,
+        action.kind === "external" ? 1000 : 850,
+      );
+
+      if (action.kind === "external" && action.externalUrl) {
+        window.location.assign(action.externalUrl);
+        return;
+      }
+
+      if (action.kind === "create" && action.createEntity) {
+        openQuickCreate(action.createEntity, action.draft ?? {});
+        setExecuting(false);
+        return;
+      }
+
+      if (action.href) {
+        router.push(action.href);
+      }
+      setExecuting(false);
     },
-    [closeCommand, router],
+    [
+      closeCommand,
+      executing,
+      openQuickCreate,
+      remember,
+      router,
+      showActionStatus,
+    ],
   );
 
-  const nlExact = useMemo(() => resolveNaturalLanguageNav(query), [query]);
-  const nlMatches = useMemo(() => matchNaturalLanguageNav(query, 6), [query]);
-  const askPrompt = useMemo(() => resolveAskKairosPrompt(query), [query]);
+  const detected = useMemo(() => detectKairosIntent(query), [query]);
+  const matchedActions = useMemo(() => matchKairosActions(query, 8), [query]);
 
-  const recentCommands = useMemo(
+  const recentActions = useMemo(
     () =>
-      recentCommandIds
-        .map((id) => KAIROS_COMMANDS.find((command) => command.id === id))
+      recentIds
+        .map((id) => KAIROS_ACTION_CATALOG.find((action) => action.id === id))
         .filter(Boolean)
-        .slice(0, 4),
-    [recentCommandIds],
+        .slice(0, 5) as KairosAction[],
+    [recentIds],
   );
 
-  const recentNav = useMemo(
-    () =>
-      recentNavIds
-        .map((id) => KAIROS_NAV_TARGETS.find((target) => target.id === id))
-        .filter(Boolean)
-        .slice(0, 4),
-    [recentNavIds],
-  );
-
-  const suggestedFiltered = useMemo(() => {
+  const suggested = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return SUGGESTED;
-    return SUGGESTED.filter((item) => item.label.toLowerCase().includes(q));
-  }, [query]);
-
-  const pinnedFiltered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return PINNED;
-    return PINNED.filter((item) => item.label.toLowerCase().includes(q));
+    if (!q) return KAIROS_SUGGESTED_ACTIONS;
+    return KAIROS_SUGGESTED_ACTIONS.filter((action) =>
+      action.label.toLowerCase().includes(q),
+    );
   }, [query]);
 
   function onOpenChange(open: boolean) {
@@ -248,37 +284,19 @@ export function AppCommandPalette() {
     else closeCommand();
   }
 
-  function runQueryAction() {
-    if (nlExact) {
-      navigate(nlExact.href, { navId: nlExact.id });
-      return;
-    }
-    if (askPrompt) {
-      askKairos(askPrompt);
-      return;
-    }
-    if (query.trim()) {
-      askKairos(query.trim());
-    }
-  }
-
   return (
-    <CommandDialog open={commandOpen} onOpenChange={onOpenChange} label="Kairos Command Center">
-      <Command
-        shouldFilter={false}
-        loop
-        className="[&_[cmdk-group-heading]]:text-muted"
-      >
+    <CommandDialog open={commandOpen} onOpenChange={onOpenChange} label="Kairos Actions">
+      <Command shouldFilter={false} loop>
         <div className="flex items-center gap-3 border-b border-border/60 px-4 py-3">
-          <KairosAvatar size="xs" state={pending ? "thinking" : "idle"} />
+          <KairosAvatar size="xs" state={pending || executing ? "thinking" : "listening"} />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
-              Kairos Command Center
+              Kairos Actions
             </p>
             <CommandInput
               value={query}
               onValueChange={setQuery}
-              placeholder='Try “Open Marketing” or ask Kairos anything…'
+              placeholder='Try “Open CRM”, “Search Nike”, or “Create Deal”'
               className="h-9 px-0"
             />
           </div>
@@ -293,7 +311,17 @@ export function AppCommandPalette() {
               <p>No matches for “{query}”.</p>
               <button
                 type="button"
-                onClick={() => askKairos(query)}
+                onClick={() =>
+                  executeAction({
+                    id: "ask-fallback",
+                    kind: "ask",
+                    label: "Ask Kairos",
+                    description: query,
+                    confirmation: "Opening Kairos...",
+                    href: `/chat?prompt=${encodeURIComponent(query.trim())}`,
+                    keywords: [],
+                  })
+                }
                 className="inline-flex items-center gap-2 rounded-xl bg-primary/15 px-3 py-2 text-sm text-primary transition hover:bg-primary/25"
               >
                 <Sparkles className="h-3.5 w-3.5" aria-hidden />
@@ -302,107 +330,72 @@ export function AppCommandPalette() {
             </div>
           </CommandEmpty>
 
-          {nlExact ? (
-            <CommandGroup heading="Natural language">
+          {detected ? (
+            <CommandGroup heading="Intent">
               <CommandItem
-                value={`nl-${nlExact.id}`}
-                onSelect={() => navigate(nlExact.href, { navId: nlExact.id })}
+                value={`intent-${detected.id}`}
+                onSelect={() => void executeAction(detected)}
               >
                 <CornerDownLeft className="h-3.5 w-3.5 text-primary" aria-hidden />
                 <span className="min-w-0 flex-1">
-                  <span className="block font-medium">{nlExact.label}</span>
-                  <span className="block text-xs text-muted">{nlExact.description}</span>
+                  <span className="block font-medium">{detected.label}</span>
+                  <span className="block text-xs text-muted">
+                    {detected.confirmation}
+                  </span>
                 </span>
-                <CommandShortcut>{nlExact.href}</CommandShortcut>
+                <CommandShortcut>{detected.kind}</CommandShortcut>
               </CommandItem>
             </CommandGroup>
           ) : null}
 
-          {askPrompt ? (
-            <CommandGroup heading="Ask Kairos">
-              <CommandItem value="ask-prompt" onSelect={() => askKairos(askPrompt)}>
-                <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
-                <span className="min-w-0 flex-1">
-                  <span className="block font-medium">Ask Kairos</span>
-                  <span className="block truncate text-xs text-muted">{askPrompt}</span>
-                </span>
-                <CommandShortcut>Chat</CommandShortcut>
-              </CommandItem>
-            </CommandGroup>
-          ) : null}
-
-          {!query.trim() && (recentNav.length > 0 || recentCommands.length > 0) ? (
+          {!query.trim() && recentActions.length > 0 ? (
             <CommandGroup heading="Recent">
-              {recentNav.map((target) => (
-                <CommandItem
-                  key={`recent-nav-${target!.id}`}
-                  value={`recent-nav-${target!.id}`}
-                  onSelect={() => navigate(target!.href, { navId: target!.id })}
-                >
-                  <Search className="h-3.5 w-3.5 text-primary" aria-hidden />
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-medium">{target!.label}</span>
-                    <span className="block text-xs text-muted">{target!.href}</span>
-                  </span>
-                </CommandItem>
-              ))}
-              {recentCommands.map((command) => (
-                <CommandItem
-                  key={`recent-cmd-${command!.id}`}
-                  value={`recent-cmd-${command!.id}`}
-                  onSelect={() =>
-                    navigate(command!.href, { commandId: command!.id })
-                  }
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-medium">{command!.label}</span>
-                    <span className="block text-xs text-muted">
-                      {command!.description}
-                    </span>
-                  </span>
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          ) : null}
-
-          {!query.trim() || suggestedFiltered.length > 0 ? (
-            <CommandGroup heading="Suggested">
-              {suggestedFiltered.map((item) => {
-                const Icon = item.icon;
+              {recentActions.map((action) => {
+                const Icon = iconForAction(action);
                 return (
                   <CommandItem
-                    key={`suggested-${item.href}`}
-                    value={`suggested-${item.label}`}
-                    onSelect={() => navigate(item.href)}
+                    key={`recent-${action.id}`}
+                    value={`recent-${action.id}`}
+                    onSelect={() => void executeAction(action)}
                   >
                     <Icon className="h-3.5 w-3.5 text-primary" aria-hidden />
-                    <span className="font-medium">{item.label}</span>
-                    <CommandShortcut>{item.href}</CommandShortcut>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-medium">{action.label}</span>
+                      <span className="block text-xs text-muted">
+                        {action.description}
+                      </span>
+                    </span>
                   </CommandItem>
                 );
               })}
             </CommandGroup>
           ) : null}
 
-          {query.trim() && nlMatches.length > 0 && !nlExact ? (
-            <CommandGroup heading="Navigate">
-              {nlMatches.map((target) => (
+          <CommandGroup heading={query.trim() ? "Actions" : "Suggested"}>
+            {(query.trim() ? matchedActions : suggested).map((action) => {
+              const Icon = iconForAction(action);
+              return (
                 <CommandItem
-                  key={`nav-${target.id}`}
-                  value={`nav-${target.id}-${target.label}`}
-                  onSelect={() => navigate(target.href, { navId: target.id })}
+                  key={`action-${action.id}-${action.label}`}
+                  value={`action-${action.id}-${action.label}`}
+                  onSelect={() => void executeAction(action)}
                 >
-                  <LayoutDashboard className="h-3.5 w-3.5 text-primary" aria-hidden />
+                  <Icon className="h-3.5 w-3.5 text-primary" aria-hidden />
                   <span className="min-w-0 flex-1">
-                    <span className="block font-medium">{target.label}</span>
-                    <span className="block text-xs text-muted">{target.description}</span>
+                    <span className="block font-medium">{action.label}</span>
+                    <span className="block text-xs text-muted">
+                      {action.description}
+                    </span>
                   </span>
-                  <CommandShortcut>{target.href}</CommandShortcut>
+                  <CommandShortcut>
+                    {action.kind === "external"
+                      ? "Advora"
+                      : action.href ?? action.kind}
+                  </CommandShortcut>
                 </CommandItem>
-              ))}
-            </CommandGroup>
-          ) : null}
+              );
+            })}
+          </CommandGroup>
 
           {results.length > 0 ? (
             <CommandGroup heading="Workspace search">
@@ -413,9 +406,14 @@ export function AppCommandPalette() {
                     key={`${result.module}-${result.id}`}
                     value={`search-${result.module}-${result.id}-${result.title}`}
                     onSelect={() =>
-                      navigate(result.href, {
-                        commandId:
-                          result.module === "command" ? result.id : undefined,
+                      void executeAction({
+                        id: `nav-result-${result.id}`,
+                        kind: "navigate",
+                        label: result.title,
+                        description: result.subtitle,
+                        confirmation: `Opening ${result.title}...`,
+                        href: result.href,
+                        keywords: [],
                       })
                     }
                   >
@@ -433,45 +431,29 @@ export function AppCommandPalette() {
             </CommandGroup>
           ) : null}
 
-          {!query.trim() ? (
-            <>
-              <CommandSeparator />
-              <CommandGroup heading="Pinned">
-                {pinnedFiltered.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <CommandItem
-                      key={`pinned-${item.href}`}
-                      value={`pinned-${item.label}`}
-                      onSelect={() => navigate(item.href)}
-                    >
-                      <Icon className="h-3.5 w-3.5 text-primary" aria-hidden />
-                      <span className="font-medium">{item.label}</span>
-                      <CommandShortcut>{item.href}</CommandShortcut>
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            </>
-          ) : null}
-
-          {query.trim() ? (
+          {query.trim() && !detected ? (
             <>
               <CommandSeparator />
               <CommandGroup heading="AI">
                 <CommandItem
                   value={`ask-freeform-${query}`}
-                  onSelect={runQueryAction}
+                  onSelect={() =>
+                    void executeAction({
+                      id: "ask-freeform",
+                      kind: "ask",
+                      label: "Ask Kairos",
+                      description: query,
+                      confirmation: "Opening Kairos...",
+                      href: `/chat?prompt=${encodeURIComponent(query.trim())}`,
+                      keywords: [],
+                    })
+                  }
                 >
                   <MessageSquare className="h-3.5 w-3.5 text-primary" aria-hidden />
                   <span className="min-w-0 flex-1">
-                    <span className="block font-medium">
-                      {nlExact ? nlExact.label : "Ask Kairos"}
-                    </span>
+                    <span className="block font-medium">Ask Kairos</span>
                     <span className="block truncate text-xs text-muted">
-                      {nlExact
-                        ? `Navigate to ${nlExact.href}`
-                        : `Send “${query.trim()}” to chat`}
+                      Send “{query.trim()}” to chat
                     </span>
                   </span>
                   <CommandShortcut>↵</CommandShortcut>
@@ -490,10 +472,10 @@ export function AppCommandPalette() {
             <span className="rounded border border-border/60 px-1.5 py-0.5 font-mono text-[10px]">
               ↵
             </span>
-            Open
+            Run
           </span>
           <span className="hidden sm:inline">
-            {pending ? "Searching…" : "Workspace · Kairos · Pages"}
+            {pending ? "Searching…" : "Navigate · Search · Create · Advora"}
           </span>
         </div>
       </Command>
