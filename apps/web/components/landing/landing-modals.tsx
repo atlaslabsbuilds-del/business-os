@@ -147,12 +147,16 @@ export function LandingModals() {
                   </li>
                 ))}
               </ul>
-              <Link href="/signup" className="mt-6 inline-block" onClick={closeOverlay}>
-                <Button className="gap-2">
-                  Connect in workspace
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Button>
-              </Link>
+              <Button
+                className="mt-6 gap-2"
+                onClick={() => {
+                  closeOverlay();
+                  openOverlay("waitlist");
+                }}
+              >
+                Join the Waitlist
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </Button>
             </>
           ) : (
             <p className="mt-6 rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3 text-sm text-secondary">
@@ -221,11 +225,15 @@ export function LandingModals() {
             >
               Watch live demo
             </Button>
-            <Link href="/signup" onClick={closeOverlay}>
-              <Button variant="secondary" className="w-full">
-                Start free
-              </Button>
-            </Link>
+            <Button
+              className="gap-2"
+              onClick={() => {
+                closeOverlay();
+                openOverlay("waitlist");
+              }}
+            >
+              Join the Waitlist
+            </Button>
           </div>
           <button
             type="button"
@@ -299,6 +307,7 @@ function BookDemoModal({ onClose }: { onClose: () => void }) {
 }
 
 function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
+  const { openOverlay } = useLandingInteractions();
   const [teamSize, setTeamSize] = useState(5);
   const [tools, setTools] = useState(8);
   const toolCost = tools * 29;
@@ -363,12 +372,16 @@ function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
         Plus ~{timeSavedHours} operator hours/month from unified inbox, CRM, and AI workflows (demo estimate).
       </p>
       <div className="mt-6 flex gap-2">
-        <Link href="/signup" onClick={onClose}>
-          <Button className="gap-2">
-            Start free
-            <Sparkles className="h-4 w-4" aria-hidden />
-          </Button>
-        </Link>
+        <Button
+          className="gap-2"
+          onClick={() => {
+            onClose();
+            openOverlay("waitlist");
+          }}
+        >
+          Join the Waitlist
+          <Sparkles className="h-4 w-4" aria-hidden />
+        </Button>
         <Button variant="secondary" onClick={onClose}>
           Close
         </Button>

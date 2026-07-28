@@ -25,9 +25,12 @@ import { Button } from "@repo/ui/button";
 import { COMPARISON_ROWS, PRICING_PLANS } from "../../lib/pricing";
 import { PlanCreditsBlock } from "../pricing/plan-credits-block";
 import { KairosAvatar } from "../kairos/kairos-avatar";
-import { StartFreeLink } from "./ai-assistant-widget";
+import { JoinWaitlistButton } from "./ai-assistant-widget";
 import { Reveal } from "./atmosphere";
 import { useLandingInteractions } from "./landing-interactions";
+import { WaitlistCounter } from "../waitlist/waitlist-counter";
+import { WaitlistSocialProof } from "../waitlist/waitlist-social-proof";
+import { useWaitlistStats } from "../waitlist/use-waitlist-stats";
 import { IntegrationsShowcase } from "./integrations-showcase";
 import { ProductMockup } from "./product-mockup";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
@@ -64,13 +67,6 @@ const responses: Record<string, string> = {
   "Analyze pipeline": "Negotiation stage is congested. Recommend follow-ups on Acme and Northwind before Friday.",
 };
 
-const testimonials = [
-  ["The first tool that feels like it understands the whole business.", "Maya Chen", "Founder, Northstar Studio"],
-  ["Our team stopped asking where things live. It is all in the workspace.", "Rafael Ortiz", "COO, Signal Works"],
-  ["The AI is useful because it has context—and because it can act.", "Aisha Patel", "Founder, Kindred Labs"],
-  ["We replaced a stack of tools with one operating rhythm.", "Jonah Lee", "Agency Owner, Frame & Co"],
-];
-
 const faqs: [string, string][] = [
   ["What is VanderBase?", "VanderBase is one AI-native platform with CRM, Inbox, Content, Calendar, Analytics, and Kairos in the same workspace."],
   ["What can I do on the Free plan?", "Start with one workspace, 25 AI credits/month, and the essentials across CRM, Inbox, and Content OS."],
@@ -80,49 +76,15 @@ const faqs: [string, string][] = [
 ];
 
 export function SocialProof() {
-  const [users, setUsers] = useState(1200);
-  const [gens, setGens] = useState(84000);
-  const [content, setContent] = useState(12600);
-  const [revenue, setRevenue] = useState(4.2);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setUsers((v) => v + 1);
-      setGens((v) => v + 17);
-      setContent((v) => v + 3);
-      setRevenue((v) => Number((v + 0.01).toFixed(2)));
-    }, 1400);
-    return () => window.clearInterval(timer);
-  }, []);
+  const { stats } = useWaitlistStats();
 
   return (
-    <section className="relative px-5 py-20 sm:px-8">
+    <section className="relative px-5 py-20 sm:px-8" id="waitlist">
       <div className="mx-auto max-w-7xl">
         <Reveal>
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-muted">
-            Growing with founders worldwide
-          </p>
-          <div className="mt-8 overflow-hidden">
-            <div className="landing-marquee-track flex gap-4">
-              {[...Array(2)].flatMap((_, copy) =>
-                ["Northstar", "Signal Works", "Kindred", "Frame & Co", "Orbit Labs", "Lumen Agency", "Harbor"].map(
-                  (name) => (
-                    <div
-                      key={`${name}-${copy}`}
-                      className="landing-glass flex h-14 min-w-36 items-center justify-center rounded-2xl px-5 text-sm text-secondary"
-                    >
-                      {name}
-                    </div>
-                  ),
-                ),
-              )}
-            </div>
-          </div>
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <Counter label="Beta operators" value={`${users.toLocaleString()}+`} />
-            <Counter label="AI generations" value={`${gens.toLocaleString()}+`} />
-            <Counter label="Content created" value={`${content.toLocaleString()}+`} />
-            <Counter label="Revenue managed" value={`$${revenue}M+`} />
+          <div className="mx-auto max-w-3xl text-center">
+            <WaitlistCounter count={stats.count} className="text-base sm:text-lg" />
+            <WaitlistSocialProof recent={stats.recent} count={stats.count} />
           </div>
         </Reveal>
       </div>
@@ -597,11 +559,11 @@ export function PricingSection() {
                       </Button>
                     </Link>
                   ) : (
-                    <StartFreeLink href={`/signup?plan=${plan.id}&cycle=${cycle}`} className="mt-5 block">
+                    <JoinWaitlistButton className="mt-5 block w-full">
                       <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
-                        {plan.id === "free" ? "Start free" : `Choose ${plan.name}`}
+                        Join the Waitlist
                       </Button>
-                    </StartFreeLink>
+                    </JoinWaitlistButton>
                   )}
                   <ul className="mt-5 space-y-2 border-t border-white/5 pt-5">
                     {plan.features.slice(0, 5).map((feature) => (
@@ -648,34 +610,34 @@ export function PricingSection() {
 }
 
 export function Testimonials() {
+  const { stats } = useWaitlistStats();
+
   return (
     <section className="relative px-5 py-20 sm:px-8">
       <div className="mx-auto max-w-7xl">
         <Reveal className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Testimonials</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Early access</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
-            Beta feedback from operators shipping every week.
+            Real founders. Real momentum. No fake social proof.
           </h2>
+          <p className="mt-4 text-sm leading-6 text-secondary">
+            VanderBase is in pre-launch. Every number on this page comes from verified waitlist signups — never fabricated testimonials or company logos.
+          </p>
         </Reveal>
-        <div className="mt-10 overflow-hidden">
-          <div className="landing-marquee-track flex gap-4">
-            {[...testimonials, ...testimonials].map(([quote, name, role], index) => (
-              <div
-                key={`${name}-${index}`}
-                className="landing-glass w-[320px] shrink-0 rounded-3xl p-6 sm:w-[380px]"
-              >
-                <p className="text-sm leading-6 text-foreground">“{quote}”</p>
-                <div className="mt-6 border-t border-white/5 pt-4">
-                  <p className="text-xs font-semibold">{name}</p>
-                  <p className="mt-1 text-xs text-muted">{role}</p>
-                  <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-primary">
-                    Video testimonial ready
-                  </p>
-                </div>
-              </div>
-            ))}
+        <Reveal className="mt-10">
+          <div className="landing-glass-strong landing-gradient-border rounded-[28px] px-6 py-10 text-center sm:px-10">
+            <WaitlistCounter count={stats.count} />
+            <WaitlistSocialProof recent={stats.recent} count={stats.count} />
+            <div className="mt-8 flex justify-center">
+              <JoinWaitlistButton>
+                <Button size="lg" className="gap-2">
+                  Join the Waitlist
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Button>
+              </JoinWaitlistButton>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -742,12 +704,12 @@ export function FinalCta() {
             <span className="block text-primary">Start Running Your Business.</span>
           </h2>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <StartFreeLink>
+            <JoinWaitlistButton>
               <Button size="lg" className="gap-2">
-                Start Free
+                Join the Waitlist
                 <ArrowRight className="h-4 w-4" aria-hidden />
               </Button>
-            </StartFreeLink>
+            </JoinWaitlistButton>
             <Button size="lg" variant="secondary" onClick={() => openOverlay("book-demo")}>
               Book Demo
             </Button>
@@ -823,14 +785,5 @@ export function LandingFooter() {
         ©️ 2026 VanderBase. All rights reserved.
       </p>
     </footer>
-  );
-}
-
-function Counter({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="landing-glass rounded-3xl p-5 text-center">
-      <p className="text-2xl font-semibold tracking-tight sm:text-3xl">{value}</p>
-      <p className="mt-2 text-xs uppercase tracking-[0.16em] text-muted">{label}</p>
-    </div>
   );
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@repo/ui/button";
-import { StartFreeLink } from "./ai-assistant-widget";
+import { JoinWaitlistButton } from "./ai-assistant-widget";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
 const links = [
@@ -74,9 +74,9 @@ export function LandingNavbar({
               Login
             </Button>
           </Link>
-          <StartFreeLink>
-            <Button size="sm">Start Free</Button>
-          </StartFreeLink>
+          <JoinWaitlistButton>
+            <Button size="sm">Join the Waitlist</Button>
+          </JoinWaitlistButton>
         </div>
       </div>
     </motion.header>

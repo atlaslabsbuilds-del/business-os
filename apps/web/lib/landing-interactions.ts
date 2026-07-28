@@ -7,7 +7,8 @@ export type OverlayId =
   | "exit-intent"
   | "credits-explainer"
   | "book-demo"
-  | "roi-calculator";
+  | "roi-calculator"
+  | "waitlist";
 
 export type ModulePreviewPayload = {
   id: string;
@@ -33,6 +34,7 @@ export type OverlayPayload = {
   "credits-explainer": undefined;
   "book-demo": undefined;
   "roi-calculator": undefined;
+  waitlist: undefined;
 };
 
 export const DEMO_ACTIVITY_EVENTS = [

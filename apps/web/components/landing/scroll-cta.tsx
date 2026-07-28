@@ -5,7 +5,7 @@ import { ArrowRight, Calculator, Sparkles, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@repo/ui/button";
 import { useLandingInteractions } from "./landing-interactions";
-import { StartFreeLink } from "./ai-assistant-widget";
+import { JoinWaitlistButton } from "./ai-assistant-widget";
 
 export function ScrollCta() {
   const { scrollY } = useScroll();
@@ -32,15 +32,15 @@ export function ScrollCta() {
               <Sparkles className="h-4 w-4 text-primary" aria-hidden />
               Ready to run the whole business from one OS?
             </p>
-            <p className="mt-1 text-xs text-secondary">Start free · 25 AI credits · no card required</p>
+            <p className="mt-1 text-xs text-secondary">Early access · Q4 2026 · no card required</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <StartFreeLink>
+            <JoinWaitlistButton>
               <Button size="sm" className="gap-1.5">
-                Start Free
+                Join the Waitlist
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden />
               </Button>
-            </StartFreeLink>
+            </JoinWaitlistButton>
             <Button
               size="sm"
               variant="secondary"

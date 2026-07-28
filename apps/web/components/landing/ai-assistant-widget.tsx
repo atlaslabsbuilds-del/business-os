@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minimize2, Send, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -193,19 +192,36 @@ export function AiAssistantWidget() {
   );
 }
 
+export function JoinWaitlistButton({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const { openOverlay, fireStartFreeConfetti } = useLandingInteractions();
+  return (
+    <button
+      type="button"
+      className={className}
+      onClick={() => {
+        fireStartFreeConfetti();
+        openOverlay("waitlist");
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** @deprecated Use JoinWaitlistButton */
 export function StartFreeLink({
   children,
   className = "",
-  href = "/signup",
 }: {
   children: React.ReactNode;
   className?: string;
   href?: string;
 }) {
-  const { fireStartFreeConfetti } = useLandingInteractions();
-  return (
-    <Link href={href} className={className} onClick={() => fireStartFreeConfetti()}>
-      {children}
-    </Link>
-  );
+  return <JoinWaitlistButton className={className}>{children}</JoinWaitlistButton>;
 }

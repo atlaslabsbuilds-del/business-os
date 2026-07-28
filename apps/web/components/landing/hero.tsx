@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import { Button } from "@repo/ui/button";
 import { MagneticButton, Reveal } from "./atmosphere";
-import { StartFreeLink } from "./ai-assistant-widget";
+import { JoinWaitlistButton } from "./ai-assistant-widget";
 import { ProductMockup } from "./product-mockup";
 
 const fadeUp = (delay = 0) => ({
@@ -59,12 +59,12 @@ export function LandingHero({
             className="mt-10 flex flex-wrap items-center justify-center gap-3.5 sm:mt-12 sm:gap-4"
           >
             <MagneticButton>
-              <StartFreeLink>
+              <JoinWaitlistButton>
                 <Button size="lg" className="gap-2">
-                  Start Free
+                  Join the Waitlist
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Button>
-              </StartFreeLink>
+              </JoinWaitlistButton>
             </MagneticButton>
             <MagneticButton>
               <Button size="lg" variant="secondary" onClick={onBookDemo}>

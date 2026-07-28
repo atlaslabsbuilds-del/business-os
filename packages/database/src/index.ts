@@ -163,6 +163,19 @@ export {
   updateAiReplyDraft,
 } from "./ai-reply-drafts";
 export {
+  WAITLIST_TEAM_SIZES,
+  getWaitlistCount,
+  getWaitlistStats,
+  getWaitlistEntryByReferralCode,
+  joinWaitlist,
+  getWaitlistSuccessData,
+  type WaitlistTeamSize,
+  type WaitlistEntry,
+  type WaitlistStats,
+  type WaitlistPublicSignup,
+  type WaitlistSuccessData,
+} from "./waitlist";
+export {
   getInboxAccountSecrets,
   getInboxAccountSecretsForSync,
   listGmailAccountSecrets,

@@ -7,7 +7,7 @@ import { Calculator, Calendar, Play, Search, Sparkles } from "lucide-react";
 import { useLandingInteractions } from "./landing-interactions";
 
 const items = [
-  { label: "Start Free", href: "/signup", group: "Actions", action: "start-free" as const },
+  { label: "Join the Waitlist", href: "#waitlist", group: "Actions", action: "waitlist" as const },
   { label: "Book Demo", href: "#book-demo", group: "Actions", action: "book-demo" as const },
   { label: "Watch Live Demo", href: "#demo", group: "Actions", action: "demo" as const },
   { label: "ROI Calculator", href: "#roi", group: "Actions", action: "roi" as const },
@@ -48,9 +48,9 @@ export function CommandPalette({
     else if (action === "credits") openOverlay("credits-explainer");
     else if (action === "assistant") toggleAssistant();
     else if (action === "theme") onToggleTheme();
-    else if (action === "start-free") {
+    else if (action === "waitlist") {
       fireStartFreeConfetti();
-      window.location.assign("/signup");
+      openOverlay("waitlist");
     }
     else if (href.startsWith("#")) {
       document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatedGlobe } from "./animated-globe";
 import { LandingAtmosphere, ScrollProgress } from "./atmosphere";
 import { AiAssistantWidget } from "./ai-assistant-widget";
@@ -10,7 +10,7 @@ import { LandingHero } from "./hero";
 import { InteractiveSandbox } from "./interactive-sandbox";
 import { LandingInteractionsProvider, useLandingInteractions } from "./landing-interactions";
 import { LandingModals } from "./landing-modals";
-import { LiveActivityFeed } from "./live-activity-feed";
+import { WaitlistModal } from "../waitlist/waitlist-modal";
 import { LiveDemo } from "./live-demo";
 import { LandingNavbar } from "./navbar";
 import { ScrollCta } from "./scroll-cta";
@@ -29,7 +29,6 @@ import {
   Testimonials,
   WorkflowAutomation,
 } from "./sections";
-import { TestimonialToasts } from "./testimonial-toasts";
 
 function LandingPageContent() {
   const { openOverlay, toggleAssistant, confettiNonce } = useLandingInteractions();
@@ -37,6 +36,20 @@ function LandingPageContent() {
 
   const unlockAssistant = useCallback(() => toggleAssistant(), [toggleAssistant]);
   useKonami(unlockAssistant);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const referral = params.get("ref")?.trim();
+    const joinWaitlist = params.get("join") === "waitlist";
+
+    if (referral) {
+      window.sessionStorage.setItem("vb_waitlist_ref", referral.toUpperCase());
+    }
+
+    if (referral || joinWaitlist) {
+      openOverlay("waitlist");
+    }
+  }, [openOverlay]);
 
   return (
     <div className="landing-root" data-accent={accent}>
@@ -69,11 +82,10 @@ function LandingPageContent() {
       <LandingFooter />
       <LiveDemo />
       <LandingModals />
+      <WaitlistModal />
       <CommandPalette onToggleTheme={() => setAccent((value) => (value === "default" ? "ember" : "default"))} />
       <AiAssistantWidget />
       <ScrollCta />
-      <TestimonialToasts />
-      <LiveActivityFeed />
       <ConfettiBurst nonce={confettiNonce} />
       <p className="sr-only">
         Press Cmd+K or slash to open command palette. Enter the Konami code for a hidden assistant easter egg.

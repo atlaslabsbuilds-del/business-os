@@ -1761,6 +1761,56 @@ export type Database = {
         };
         Relationships: [];
       };
+      waitlist: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          company: string | null;
+          team_size: string;
+          status: string;
+          referral_code: string;
+          referred_by: string | null;
+          share_company_publicly: boolean;
+          marketing_consent: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          company?: string | null;
+          team_size: string;
+          status?: string;
+          referral_code: string;
+          referred_by?: string | null;
+          share_company_publicly?: boolean;
+          marketing_consent?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          email?: string;
+          company?: string | null;
+          team_size?: string;
+          status?: string;
+          referral_code?: string;
+          referred_by?: string | null;
+          share_company_publicly?: boolean;
+          marketing_consent?: boolean;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_referred_by_fkey";
+            columns: ["referred_by"];
+            isOneToOne: false;
+            referencedRelation: "waitlist";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       calendar_booking_links: {
         Row: {
           id: string; workspace_id: string; created_by: string; name: string; slug: string;
