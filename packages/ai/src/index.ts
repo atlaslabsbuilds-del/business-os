@@ -6,6 +6,7 @@
  */
 
 export type * from "./types/ai";
+export { AiProviderError } from "./types/ai";
 export {
   aiMessageSchema,
   completionInputSchema,
@@ -24,6 +25,16 @@ export { createOpenAIProvider } from "./providers/openai";
 export { createAnthropicProvider } from "./providers/anthropic";
 export { createGeminiProvider } from "./providers/gemini";
 export { createGroqProvider } from "./providers/groq";
+export { normalizeProviderError } from "./providers/errors";
+
+export {
+  createTokenCounter,
+  estimateTokens,
+  estimateChatMessageTokens,
+} from "./tokens";
+export type { TokenCounter } from "./tokens";
+export { createInMemoryAiRateLimiter } from "./rate-limit";
+export type { InMemoryAiRateLimiterOptions } from "./rate-limit";
 
 export {
   DEFAULT_SYSTEM_PROMPT,

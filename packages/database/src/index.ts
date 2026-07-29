@@ -186,6 +186,12 @@ export {
   type WaitlistPublicSignup,
   type WaitlistSuccessData,
 } from "./waitlist";
+export {
+  getKairosMemoryContext,
+  rememberKairosPreference,
+  rememberKairosSessionContext,
+  type KairosSessionContextInput,
+} from "./kairos-memory";
 export { submitContactMessage, type ContactMessageInput } from "./contact";
 export {
   listFinanceInvoices,

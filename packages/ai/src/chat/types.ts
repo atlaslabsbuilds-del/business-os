@@ -24,6 +24,19 @@ export type ChatTurnInput = {
   model?: string;
   provider?: AiProviderId;
   regenerate?: boolean;
+  kairosContext?: {
+    currentPage?: string;
+    selectedCustomer?: {
+      id: string;
+      name?: string;
+      email?: string;
+    };
+    selectedRecords?: Array<{
+      type: string;
+      id: string;
+      label?: string;
+    }>;
+  };
 };
 
 export type ChatTurnResult = {

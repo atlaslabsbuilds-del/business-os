@@ -1,4 +1,10 @@
-import type { AiCost, AiLogger, AiUsage, ModelRoute } from "./types/ai";
+import type {
+  AiCost,
+  AiLogger,
+  AiProviderError,
+  AiUsage,
+  ModelRoute,
+} from "./types/ai";
 
 export function createConsoleLogger(namespace = "@repo/ai"): AiLogger {
   const prefix = `[${namespace}]`;
@@ -106,6 +112,9 @@ export async function withRetry<T>(
 }
 
 function isRetryableError(error: unknown): boolean {
+  if (error && typeof error === "object" && "retryable" in error) {
+    return Boolean((error as AiProviderError).retryable);
+  }
   if (!(error instanceof Error)) {
     return false;
   }

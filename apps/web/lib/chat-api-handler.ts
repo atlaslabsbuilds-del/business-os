@@ -17,10 +17,16 @@ import {
 } from "@repo/database/chat";
 import { deductWorkspaceCredits } from "@repo/database/credits";
 import { getMembershipRole } from "@repo/database/workspace";
+import {
+  getKairosMemoryContext,
+  rememberKairosSessionContext,
+} from "@repo/database";
 import { chatStreamRequestSchema } from "@repo/types";
+import type { WorkspaceMembership } from "@repo/types";
 import { resolveActiveWorkspace } from "./workspace-context";
-
-const gateway = createChatGateway();
+import {
+  buildKairosContext,
+} from "./kairos-context-engine";
 
 const chatRepo: ChatRepository = {
   async getConversation(conversationId) {
@@ -65,6 +71,18 @@ const creditRepo: CreditRepository = {
   },
 };
 
+export type ChatApiDependencies = {
+  gateway: ReturnType<typeof createChatGateway>;
+  chatRepo: ChatRepository;
+  creditRepo: CreditRepository;
+};
+
+export const defaultChatApiDependencies: ChatApiDependencies = {
+  gateway: createChatGateway(),
+  chatRepo,
+  creditRepo,
+};
+
 function providerConfigured(): boolean {
   return Boolean(
     process.env.OPENAI_API_KEY ||
@@ -75,7 +93,10 @@ function providerConfigured(): boolean {
   );
 }
 
-export async function handleChatStreamRequest(request: Request) {
+export async function handleChatStreamRequest(
+  request: Request,
+  dependencies: ChatApiDependencies = defaultChatApiDependencies,
+) {
   const user = await getUser();
   if (!user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -129,10 +150,21 @@ export async function handleChatStreamRequest(request: Request) {
   }
 
   const chat = createChatService({
-    gateway,
-    chatRepo,
-    creditRepo,
+    gateway: dependencies.gateway,
+    chatRepo: dependencies.chatRepo,
+    creditRepo: dependencies.creditRepo,
     workspaceName: context.active.workspace.name,
+    memoryContext: await buildMemoryContext({
+      workspaceId: context.active.workspace.id,
+      userId: user.id,
+      workspaceName: context.active.workspace.name,
+      currentPage: parsed.data.kairosContext?.currentPage,
+      selectedCustomer: parsed.data.kairosContext?.selectedCustomer,
+      selectedRecords: parsed.data.kairosContext?.selectedRecords,
+      memberships: context.memberships,
+      workspace: context.active,
+      email: context.email,
+    }),
   });
 
   try {
@@ -144,6 +176,7 @@ export async function handleChatStreamRequest(request: Request) {
       model: parsed.data.model,
       provider: parsed.data.provider,
       regenerate: parsed.data.regenerate,
+      kairosContext: parsed.data.kairosContext,
     });
 
     return createSseResponse(stream);
@@ -157,5 +190,52 @@ export async function handleChatStreamRequest(request: Request) {
       { error: "Chat failed. Please try again." },
       { status: 500 },
     );
+  }
+}
+
+async function buildMemoryContext(input: {
+  workspaceId: string;
+  userId: string;
+  workspaceName: string;
+  currentPage?: string;
+  selectedCustomer?: {
+    id: string;
+    name?: string;
+    email?: string;
+  };
+  selectedRecords?: Array<{
+    type: string;
+    id: string;
+    label?: string;
+  }>;
+  memberships: WorkspaceMembership[];
+  workspace: WorkspaceMembership;
+  email: string | null;
+}): Promise<string | undefined> {
+  try {
+    const [memory, appContext] = await Promise.all([
+      (async () => {
+        await rememberKairosSessionContext(input);
+        return getKairosMemoryContext(input);
+      })(),
+      buildKairosContext({
+        userId: input.userId,
+        userEmail: input.email,
+        workspace: input.workspace,
+        memberships: input.memberships,
+        currentRoute: input.currentPage,
+        selectedRecords: input.selectedRecords,
+      }),
+    ]);
+    return JSON.stringify({
+      memory,
+      contextEngine: appContext,
+    });
+  } catch (error) {
+    // Memory is an enhancement; a database/migration issue must not prevent chat.
+    console.warn("[kairos.memory] unavailable", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return undefined;
   }
 }

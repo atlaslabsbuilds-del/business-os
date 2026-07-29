@@ -38,6 +38,7 @@ function mapSettings(row: SettingsRow): WorkspaceAiSettings {
 export async function listWorkspaceAiMemory(input: {
   workspaceId: string;
   sourceModule?: string;
+  userId?: string;
   limit?: number;
   client?: SupabaseClient<Database>;
 }): Promise<WorkspaceAiMemory[]> {
@@ -52,6 +53,9 @@ export async function listWorkspaceAiMemory(input: {
 
   if (input.sourceModule) {
     builder = builder.eq("source_module", input.sourceModule);
+  }
+  if (input.userId) {
+    builder = builder.eq("created_by", input.userId);
   }
 
   const { data, error } = await builder;

@@ -225,6 +225,14 @@ export {
 } from "./chat";
 
 export type {
+  KairosCustomerContext,
+  KairosSelectedRecord,
+  KairosMemoryContext,
+  KairosMemoryRecord,
+  KairosSemanticSearchAdapter,
+} from "./kairos-memory";
+
+export type {
   CrmLifecycleStage,
   CrmDealStage,
   CrmActivityType,

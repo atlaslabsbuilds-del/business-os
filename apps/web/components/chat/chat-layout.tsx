@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@repo/ui/button";
 import { IconMenu } from "@repo/ui/icons";
 import type { ChatConversation, ChatMessage } from "@repo/types";
@@ -63,6 +64,9 @@ export function ChatLayout({
   variant = "page",
   streamEndpoint = "/api/chat/stream",
 }: ChatLayoutProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const selectedCustomerId = searchParams.get("customerId") ?? undefined;
   const [conversations, setConversations] = React.useState(initialConversations);
   const [activeId, setActiveId] = React.useState<string | undefined>(
     initialConversationId,
@@ -78,6 +82,12 @@ export function ChatLayout({
   const [usageLabel, setUsageLabel] = React.useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [isOnline, setIsOnline] = React.useState(true);
+  const [lastAttempt, setLastAttempt] = React.useState<{
+    message: string;
+    conversationId?: string;
+    regenerate?: boolean;
+  } | null>(null);
   const [kairosPhase, setKairosPhase] = React.useState<"success" | "completed" | null>(null);
   const abortRef = React.useRef<AbortController | null>(null);
   const searchTimer = React.useRef<number | null>(null);
@@ -88,6 +98,18 @@ export function ChatLayout({
     if (result.ok) {
       setConversations(result.data.conversations);
     }
+  }, []);
+
+  React.useEffect(() => {
+    setIsOnline(navigator.onLine);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
   }, []);
 
   React.useEffect(() => {
@@ -138,7 +160,12 @@ export function ChatLayout({
     conversationId?: string;
     regenerate?: boolean;
   }) {
+    if (!isOnline) {
+      setError("You are offline. Reconnect to continue chatting with Kairos.");
+      return;
+    }
     setError(null);
+    setLastAttempt(input);
     setIsStreaming(true);
     setStreamingContent("");
     setUsageLabel(null);
@@ -171,6 +198,15 @@ export function ChatLayout({
           regenerate: input.regenerate,
           signal: controller.signal,
           endpoint: streamEndpoint,
+          kairosContext: {
+            currentPage: pathname,
+            selectedCustomer: selectedCustomerId
+              ? { id: selectedCustomerId }
+              : undefined,
+            selectedRecords: selectedCustomerId
+              ? [{ type: "customer", id: selectedCustomerId }]
+              : undefined,
+          },
         },
         {
           onEvent(event) {
@@ -233,6 +269,7 @@ export function ChatLayout({
           ]);
         }
       } else {
+        setDraft(input.message);
         setError(
           streamError instanceof Error ? streamError.message : "Stream failed",
         );
@@ -256,6 +293,11 @@ export function ChatLayout({
     if (!text || isStreaming) return;
     setKairosPhase(null);
     await runStream({ message: text, conversationId: activeId });
+  }
+
+  async function handleRetry() {
+    if (!lastAttempt || isStreaming) return;
+    await runStream(lastAttempt);
   }
 
   async function handleRegenerate() {
@@ -377,9 +419,19 @@ export function ChatLayout({
           </header>
         )}
 
+        {!isOnline ? (
+          <div className="border-b border-warning/30 bg-warning/10 px-4 py-2 text-sm text-warning sm:px-6" role="status">
+            You&apos;re offline. Kairos will be ready when your connection returns.
+          </div>
+        ) : null}
         {error ? (
-          <div className="border-b border-error/30 bg-error/10 px-4 py-2 text-sm text-error sm:px-6">
-            {error}
+          <div className="flex items-center justify-between gap-3 border-b border-error/30 bg-error/10 px-4 py-2 text-sm text-error sm:px-6" role="alert">
+            <span>{error}</span>
+            {lastAttempt ? (
+              <Button type="button" variant="secondary" size="sm" onClick={() => void handleRetry()} disabled={!isOnline || isStreaming}>
+                Retry
+              </Button>
+            ) : null}
           </div>
         ) : null}
 
@@ -427,6 +479,7 @@ export function ChatLayout({
           onChange={setDraft}
           onSubmit={handleSubmit}
           onStop={handleStop}
+          disabled={!isOnline}
           isStreaming={isStreaming}
           models={models}
           model={model}

@@ -67,7 +67,18 @@ export function ConversationList({
   return (
     <>
       <div className="space-y-1 p-2">
-        {conversations.map((conversation) => {
+        {(["Pinned", "Recent"] as const).map((section) => {
+          const sectionConversations = conversations.filter((conversation) =>
+            section === "Pinned" ? conversation.pinned : !conversation.pinned,
+          );
+          if (sectionConversations.length === 0) return null;
+
+          return (
+            <React.Fragment key={section}>
+              <p className="px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted first:pt-1">
+                {section}
+              </p>
+              {sectionConversations.map((conversation) => {
           const active = conversation.id === activeId;
           return (
             <div
@@ -133,6 +144,9 @@ export function ConversationList({
                 <span className="pr-2 text-[10px] text-muted">…</span>
               ) : null}
             </div>
+          );
+              })}
+            </React.Fragment>
           );
         })}
       </div>

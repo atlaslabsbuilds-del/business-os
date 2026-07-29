@@ -37,3 +37,9 @@ export type {
   ConversationMemorySnapshot,
   MemoryCleanupResult,
 } from "./types";
+
+export {
+  createKairosMemoryService,
+  type KairosMemoryPersistence,
+  type KairosMemoryService,
+} from "./kairos-service";

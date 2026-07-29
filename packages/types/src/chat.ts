@@ -3,6 +3,14 @@ import { z } from "zod";
 export type ChatProviderId = "openai" | "anthropic" | "gemini" | "groq";
 export type ChatMessageRole = "system" | "user" | "assistant" | "tool";
 
+export type ChatAttachment = {
+  id: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  url?: string;
+};
+
 export type ChatConversation = {
   id: string;
   workspaceId: string;
@@ -24,7 +32,12 @@ export type ChatMessage = {
   inputTokens: number;
   outputTokens: number;
   createdAt: string;
+  attachments?: ChatAttachment[];
 };
+
+export type Conversation = ChatConversation;
+export type Message = ChatMessage;
+export type Attachment = ChatAttachment;
 
 export type WorkspaceCredits = {
   workspaceId: string;
@@ -61,6 +74,28 @@ export const chatStreamRequestSchema = z.object({
   model: z.string().min(1).optional(),
   provider: chatProviderSchema.optional(),
   regenerate: z.boolean().optional(),
+  kairosContext: z
+    .object({
+      currentPage: z.string().max(500).optional(),
+      selectedCustomer: z
+        .object({
+          id: z.string().max(200),
+          name: z.string().max(200).optional(),
+          email: z.string().email().max(320).optional(),
+        })
+        .optional(),
+      selectedRecords: z
+        .array(
+          z.object({
+            type: z.string().max(80),
+            id: z.string().max(200),
+            label: z.string().max(200).optional(),
+          }),
+        )
+        .max(10)
+        .optional(),
+    })
+    .optional(),
 });
 
 export const pinConversationSchema = z.object({

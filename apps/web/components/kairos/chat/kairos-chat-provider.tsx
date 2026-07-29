@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useEffect } from "react";
 
 type KairosChatContextValue = {
   isOpen: boolean;
@@ -50,6 +51,25 @@ export function KairosChatProvider({ children }: { children: ReactNode }) {
     }),
     [isOpen, initialPrompt, openChat, closeChat, toggleChat],
   );
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        event.stopPropagation();
+        setInitialPrompt(undefined);
+        setIsOpen(true);
+      }
+      if (event.key === "Escape" && isOpen) {
+        event.preventDefault();
+        setIsOpen(false);
+        setInitialPrompt(undefined);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [isOpen]);
 
   return (
     <KairosChatContext.Provider value={value}>{children}</KairosChatContext.Provider>

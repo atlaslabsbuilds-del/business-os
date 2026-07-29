@@ -273,6 +273,7 @@ export async function listContacts(input: {
   query?: string;
   stage?: CrmLifecycleStage;
   companyId?: string;
+  limit?: number;
   client?: SupabaseClient<Database>;
 }): Promise<CrmContact[]> {
   const supabase = await clientOrDefault(input.client);
@@ -288,6 +289,9 @@ export async function listContacts(input: {
     builder = builder.or(
       `first_name.ilike.%${input.query}%,last_name.ilike.%${input.query}%,email.ilike.%${input.query}%`,
     );
+  }
+  if (input.limit !== undefined) {
+    builder = builder.limit(input.limit);
   }
 
   const { data, error } = await builder;

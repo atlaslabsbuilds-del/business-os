@@ -28,6 +28,7 @@ export function KairosChatPanel() {
   const [bootstrap, setBootstrap] = useState<PanelBootstrap | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -74,7 +75,7 @@ export function KairosChatPanel() {
     return () => {
       cancelled = true;
     };
-  }, [isOpen]);
+  }, [isOpen, retryNonce]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -147,15 +148,25 @@ export function KairosChatPanel() {
             <div className="min-h-0 flex-1">
               {loading ? (
                 <div className="flex h-full flex-col items-center justify-center gap-3">
+                  <div className="w-full max-w-xl space-y-3 px-6" aria-hidden>
+                    <div className="h-4 w-32 animate-pulse rounded bg-elevated" />
+                    <div className="h-4 w-full animate-pulse rounded bg-elevated" />
+                    <div className="h-4 w-4/5 animate-pulse rounded bg-elevated" />
+                  </div>
                   <Spinner label="Loading Kairos" />
                   <p className="text-sm text-secondary">Preparing your assistant…</p>
                 </div>
               ) : error ? (
                 <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
                   <p className="text-sm text-error">{error}</p>
-                  <Button type="button" variant="secondary" onClick={closeChat}>
-                    Close
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button type="button" variant="secondary" onClick={() => setRetryNonce((value) => value + 1)}>
+                      Retry
+                    </Button>
+                    <Button type="button" variant="ghost" onClick={closeChat}>
+                      Close
+                    </Button>
+                  </div>
                 </div>
               ) : bootstrap ? (
                 <ChatLayout

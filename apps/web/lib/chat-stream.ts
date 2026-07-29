@@ -1,4 +1,5 @@
 import type { ChatStreamEvent } from "@repo/ai";
+import type { KairosCustomerContext, KairosSelectedRecord } from "@repo/types";
 
 export type StreamChatInput = {
   conversationId?: string;
@@ -8,6 +9,11 @@ export type StreamChatInput = {
   regenerate?: boolean;
   signal?: AbortSignal;
   endpoint?: string;
+  kairosContext?: {
+    currentPage?: string;
+    selectedCustomer?: KairosCustomerContext;
+    selectedRecords?: KairosSelectedRecord[];
+  };
 };
 
 export type StreamChatCallbacks = {
@@ -28,6 +34,7 @@ export async function streamChatRequest(
       model: input.model,
       provider: input.provider,
       regenerate: input.regenerate,
+      kairosContext: input.kairosContext,
     }),
     signal: input.signal,
   });

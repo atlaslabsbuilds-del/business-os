@@ -5,6 +5,10 @@ import {
   getDashboardSnapshot,
 } from "@repo/database/dashboard";
 import {
+  getKairosMemoryContext,
+  rememberKairosPreference,
+} from "@repo/database";
+import {
   countUnreadNotificationsForUser,
   listNotificationsForUser,
 } from "@repo/database/notifications";
@@ -191,6 +195,60 @@ export async function rememberWorkspaceFactAction(
         error instanceof Error
           ? error.message
           : "Failed to save workspace memory",
+    };
+  }
+}
+
+export async function kairosMemoryContextAction(input?: {
+  currentPage?: string;
+  selectedCustomer?: { id: string; name?: string; email?: string };
+}): Promise<PlatformActionResult<Awaited<ReturnType<typeof getKairosMemoryContext>>>> {
+  const context = await resolveActiveWorkspace();
+  if (!context) {
+    return { ok: false, error: "Workspace required" };
+  }
+
+  try {
+    const memory = await getKairosMemoryContext({
+      workspaceId: context.active.workspace.id,
+      userId: context.userId,
+      workspaceName: context.active.workspace.name,
+      currentPage: input?.currentPage,
+      selectedCustomer: input?.selectedCustomer,
+    });
+    return { ok: true, data: memory };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Failed to load Kairos memory",
+    };
+  }
+}
+
+export async function rememberKairosPreferenceAction(input: {
+  key: string;
+  value: unknown;
+}): Promise<PlatformActionResult<{ saved: true }>> {
+  if (!input.key.trim()) {
+    return { ok: false, error: "Preference key is required" };
+  }
+  const context = await resolveActiveWorkspace();
+  if (!context) {
+    return { ok: false, error: "Workspace required" };
+  }
+
+  try {
+    await rememberKairosPreference({
+      workspaceId: context.active.workspace.id,
+      userId: context.userId,
+      key: input.key.trim(),
+      value: input.value,
+    });
+    return { ok: true, data: { saved: true } };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Failed to save Kairos preference",
     };
   }
 }

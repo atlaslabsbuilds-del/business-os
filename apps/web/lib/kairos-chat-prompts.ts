@@ -1,7 +1,10 @@
 export const KAIROS_SUGGESTED_PROMPTS = [
-  "Summarize today's activity",
-  "Show recent customers",
-  "Create a new deal",
+  "Summarize today's business",
+  "Show new customers",
+  "Create a deal",
+  "Create an invoice",
   "Analyze revenue",
-  "Draft an email",
+  "Schedule a meeting",
+  "Draft a follow-up email",
+  "Build a marketing campaign",
 ] as const;

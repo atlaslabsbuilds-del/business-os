@@ -5,6 +5,7 @@ import { createGroqProvider } from "../providers/groq";
 import { createOpenAIProvider } from "../providers/openai";
 import type { ToolRegistry } from "../tools/registry";
 import type { ToolExecutionContext } from "../tools/permissions";
+import { AiProviderError } from "../types/ai";
 import type {
   AiCompletionRequest,
   AiCompletionResponse,
@@ -18,6 +19,7 @@ import type {
   ProviderConfig,
   RoutingStrategy,
 } from "../types/ai";
+import { normalizeProviderError } from "../providers/errors";
 import { createConsoleLogger, withRetry } from "../utils";
 import { getModelRoute, listModels, resolveRoute } from "./router";
 import { completeWithTools, streamWithTools, type ToolLoopRequest } from "./tool-loop";
@@ -30,6 +32,7 @@ export type GatewayCompletionRequest = Omit<AiCompletionRequest, "model"> & {
   toolContext?: ToolExecutionContext;
   toolNames?: string[];
   maxToolRounds?: number;
+  rateLimitKey?: string;
 };
 
 export type AiGateway = {
@@ -61,6 +64,7 @@ export function createGateway(options: CreateGatewayInput = {}): AiGateway {
   const logger: AiLogger = options.logger ?? createConsoleLogger();
   const maxRetries = options.maxRetries ?? 2;
   const maxToolRounds = options.maxToolRounds ?? 8;
+  const rateLimiter = options.rateLimiter;
 
   const providers: Record<AiProviderId, AiProvider> = {
     openai: createOpenAIProvider(options.providers?.openai),
@@ -87,6 +91,29 @@ export function createGateway(options: CreateGatewayInput = {}): AiGateway {
     return request.registry ?? options.tools;
   }
 
+  function enforceRateLimit(request: GatewayCompletionRequest): void {
+    if (!rateLimiter || !request.rateLimitKey) return;
+    const result = rateLimiter.check(request.rateLimitKey);
+    if (!result.allowed) {
+      throw new AiProviderError("AI rate limit exceeded.", {
+        code: "rate_limited",
+        retryable: true,
+        retryAfterSeconds: result.retryAfterSeconds,
+      });
+    }
+  }
+
+  async function invokeProvider<T>(
+    provider: AiProvider,
+    operation: () => Promise<T>,
+  ): Promise<T> {
+    try {
+      return await operation();
+    } catch (error) {
+      throw normalizeProviderError(error, provider.id);
+    }
+  }
+
   function toToolLoopRequest(
     request: GatewayCompletionRequest,
     routeModel: string,
@@ -109,6 +136,7 @@ export function createGateway(options: CreateGatewayInput = {}): AiGateway {
     },
 
     async complete(request) {
+      enforceRateLimit(request);
       const route = pickRoute({
         model: request.model,
         provider: request.provider,
@@ -133,19 +161,23 @@ export function createGateway(options: CreateGatewayInput = {}): AiGateway {
       const response = hasTools
         ? await withRetry(
             () =>
-              completeWithTools({
+              invokeProvider(provider, () =>
+                completeWithTools({
                 provider,
                 request: toToolLoopRequest(request, route.model, registry),
                 maxToolRounds,
-              }),
+                }),
+              ),
             { maxRetries, logger, label: "completeWithTools" },
           )
         : await withRetry(
             () =>
-              provider.complete({
-                ...request,
-                model: route.model,
-              }),
+              invokeProvider(provider, () =>
+                provider.complete({
+                  ...request,
+                  model: route.model,
+                }),
+              ),
             { maxRetries, logger, label: "complete" },
           );
 
@@ -161,6 +193,7 @@ export function createGateway(options: CreateGatewayInput = {}): AiGateway {
     },
 
     async *stream(request) {
+      enforceRateLimit(request);
       const route = pickRoute({
         model: request.model,
         provider: request.provider,
@@ -182,19 +215,23 @@ export function createGateway(options: CreateGatewayInput = {}): AiGateway {
         tools: hasTools,
       });
 
-      if (hasTools) {
-        yield* streamWithTools({
-          provider,
-          request: toToolLoopRequest(request, route.model, registry),
-          maxToolRounds,
-        });
-        return;
-      }
+      try {
+        if (hasTools) {
+          yield* streamWithTools({
+            provider,
+            request: toToolLoopRequest(request, route.model, registry),
+            maxToolRounds,
+          });
+          return;
+        }
 
-      yield* provider.stream({
-        ...request,
-        model: route.model,
-      });
+        yield* provider.stream({
+          ...request,
+          model: route.model,
+        });
+      } catch (error) {
+        throw normalizeProviderError(error, provider.id);
+      }
     },
 
     async embed(request) {

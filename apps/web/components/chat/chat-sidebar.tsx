@@ -57,7 +57,7 @@ export function ChatSidebar({
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-2">
             <IconSparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold">AI Chat</span>
+            <span className="text-sm font-semibold">Kairos</span>
           </div>
           <Badge variant="accent">{creditBalance.toLocaleString()} credits</Badge>
         </div>

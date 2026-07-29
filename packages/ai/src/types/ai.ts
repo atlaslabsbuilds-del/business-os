@@ -3,6 +3,43 @@ import { z } from "zod";
 /** Supported model providers. */
 export type AiProviderId = "openai" | "anthropic" | "gemini" | "groq";
 
+export type AiProviderErrorCode =
+  | "not_configured"
+  | "authentication"
+  | "rate_limited"
+  | "invalid_request"
+  | "unavailable"
+  | "timeout"
+  | "unknown";
+
+export class AiProviderError extends Error {
+  readonly code: AiProviderErrorCode;
+  readonly provider?: AiProviderId;
+  readonly status?: number;
+  readonly retryable: boolean;
+  readonly retryAfterSeconds?: number;
+
+  constructor(
+    message: string,
+    options: {
+      code?: AiProviderErrorCode;
+      provider?: AiProviderId;
+      status?: number;
+      retryable?: boolean;
+      retryAfterSeconds?: number;
+      cause?: unknown;
+    } = {},
+  ) {
+    super(message, { cause: options.cause });
+    this.name = "AiProviderError";
+    this.code = options.code ?? "unknown";
+    this.provider = options.provider;
+    this.status = options.status;
+    this.retryable = options.retryable ?? false;
+    this.retryAfterSeconds = options.retryAfterSeconds;
+  }
+}
+
 export type AiMessageRole = "system" | "user" | "assistant" | "tool";
 
 export type AiTextPart = {
@@ -260,6 +297,16 @@ export type GatewayOptions = {
   maxRetries?: number;
   timeoutMs?: number;
   logger?: AiLogger;
+  rateLimiter?: AiRateLimiter;
+};
+
+export type AiRateLimitResult = {
+  allowed: boolean;
+  retryAfterSeconds: number;
+};
+
+export type AiRateLimiter = {
+  check: (key: string) => AiRateLimitResult;
 };
 
 export type AiLogger = {
@@ -281,6 +328,10 @@ export interface AiProvider {
   stream(request: AiCompletionRequest): AsyncIterable<AiStreamChunk>;
   embed?(request: EmbeddingRequest): Promise<EmbeddingResponse>;
 }
+
+/** Alias used by application code when injecting a provider implementation. */
+export type AiProviderAdapter = AiProvider;
+export type AiProviderRegistry = Readonly<Record<AiProviderId, AiProviderAdapter>>;
 
 export interface MemoryStore {
   getSession(sessionId: string): Promise<MemorySession | null>;

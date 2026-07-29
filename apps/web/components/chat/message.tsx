@@ -4,6 +4,8 @@ import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Copy, Check } from "lucide-react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Button } from "@repo/ui/button";
 import { cn } from "@repo/ui/utils";
 import type { ChatMessage } from "@repo/types";
@@ -50,9 +52,20 @@ function CodeBlock({
           {copied ? "Copied" : "Copy"}
         </Button>
       </div>
-      <pre className="overflow-x-auto p-4 text-[13px] leading-relaxed text-foreground/90">
-        <code>{code}</code>
-      </pre>
+      <SyntaxHighlighter
+        language={language === "code" ? "text" : language}
+        style={oneDark}
+        customStyle={{
+          margin: 0,
+          padding: "1rem",
+          background: "transparent",
+          fontSize: "13px",
+          lineHeight: 1.6,
+        }}
+        codeTagProps={{ style: { fontFamily: "inherit" } }}
+      >
+        {code}
+      </SyntaxHighlighter>
     </div>
   );
 }
@@ -119,6 +132,16 @@ export function Message({
             </ReactMarkdown>
           )}
         </div>
+        <time
+          dateTime={message.createdAt}
+          className="text-[10px] text-muted/70"
+          title={new Date(message.createdAt).toLocaleString()}
+        >
+          {new Date(message.createdAt).toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+          })}
+        </time>
         <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
           {!isUser && message.content.trim() ? (
             <Button type="button" variant="ghost" size="sm" onClick={copyMessage}>

@@ -1,7 +1,11 @@
 import type { AiGateway } from "../gateway";
 import { creditEngine } from "../credits/engine";
 import { emptyCost, emptyUsage } from "../utils";
-import type { AiProviderId, AiStreamChunk } from "../types/ai";
+import {
+  AiProviderError,
+  type AiProviderId,
+  type AiStreamChunk,
+} from "../types/ai";
 import {
   buildChatSystemPrompt,
   buildGatewayMessages,
@@ -65,11 +69,13 @@ export type ChatServiceDeps = {
   chatRepo: ChatRepository;
   creditRepo: CreditRepository;
   workspaceName?: string;
+  memoryContext?: string;
 };
 
 export function createChatService(deps: ChatServiceDeps) {
   const systemPrompt = buildChatSystemPrompt({
     workspaceName: deps.workspaceName,
+    memoryContext: deps.memoryContext,
   });
 
   async function prepareTurn(input: ChatTurnInput) {
@@ -218,6 +224,12 @@ export function createChatService(deps: ChatServiceDeps) {
             }
             if (chunk.type === "done") {
               usageChunk = chunk;
+            }
+            if (chunk.type === "error") {
+              throw new AiProviderError(chunk.error, {
+                provider: selection.provider,
+                code: "unknown",
+              });
             }
           }
 

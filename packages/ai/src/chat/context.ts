@@ -27,12 +27,16 @@ export function buildChatContext(input: BuildChatContextInput): ChatContext {
 export function buildChatSystemPrompt(input: {
   workspaceName?: string;
   systemPrompt?: string;
+  memoryContext?: string;
 }): string {
   const base = input.systemPrompt?.trim() || DEFAULT_SYSTEM_PROMPT;
-  if (!input.workspaceName) {
-    return base;
-  }
-  return `${base}\n\nActive workspace: ${input.workspaceName}.`;
+  const workspace = input.workspaceName
+    ? `\n\nActive workspace: ${input.workspaceName}.`
+    : "";
+  const memory = input.memoryContext
+    ? `\n\nKairos memory context (use as context, never invent missing facts):\n${input.memoryContext}`
+    : "";
+  return `${base}${workspace}${memory}`;
 }
 
 export async function buildGatewayMessages(input: {
