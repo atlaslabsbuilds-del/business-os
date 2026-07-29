@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import { createBrowserClient } from "@repo/database/browser";
 import type { NotificationListItem } from "@repo/types";
 import {
@@ -32,6 +33,100 @@ function mapRow(row: Record<string, unknown>): NotificationListItem {
   };
 }
 
+type NotificationCallbacks = {
+  onInsert?: (notification: NotificationListItem) => void;
+  onUnreadCountChange?: (count: number) => void;
+};
+
+type SharedChannel = {
+  supabase: ReturnType<typeof createBrowserClient>;
+  channel: RealtimeChannel;
+  workspaceId: string;
+  userId: string;
+  refCount: number;
+};
+
+const sharedChannels = new Map<string, SharedChannel>();
+const sharedListeners = new Map<string, Set<RefObject<NotificationCallbacks>>>();
+
+function channelKey(workspaceId: string, userId: string) {
+  return `${workspaceId}:${userId}`;
+}
+
+function dispatchInsert(key: string, notification: NotificationListItem) {
+  for (const callbacks of sharedListeners.get(key) ?? []) {
+    callbacks.current.onInsert?.(notification);
+  }
+}
+
+function dispatchUnreadCount(key: string, count: number) {
+  for (const callbacks of sharedListeners.get(key) ?? []) {
+    callbacks.current.onUnreadCountChange?.(count);
+  }
+}
+
+function acquireNotificationsChannel(workspaceId: string, userId: string) {
+  const key = channelKey(workspaceId, userId);
+  const existing = sharedChannels.get(key);
+  if (existing) {
+    existing.refCount += 1;
+    return key;
+  }
+
+  const supabase = createBrowserClient();
+  const channel = supabase
+    .channel(`notifications:${key}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "INSERT",
+        schema: "public",
+        table: "workspace_notifications",
+        filter: `workspace_id=eq.${workspaceId}`,
+      },
+      (payload) => {
+        const row = payload.new as Record<string, unknown>;
+        const recipient = row.recipient_user_id
+          ? String(row.recipient_user_id)
+          : null;
+        if (recipient && recipient !== userId) return;
+
+        const notification = mapRow(row);
+        dispatchInsert(key, notification);
+
+        void getUnreadNotificationCountAction().then((response) => {
+          if (response.ok) {
+            dispatchUnreadCount(key, response.data.unreadCount);
+          }
+        });
+      },
+    )
+    .subscribe();
+
+  sharedChannels.set(key, {
+    supabase,
+    channel,
+    workspaceId,
+    userId,
+    refCount: 1,
+  });
+  sharedListeners.set(key, new Set());
+
+  return key;
+}
+
+function releaseNotificationsChannel(key: string) {
+  const entry = sharedChannels.get(key);
+  if (!entry) return;
+
+  entry.refCount -= 1;
+  if (entry.refCount > 0) return;
+
+  void entry.supabase.removeChannel(entry.channel);
+  sharedChannels.delete(key);
+  sharedListeners.delete(key);
+}
+
 export function useNotificationsRealtime(input: {
   workspaceId: string;
   userId: string;
@@ -39,42 +134,25 @@ export function useNotificationsRealtime(input: {
   onInsert?: (notification: NotificationListItem) => void;
   onUnreadCountChange?: (count: number) => void;
 }) {
-  const callbacks = useRef(input);
-  callbacks.current = input;
+  const callbacks = useRef<NotificationCallbacks>({
+    onInsert: input.onInsert,
+    onUnreadCountChange: input.onUnreadCountChange,
+  });
+  callbacks.current = {
+    onInsert: input.onInsert,
+    onUnreadCountChange: input.onUnreadCountChange,
+  };
 
   useEffect(() => {
     if (!input.enabled) return;
 
-    const supabase = createBrowserClient();
-    const channel = supabase
-      .channel(`notifications:${input.workspaceId}:${input.userId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "workspace_notifications",
-          filter: `workspace_id=eq.${input.workspaceId}`,
-        },
-        (payload) => {
-          const row = payload.new as Record<string, unknown>;
-          const recipient = row.recipient_user_id
-            ? String(row.recipient_user_id)
-            : null;
-          if (recipient && recipient !== input.userId) return;
-          const notification = mapRow(row);
-          callbacks.current.onInsert?.(notification);
-          void getUnreadNotificationCountAction().then((response: Awaited<ReturnType<typeof getUnreadNotificationCountAction>>) => {
-            if (response.ok) {
-              callbacks.current.onUnreadCountChange?.(response.data.unreadCount);
-            }
-          });
-        },
-      )
-      .subscribe();
+    const key = acquireNotificationsChannel(input.workspaceId, input.userId);
+    const listeners = sharedListeners.get(key)!;
+    listeners.add(callbacks);
 
     return () => {
-      void supabase.removeChannel(channel);
+      listeners.delete(callbacks);
+      releaseNotificationsChannel(key);
     };
   }, [input.enabled, input.userId, input.workspaceId]);
 }

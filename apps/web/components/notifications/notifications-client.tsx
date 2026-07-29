@@ -17,7 +17,7 @@ import {
   Users,
   Workflow,
 } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@repo/ui/badge";
 import { Button } from "@repo/ui/button";
 import type { NotificationCategory, NotificationListItem } from "@repo/types";
@@ -29,6 +29,7 @@ import {
 } from "../../app/(protected)/actions/notifications";
 import { formatRelative } from "../dashboard/format";
 import { cn } from "@repo/ui/utils";
+import { useNotificationsRealtime } from "../../lib/notifications-realtime";
 
 const CATEGORY_ICONS: Record<string, typeof Bell> = {
   workspace_update: Workflow,
@@ -331,36 +332,21 @@ export function NotificationsCenterClient({
     if (data) setNotifications(data.notifications);
   }, [refresh]);
 
+  const loadRef = useRef(load);
+  loadRef.current = load;
+
   useEffect(() => {
     void load();
   }, [load]);
 
-  useEffect(() => {
-    const supabase = import("@repo/database/browser").then(({ createBrowserClient }) => {
-      const client = createBrowserClient();
-      const channel = client
-        .channel(`notifications-page:${workspaceId}:${userId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "INSERT",
-            schema: "public",
-            table: "workspace_notifications",
-            filter: `workspace_id=eq.${workspaceId}`,
-          },
-          () => {
-            void load();
-          },
-        )
-        .subscribe();
-      return () => {
-        void client.removeChannel(channel);
-      };
-    });
-    return () => {
-      void supabase.then((cleanup) => cleanup?.());
-    };
-  }, [load, userId, workspaceId]);
+  useNotificationsRealtime({
+    workspaceId,
+    userId,
+    enabled: true,
+    onInsert: () => {
+      void loadRef.current();
+    },
+  });
 
   return (
     <div className="space-y-4">
