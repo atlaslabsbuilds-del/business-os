@@ -46,9 +46,9 @@ export default function PrivacyPage() {
         </LegalSection>
         <LegalSection title="5. Sharing">
           <p>
-            We share data with infrastructure and authentication providers (for example Supabase and
-            Google OAuth) solely to operate the Service, or when required by law. Subprocessors are
-            bound by appropriate data protection terms.
+            We share data with trusted infrastructure partners solely to operate authentication,
+            hosting, and related Service features, or when required by law. Partners are bound by
+            appropriate data protection terms. Sign in with Google is provided via Google OAuth.
           </p>
         </LegalSection>
         <LegalSection title="6. Retention">

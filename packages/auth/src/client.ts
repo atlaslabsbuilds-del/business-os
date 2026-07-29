@@ -96,10 +96,45 @@ export async function updatePassword(input: ResetPasswordInput) {
   });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapPasswordUpdateError(error.message));
   }
 
   return data;
+}
+
+function mapPasswordUpdateError(message: string): string {
+  const lower = message.toLowerCase();
+  if (
+    lower.includes("expired") ||
+    lower.includes("session missing") ||
+    lower.includes("not authenticated") ||
+    lower.includes("jwt")
+  ) {
+    return "This reset link has expired. Request a new one and try again.";
+  }
+  if (
+    lower.includes("already been used") ||
+    lower.includes("reuse") ||
+    lower.includes("invalid") ||
+    lower.includes("flow state")
+  ) {
+    return "This reset link is no longer valid. Request a new one and try again.";
+  }
+  if (
+    lower.includes("weak") ||
+    lower.includes("at least") ||
+    lower.includes("password should") ||
+    lower.includes("too short")
+  ) {
+    return "Choose a stronger password (12+ characters with upper, lower, number, and symbol).";
+  }
+  if (lower.includes("same") || lower.includes("different from the old")) {
+    return "Choose a password that is different from your current one.";
+  }
+  if (lower.includes("network") || lower.includes("fetch")) {
+    return "Network error. Check your connection and try again.";
+  }
+  return message || "Unable to update password. Please try again.";
 }
 
 export async function signOutClient() {
@@ -134,4 +169,19 @@ export async function getAuthSession() {
     throw new Error(error.message);
   }
   return data.session;
+}
+
+/** Listen for password-recovery session establishment (email link). */
+export function onPasswordRecovery(
+  callback: (ready: boolean) => void,
+): () => void {
+  const supabase = createBrowserClient();
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
+      callback(Boolean(session));
+    }
+  });
+  return () => subscription.unsubscribe();
 }

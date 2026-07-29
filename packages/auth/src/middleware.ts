@@ -180,14 +180,9 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
       return redirectForRequest(request, url, response);
     }
 
+    // Recovery links exchange a code for a short-lived session via /auth/callback.
+    // Allow the page itself to render invalid/expired states when there is no session.
     if (pathname === "/reset-password" || pathname.startsWith("/reset-password/")) {
-      if (!user) {
-        const url = request.nextUrl.clone();
-        url.pathname = loginPath;
-        url.search = "";
-        url.searchParams.set("next", pathname);
-        return redirectForRequest(request, url, response);
-      }
       return response;
     }
 

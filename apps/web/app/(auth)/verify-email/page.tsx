@@ -12,7 +12,9 @@ export default function VerifyEmailPage() {
   return (
     <div className="grid gap-6">
       <div className="space-y-1.5">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Verify your email</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Verify your email
+        </h1>
         <p className="text-sm text-secondary">
           Confirm your email address to finish setting up your VanderBase account.
         </p>

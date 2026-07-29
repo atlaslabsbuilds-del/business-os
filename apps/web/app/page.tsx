@@ -11,13 +11,20 @@ export const metadata: Metadata = {
     url: "/",
     siteName: "VanderBase",
     type: "website",
-    images: [{ url: "/branding/vanderbase-icon-512.png", width: 512, height: 512, alt: "VanderBase" }],
+    images: [
+      {
+        url: "/branding/vanderbase-og.png",
+        width: 1200,
+        height: 630,
+        alt: "VanderBase — The AI-Native Business OS",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "VanderBase — The AI-Native Business OS",
     description: "The AI-native Business OS for modern businesses.",
-    images: ["/branding/vanderbase-icon-512.png"],
+    images: ["/branding/vanderbase-og.png"],
   },
   alternates: { canonical: "/" },
 };

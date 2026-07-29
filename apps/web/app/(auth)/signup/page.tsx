@@ -10,8 +10,12 @@ export default function SignUpPage() {
   return (
     <div className="grid gap-6">
       <div className="space-y-1.5">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">Create account</h1>
-        <p className="text-sm text-secondary">Start your VanderBase workspace in minutes.</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          Create account
+        </h1>
+        <p className="text-sm text-secondary">
+          Start your VanderBase workspace in minutes.
+        </p>
       </div>
       <SignupForm />
     </div>
