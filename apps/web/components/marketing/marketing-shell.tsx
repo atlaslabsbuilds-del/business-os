@@ -14,8 +14,8 @@ export function MarketingShell({
   return (
     <div className="bos-atmosphere min-h-screen">
       <header className="relative z-10 border-b border-border/60">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="inline-flex items-center py-1">
+        <div className="mx-auto flex max-w-4xl items-center justify-between gap-6 px-5 py-4 sm:gap-8 sm:px-8 sm:py-5">
+          <Link href="/" className="inline-flex shrink-0 items-center" aria-label="VanderBase">
             <VanderBaseLogo size="nav" priority />
           </Link>
           <nav className="flex flex-wrap items-center gap-3 text-sm text-secondary">

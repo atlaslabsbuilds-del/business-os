@@ -39,12 +39,17 @@ export function LandingNavbar({
       style={{ height, backdropFilter, backgroundColor: bg }}
       className="fixed inset-x-0 top-0 z-50 border-b border-white/5"
     >
-      <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="inline-flex items-center py-1" onClick={closeMenu}>
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-6 px-5 sm:gap-8 sm:px-8">
+        <Link
+          href="/"
+          className="inline-flex h-full shrink-0 items-center"
+          onClick={closeMenu}
+          aria-label="VanderBase"
+        >
           <VanderBaseLogo size="nav" priority />
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Primary">
           {links.map((link) => (
             <Link
               key={link.href}

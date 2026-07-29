@@ -47,8 +47,8 @@ export function PricingPage() {
 
 function PricingHeader() {
   return (
-    <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
-      <Link href="/" className="inline-flex items-center py-1">
+    <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-4 sm:gap-8 sm:px-8 sm:py-5">
+      <Link href="/" className="inline-flex shrink-0 items-center" aria-label="VanderBase">
         <VanderBaseLogo size="nav" priority />
       </Link>
       <div className="flex items-center gap-2">
