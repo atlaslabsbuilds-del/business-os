@@ -51,6 +51,8 @@ import {
   updateWorkspaceAiMemorySchema,
 } from "@repo/types";
 import { resolveActiveWorkspace } from "../../../lib/workspace-context";
+import { executeKairosActionCommand } from "../../../lib/kairos-actions/service";
+import { mapWorkspaceRoleToKairosRole } from "../../../lib/kairos-actions/registry";
 import { buildDashboardAiContext } from "../../../lib/dashboard-ai-context";
 import { globalSearch, type GlobalSearchResult } from "../../../lib/global-search";
 import { getKairosAgent } from "../../../lib/kairos-agents";
@@ -63,6 +65,22 @@ export type PlatformActionResult<T> =
 const globalSearchSchema = z.object({
   query: z.string().trim().min(1).max(120),
   limit: z.number().int().min(1).max(20).optional(),
+});
+
+const kairosActionSchema = z.object({
+  command: z.string().trim().min(1).max(2000),
+  confirm: z.boolean().optional(),
+  currentRoute: z.string().max(500).optional(),
+  selectedRecords: z
+    .array(
+      z.object({
+        type: z.string().max(80),
+        id: z.string().max(200),
+        label: z.string().max(200).optional(),
+      }),
+    )
+    .max(20)
+    .optional(),
 });
 
 export async function globalSearchAction(
@@ -764,4 +782,45 @@ export async function dismissKairosSuggestionAction(
       error: error instanceof Error ? error.message : "Failed to dismiss",
     };
   }
+}
+
+export async function runKairosActionAction(
+  input: unknown,
+): Promise<Awaited<ReturnType<typeof executeKairosActionCommand>>> {
+  const parsed = kairosActionSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      status: "validation_failed",
+      phase: "failed",
+      message: parsed.error.issues[0]?.message ?? "Invalid input",
+      timeline: [],
+    };
+  }
+
+  const context = await resolveActiveWorkspace();
+  if (!context) {
+    return {
+      ok: false,
+      status: "failed",
+      phase: "failed",
+      message: "Workspace required",
+      timeline: [],
+    };
+  }
+
+  return executeKairosActionCommand({
+    context: {
+      userId: context.userId,
+      userEmail: context.email,
+      workspaceId: context.active.workspace.id,
+      workspaceName: context.active.workspace.name,
+      workspaceRole: context.active.role,
+      agentRole: mapWorkspaceRoleToKairosRole(context.active.role),
+      selectedRecords: parsed.data.selectedRecords ?? [],
+      currentRoute: parsed.data.currentRoute,
+    },
+    command: parsed.data.command,
+    confirm: parsed.data.confirm,
+  });
 }
