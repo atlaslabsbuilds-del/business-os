@@ -15,12 +15,8 @@ export function MarketingShell({
     <div className="bos-atmosphere min-h-screen">
       <header className="relative z-10 border-b border-border/60">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <VanderBaseLogo compact priority />
-            <span className="text-sm font-semibold uppercase tracking-[0.18em]">
-              <span className="text-white">VANDER</span>
-              <span className="text-primary">BASE</span>
-            </span>
+          <Link href="/" className="inline-flex items-center py-1">
+            <VanderBaseLogo size="nav" priority />
           </Link>
           <nav className="flex flex-wrap items-center gap-3 text-sm text-secondary">
             <Link href="/contact" className="transition hover:text-foreground">
@@ -40,8 +36,11 @@ export function MarketingShell({
         {children}
       </main>
       <footer className="relative z-10 border-t border-border/60 px-5 py-8 sm:px-8">
-        <div className="mx-auto flex max-w-4xl flex-col gap-3 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} VanderBase. All rights reserved.</p>
+        <div className="mx-auto flex max-w-4xl flex-col gap-4 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <VanderBaseLogo size="sm" />
+            <p>© {new Date().getFullYear()} VanderBase. All rights reserved.</p>
+          </div>
           <div className="flex flex-wrap gap-4">
             <Link href="/terms" className="hover:text-foreground">
               Terms

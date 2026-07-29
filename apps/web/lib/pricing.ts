@@ -27,7 +27,7 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: "builder",
-    name: "Builder",
+    name: "Pro",
     description: "Build the full engine behind your growth.",
     monthly: 40,
     credits: 250,
@@ -36,11 +36,11 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: "pro",
-    name: "Pro",
+    name: "Pro Plus",
     description: "Automate more of the work that moves you forward.",
     monthly: 80,
     credits: 500,
-    features: ["Everything in Builder", "AI Studio", "Advanced AI Agents", "Workflow Automations", "API Access", "Team Collaboration", "Advanced Reports", "Priority AI Processing"],
+    features: ["Everything in Pro", "AI Studio", "Advanced AI Agents", "Workflow Automations", "API Access", "Team Collaboration", "Advanced Reports", "Priority AI Processing"],
   },
   {
     id: "elite",
@@ -48,7 +48,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     description: "Serious infrastructure for ambitious teams.",
     monthly: 180,
     credits: 1300,
-    features: ["Everything in Pro", "Up to 10 Team Members", "Unlimited Workspaces", "Roles & Permissions", "Audit Logs", "Premium Support", "Early Access Features"],
+    features: ["Everything in Pro Plus", "Up to 10 Team Members", "Unlimited Workspaces", "Roles & Permissions", "Audit Logs", "Premium Support", "Early Access Features"],
   },
   {
     id: "enterprise",

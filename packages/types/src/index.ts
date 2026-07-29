@@ -76,6 +76,26 @@ export {
 } from "./platform";
 
 export type {
+  NotificationCategory,
+  NotificationPriority,
+  UserNotificationPreferences,
+  UserNotificationState,
+  NotificationListItem,
+  ListNotificationsInput,
+  UpdateNotificationPreferencesInput,
+} from "./notifications";
+
+export {
+  notificationCategorySchema,
+  notificationPrioritySchema,
+  listNotificationsSchema,
+  markNotificationReadSchema,
+  deleteNotificationSchema,
+  updateNotificationPreferencesSchema,
+  NOTIFICATION_CATEGORY_LABELS,
+} from "./notifications";
+
+export type {
   KairosAgentId,
   WorkspaceAiSettings,
   KairosAgentRun,
@@ -240,6 +260,25 @@ export {
   crmSearchSchema,
   deleteCrmEntitySchema,
 } from "./crm";
+
+export type {
+  FinanceInvoiceStatus,
+  FinanceExpenseStatus,
+  FinanceTransactionType,
+  FinanceInvoiceItem,
+  FinanceInvoice,
+  FinanceExpense,
+  FinanceTransaction,
+  FinanceMonthlyPoint,
+  FinanceDashboardStats,
+} from "./finance";
+
+export {
+  financeInvoiceStatusSchema,
+  financeExpenseStatusSchema,
+  financeTransactionTypeSchema,
+  financeSearchSchema,
+} from "./finance";
 
 export type {
   InboxProvider,

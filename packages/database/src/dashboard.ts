@@ -19,7 +19,7 @@ import {
   listWorkspaceMembers,
 } from "./workspace";
 import { listWorkspaceActivityEvents } from "./activity";
-import { listWorkspaceNotifications } from "./notifications";
+import { listNotificationsForUser } from "./notifications";
 import { listWorkspaceAiMemory } from "./workspace-memory";
 import { listWorkspaceAiReplyDrafts } from "./ai-reply-drafts";
 
@@ -186,8 +186,9 @@ export async function getDashboardSnapshot(input: {
       workspaceId: input.workspaceId,
       upcomingOnly: true,
     }),
-    listWorkspaceNotifications({
+    listNotificationsForUser({
       workspaceId: input.workspaceId,
+      userId: input.userId,
       limit: 8,
     }),
     listWorkspaceActivityEvents({

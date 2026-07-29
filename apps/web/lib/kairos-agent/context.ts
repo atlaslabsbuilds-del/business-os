@@ -8,6 +8,7 @@ export function moduleFromPathname(pathname: string): KairosWorkspaceModule {
   if (pathname.startsWith("/marketing")) return "marketing";
   if (pathname.startsWith("/settings")) return "settings";
   if (pathname.startsWith("/calendar")) return "calendar";
+  if (pathname.startsWith("/finance")) return "finance";
   if (pathname.startsWith("/chat")) return "chat";
   if (pathname.startsWith("/ai") || pathname.startsWith("/command")) return "ai";
   if (pathname.startsWith("/dashboard") || pathname === "/") return "dashboard";
@@ -69,8 +70,10 @@ export function contextSuggestedActionIds(
         "open-crm",
       ];
     case "analytics":
+    case "finance":
     case "dashboard":
       return [
+        "open-invoices",
         "today-revenue",
         "today-signups",
         "open-inbox",

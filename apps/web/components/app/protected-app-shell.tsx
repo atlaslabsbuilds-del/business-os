@@ -16,28 +16,49 @@ import { PageTransition } from "./page-transition";
 import { KairosFab } from "../kairos/kairos-fab";
 import { KairosChromeOverlays } from "../kairos/kairos-chrome-overlays";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
+import { useNotificationsRealtime, useUnreadNotificationCount } from "../../lib/notifications-realtime";
 
 export function ProtectedAppShell({
   workspaceName,
   workspaceId,
+  userId,
   email,
   role,
   canInvite,
   memberships,
   activeWorkspaceId,
   navItems,
+  initialUnreadCount = 0,
   children,
 }: {
   workspaceName: string;
   workspaceId: string;
+  userId: string;
   email: string | null;
   role: string;
   canInvite: boolean;
   memberships: WorkspaceMembership[];
   activeWorkspaceId: string;
   navItems: AppShellNavItem[];
+  initialUnreadCount?: number;
   children: ReactNode;
 }) {
+  const { count, setCount } = useUnreadNotificationCount({
+    workspaceId,
+    initialCount: initialUnreadCount,
+  });
+
+  useNotificationsRealtime({
+    workspaceId,
+    userId,
+    enabled: true,
+    onUnreadCountChange: setCount,
+  });
+
+  const navWithBadge = navItems.map((item) =>
+    item.href === "/notifications" ? { ...item, badge: count } : item,
+  );
+
   return (
     <AppChromeProvider
       workspaceContext={{
@@ -47,12 +68,13 @@ export function ProtectedAppShell({
       }}
     >
       <AppShell
-        brand="VANDERBASE"
-        brandMark={<VanderBaseLogo compact />}
+        brand="VanderBase"
+        brandMark={<VanderBaseLogo size="sm" className="max-w-full" />}
+        brandMarkCollapsed={<VanderBaseLogo variant="icon" size="md" />}
         brandHref="/dashboard"
         title={workspaceName}
         userEmail={email}
-        navItems={navItems}
+        navItems={navWithBadge}
         sidebarTop={
           <WorkspaceSwitcher workspaces={memberships} activeWorkspaceId={activeWorkspaceId} />
         }
@@ -60,7 +82,11 @@ export function ProtectedAppShell({
         toolbar={
           <>
             <AppQuickActionsPanel />
-            <AppNotificationsCenter />
+            <AppNotificationsCenter
+              workspaceId={workspaceId}
+              userId={userId}
+              initialUnreadCount={count}
+            />
             <InviteMemberModal workspaceId={workspaceId} canInvite={canInvite} />
             <span className="hidden sm:inline">
               <AppProfileMenu email={email} role={role} />

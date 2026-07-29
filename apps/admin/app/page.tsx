@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { requireAdmin } from "@repo/auth/server";
 import { AppShell } from "@repo/ui/app-shell";
 import { Badge } from "@repo/ui/badge";
@@ -6,12 +7,39 @@ import { IconShield, IconUsers } from "@repo/ui/icons";
 
 export const dynamic = "force-dynamic";
 
+function AdminBrandMark({ collapsed = false }: { collapsed?: boolean }) {
+  if (collapsed) {
+    return (
+      <Image
+        src="/branding/vanderbase-logo.png"
+        alt="VanderBase"
+        width={32}
+        height={32}
+        className="object-contain"
+        priority
+      />
+    );
+  }
+  return (
+    <Image
+      src="/branding/vanderbase-wordmark.png"
+      alt="VanderBase"
+      width={240}
+      height={28}
+      className="h-7 w-auto max-w-full object-contain"
+      priority
+    />
+  );
+}
+
 export default async function AdminHomePage() {
   const user = await requireAdmin();
 
   return (
     <AppShell
       brand="VanderBase"
+      brandMark={<AdminBrandMark />}
+      brandMarkCollapsed={<AdminBrandMark collapsed />}
       brandHref="/"
       title="Admin"
       userEmail={user.email}

@@ -1,6 +1,8 @@
 import {
+  IconBell,
   IconBriefcase,
   IconCalendar,
+  IconCreditCard,
   IconGlobe,
   IconLayout,
   IconMail,
@@ -10,6 +12,7 @@ import {
   IconSparkles,
   IconUsers,
 } from "@repo/ui/icons";
+import { countUnreadNotificationsForUser } from "@repo/database/notifications";
 import { ProtectedAppShell } from "../../components/app/protected-app-shell";
 import { resolveActiveWorkspace } from "../../lib/workspace-context";
 
@@ -25,18 +28,24 @@ export default async function ProtectedLayout({
     return children;
   }
 
-  const { active, memberships, email } = context;
+  const { active, memberships, email, userId } = context;
   const canInvite = active.role === "owner" || active.role === "admin";
+  const unreadCount = await countUnreadNotificationsForUser({
+    workspaceId: active.workspace.id,
+    userId,
+  });
 
   return (
     <ProtectedAppShell
       workspaceName={active.workspace.name}
       workspaceId={active.workspace.id}
+      userId={userId}
       email={email}
       role={active.role}
       canInvite={canInvite}
       memberships={memberships}
       activeWorkspaceId={active.workspace.id}
+      initialUnreadCount={unreadCount}
       navItems={[
         { href: "/dashboard", label: "Dashboard", icon: <IconLayout /> },
         { href: "/ai", label: "AI Studio", icon: <IconSparkles /> },
@@ -47,6 +56,8 @@ export default async function ProtectedLayout({
         { href: "/social", label: "Social OS", icon: <IconShare /> },
         { href: "/website", label: "Website OS", icon: <IconGlobe /> },
         { href: "/calendar", label: "Calendar OS", icon: <IconCalendar /> },
+        { href: "/finance", label: "Finance", icon: <IconCreditCard /> },
+        { href: "/notifications", label: "Notifications", icon: <IconBell /> },
         { href: "/team", label: "Team", icon: <IconUsers /> },
         { href: "/settings", label: "Settings", icon: <IconSettings /> },
       ]}

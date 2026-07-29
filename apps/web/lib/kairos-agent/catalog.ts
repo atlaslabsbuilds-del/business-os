@@ -208,9 +208,9 @@ export const KAIROS_ACTION_CATALOG: KairosAction[] = [
     label: "Open Invoices",
     description: "Review finance and invoice activity",
     confirmation: "Opening invoices...",
-    href: "/crm/activities?focus=invoices",
-    keywords: ["open invoice", "invoices", "invoice", "finance"],
-    modules: ["crm", "dashboard"],
+    href: "/finance/invoices",
+    keywords: ["open invoice", "invoices", "invoice", "finance", "show overdue invoices"],
+    modules: ["crm", "dashboard", "finance"],
     slash: "invoice",
   },
   {

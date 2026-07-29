@@ -213,11 +213,14 @@ export type Database = {
           workspace_id: string;
           module: string;
           type: string;
+          category: string;
+          priority: string;
           title: string;
           body: string | null;
           action_url: string | null;
           read_at: string | null;
           created_by: string | null;
+          recipient_user_id: string | null;
           metadata: Json;
           created_at: string;
           updated_at: string;
@@ -227,11 +230,14 @@ export type Database = {
           workspace_id: string;
           module: string;
           type?: string;
+          category?: string;
+          priority?: string;
           title: string;
           body?: string | null;
           action_url?: string | null;
           read_at?: string | null;
           created_by?: string | null;
+          recipient_user_id?: string | null;
           metadata?: Json;
           created_at?: string;
           updated_at?: string;
@@ -241,12 +247,81 @@ export type Database = {
           workspace_id?: string;
           module?: string;
           type?: string;
+          category?: string;
+          priority?: string;
           title?: string;
           body?: string | null;
           action_url?: string | null;
           read_at?: string | null;
           created_by?: string | null;
+          recipient_user_id?: string | null;
           metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_notification_states: {
+        Row: {
+          id: string;
+          user_id: string;
+          notification_id: string;
+          read_at: string | null;
+          deleted_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          notification_id: string;
+          read_at?: string | null;
+          deleted_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          notification_id?: string;
+          read_at?: string | null;
+          deleted_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_notification_preferences: {
+        Row: {
+          user_id: string;
+          email_notifications: boolean;
+          in_app_notifications: boolean;
+          marketing_emails: boolean;
+          product_updates: boolean;
+          security_alerts: boolean;
+          billing_alerts: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          email_notifications?: boolean;
+          in_app_notifications?: boolean;
+          marketing_emails?: boolean;
+          product_updates?: boolean;
+          security_alerts?: boolean;
+          billing_alerts?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          email_notifications?: boolean;
+          in_app_notifications?: boolean;
+          marketing_emails?: boolean;
+          product_updates?: boolean;
+          security_alerts?: boolean;
+          billing_alerts?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -1838,6 +1913,72 @@ export type Database = {
           message?: string;
           status?: string;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_invoices: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; customer_id: string | null;
+          customer_name: string; invoice_number: string; status: string; items: Json;
+          subtotal: number; tax: number; discount: number; total: number; currency: string;
+          notes: string | null; due_date: string | null; paid_at: string | null;
+          provider: string | null; provider_invoice_id: string | null; metadata: Json;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; customer_id?: string | null;
+          customer_name: string; invoice_number: string; status?: string; items?: Json;
+          subtotal?: number; tax?: number; discount?: number; total?: number; currency?: string;
+          notes?: string | null; due_date?: string | null; paid_at?: string | null;
+          provider?: string | null; provider_invoice_id?: string | null; metadata?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; customer_id?: string | null;
+          customer_name?: string; invoice_number?: string; status?: string; items?: Json;
+          subtotal?: number; tax?: number; discount?: number; total?: number; currency?: string;
+          notes?: string | null; due_date?: string | null; paid_at?: string | null;
+          provider?: string | null; provider_invoice_id?: string | null; metadata?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_expenses: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; category: string; vendor: string;
+          amount: number; currency: string; expense_date: string; notes: string | null;
+          receipt_path: string | null; status: string; provider: string | null;
+          provider_transaction_id: string | null; metadata: Json; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; category: string; vendor: string;
+          amount: number; currency?: string; expense_date?: string; notes?: string | null;
+          receipt_path?: string | null; status?: string; provider?: string | null;
+          provider_transaction_id?: string | null; metadata?: Json; created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; category?: string; vendor?: string;
+          amount?: number; currency?: string; expense_date?: string; notes?: string | null;
+          receipt_path?: string | null; status?: string; provider?: string | null;
+          provider_transaction_id?: string | null; metadata?: Json; created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_transactions: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; type: string; description: string;
+          amount: number; currency: string; transaction_date: string; reference_id: string | null;
+          provider: string | null; provider_transaction_id: string | null; metadata: Json; created_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; type: string; description: string;
+          amount: number; currency?: string; transaction_date?: string; reference_id?: string | null;
+          provider?: string | null; provider_transaction_id?: string | null; metadata?: Json; created_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; type?: string; description?: string;
+          amount?: number; currency?: string; transaction_date?: string; reference_id?: string | null;
+          provider?: string | null; provider_transaction_id?: string | null; metadata?: Json; created_at?: string;
         };
         Relationships: [];
       };

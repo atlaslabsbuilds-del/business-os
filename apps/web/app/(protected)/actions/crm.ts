@@ -8,6 +8,7 @@ import {
   createContact,
   createDeal,
   createLead,
+  contactDisplayName,
   createNote,
   createTag,
   deleteActivity,
@@ -33,6 +34,7 @@ import {
   updateDeal,
 } from "@repo/database/crm";
 import { getMembershipRole } from "@repo/database/workspace";
+import { emitWorkspaceNotification } from "@repo/database/notifications";
 import {
   assignTagSchema,
   createActivitySchema,
@@ -152,6 +154,16 @@ export async function createCrmContactAction(
       ...parsed.data,
       email: parsed.data.email || null,
     });
+    await emitWorkspaceNotification({
+      workspaceId: ctx.workspaceId,
+      module: "crm",
+      category: "new_customer",
+      title: "New customer added",
+      body: contactDisplayName(contact),
+      actionUrl: `/crm/contacts`,
+      userId: ctx.userId,
+      metadata: { contactId: contact.id },
+    });
     return { ok: true, data: { contact }, tools: ctx.tools };
   } catch (error) {
     return fail(error);
@@ -177,6 +189,17 @@ export async function createCrmLeadAction(
       title: parsed.data.title,
       companyId: parsed.data.companyId,
       source: parsed.data.source,
+    });
+    const leadName = [lead.firstName, lead.lastName].filter(Boolean).join(" ").trim() || "New lead";
+    await emitWorkspaceNotification({
+      workspaceId: ctx.workspaceId,
+      module: "crm",
+      category: "new_lead",
+      title: "New lead captured",
+      body: leadName,
+      actionUrl: "/crm/leads",
+      userId: ctx.userId,
+      metadata: { leadId: lead.id },
     });
     return { ok: true, data: { lead }, tools: ctx.tools };
   } catch (error) {

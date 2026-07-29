@@ -45,7 +45,25 @@ export function PricingPage() {
   );
 }
 
-function PricingHeader() { return <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8"><Link href="/" className="flex items-center gap-2.5"><VanderBaseLogo compact priority /><span className="text-sm font-semibold uppercase tracking-[0.18em]"><span className="text-white">VANDER</span><span className="text-primary">BASE</span></span></Link><div className="flex items-center gap-2"><Link href="/signin"><Button size="sm" variant="ghost">Sign in</Button></Link><Link href="/?join=waitlist"><Button size="sm">Join the Waitlist</Button></Link></div></header>; }
+function PricingHeader() {
+  return (
+    <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
+      <Link href="/" className="inline-flex items-center py-1">
+        <VanderBaseLogo size="nav" priority />
+      </Link>
+      <div className="flex items-center gap-2">
+        <Link href="/signin">
+          <Button size="sm" variant="ghost">
+            Sign in
+          </Button>
+        </Link>
+        <Link href="/?join=waitlist">
+          <Button size="sm">Join the Waitlist</Button>
+        </Link>
+      </div>
+    </header>
+  );
+}
 function BillingToggle({ cycle, onChange }: { cycle: BillingCycle; onChange: (cycle: BillingCycle) => void }) { return <div className="mx-auto mt-9 inline-flex rounded-2xl border border-border bg-surface p-1 shadow-soft"><button type="button" onClick={() => onChange("monthly")} className={`rounded-xl px-4 py-2 text-sm transition ${cycle === "monthly" ? "bg-elevated text-foreground shadow-soft" : "text-secondary"}`}>Monthly</button><button type="button" onClick={() => onChange("annual")} className={`rounded-xl px-4 py-2 text-sm transition ${cycle === "annual" ? "bg-primary text-white shadow-soft" : "text-secondary"}`}>Annual <span className="ml-1 text-xs opacity-80">20% off</span></button></div>; }
 function PricingCard({ plan, cycle }: { plan: PricingPlan; cycle: BillingCycle }) {
   const price =

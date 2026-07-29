@@ -40,12 +40,8 @@ export function LandingNavbar({
       className="fixed inset-x-0 top-0 z-50 border-b border-white/5"
     >
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" className="flex items-center gap-2.5" onClick={closeMenu}>
-          <VanderBaseLogo compact priority />
-          <span className="text-sm font-semibold uppercase tracking-[0.18em]">
-            <span className="text-white">VANDER</span>
-            <span className="text-primary">BASE</span>
-          </span>
+        <Link href="/" className="inline-flex items-center py-1" onClick={closeMenu}>
+          <VanderBaseLogo size="nav" priority />
         </Link>
 
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">

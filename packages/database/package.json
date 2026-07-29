@@ -28,7 +28,8 @@
     "./security": "./src/security.ts",
     "./kairos-intelligence": "./src/kairos-intelligence.ts",
     "./waitlist": "./src/waitlist.ts",
-    "./contact": "./src/contact.ts"
+    "./contact": "./src/contact.ts",
+    "./finance": "./src/finance.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

@@ -56,12 +56,12 @@ export default async function WaitlistSuccessPage({
           className="inline-flex items-center gap-2 text-sm text-secondary transition hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
-          VanderBase
+          <VanderBaseLogo size="sm" />
         </Link>
 
         <div className="landing-glass-strong landing-gradient-border mt-10 rounded-[32px] px-6 py-10 sm:px-10 sm:py-12">
           <div className="flex items-center gap-3">
-            <VanderBaseLogo className="h-8 w-8" />
+            <VanderBaseLogo variant="icon" size="md" />
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Waitlist confirmed</p>
           </div>
 

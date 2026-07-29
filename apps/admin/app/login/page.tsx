@@ -11,19 +11,17 @@ export default function AdminLoginPage() {
         <div className="mb-8 text-center">
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground"
+            className="inline-flex items-center justify-center py-1"
+            aria-label="VanderBase"
           >
             <Image
-              src="/branding/vanderbase-logo.png"
+              src="/branding/vanderbase-wordmark.png"
               alt="VanderBase"
-              width={32}
-              height={32}
-              className="h-8 w-8 rounded-xl object-cover"
+              width={360}
+              height={42}
+              priority
+              className="h-8 w-auto object-contain sm:h-[42px]"
             />
-            <span className="uppercase tracking-[0.18em]">
-              <span className="text-white">VANDER</span>
-              <span className="text-primary">BASE</span>
-            </span>
           </Link>
           <p className="mt-3 text-xs uppercase tracking-[0.14em] text-muted">Admin</p>
         </div>

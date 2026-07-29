@@ -24,6 +24,7 @@ export default function robots(): MetadataRoute.Robots {
           "/calendar",
           "/finance",
           "/analytics",
+          "/finance",
           "/api/",
           "/waitlist/success",
         ],

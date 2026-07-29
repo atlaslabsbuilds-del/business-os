@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { NotificationListItem } from "./notifications";
 
 export const platformModuleSchema = z.enum([
   "dashboard",
@@ -40,9 +41,12 @@ export type WorkspaceNotification = {
   workspaceId: string;
   module: PlatformModule | string;
   type: WorkspaceNotificationType | string;
+  category: string;
+  priority: string;
   title: string;
   body: string | null;
   actionUrl: string | null;
+  recipientUserId: string | null;
   readAt: string | null;
   createdBy: string | null;
   metadata: Record<string, unknown>;
@@ -215,7 +219,7 @@ export type DashboardSnapshot = {
   deals: DashboardDealItem[];
   conversations: DashboardConversationItem[];
   agenda: DashboardAgendaItem[];
-  notifications: WorkspaceNotification[];
+  notifications: NotificationListItem[];
   activity: WorkspaceActivityEvent[];
   memory: WorkspaceAiMemory[];
   insights: DashboardInsight[];

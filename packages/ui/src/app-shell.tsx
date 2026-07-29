@@ -12,11 +12,14 @@ export type AppShellNavItem = {
   href: string;
   label: string;
   icon?: React.ReactNode;
+  badge?: number;
 };
 
 export type AppShellProps = {
   brand?: string;
   brandMark?: React.ReactNode;
+  /** Shown when the desktop sidebar is collapsed (prefer brand icon). */
+  brandMarkCollapsed?: React.ReactNode;
   brandHref?: string;
   title?: string;
   userEmail?: string | null;
@@ -35,6 +38,7 @@ const SIDEBAR_KEY = "bos-sidebar-collapsed";
 export function AppShell({
   brand = "VanderBase",
   brandMark,
+  brandMarkCollapsed,
   brandHref = "/",
   title = "Workspace",
   userEmail,
@@ -94,7 +98,14 @@ export function AppShell({
                   aria-hidden
                 />
               ) : null}
-              <span className={cn("shrink-0", active && "text-primary")}>{item.icon}</span>
+              <span className={cn("relative shrink-0", active && "text-primary")}>
+                {item.icon}
+                {item.badge && item.badge > 0 ? (
+                  <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-white">
+                    {item.badge > 9 ? "9+" : item.badge}
+                  </span>
+                ) : null}
+              </span>
               {!compact ? <span className="truncate">{item.label}</span> : null}
             </Link>
           );
@@ -116,22 +127,29 @@ export function AppShell({
           <div
             className={cn(
               "flex h-14 items-center border-b border-border/60",
-              collapsed ? "justify-center px-2" : "gap-2.5 px-4",
+              collapsed ? "justify-center px-2" : "px-3",
             )}
           >
-            {brandMark ?? (
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-[11px] font-bold text-white shadow-soft">
-                VB
-              </span>
-            )}
-            {!collapsed ? (
-              <Link
-                href={brandHref}
-                className="min-w-0 truncate text-sm font-semibold tracking-tight transition duration-200 hover:text-secondary"
-              >
-                {brand}
-              </Link>
-            ) : null}
+            <Link
+              href={brandHref}
+              className={cn(
+                "inline-flex min-w-0 items-center transition duration-200 hover:opacity-90",
+                collapsed ? "justify-center" : "w-full",
+              )}
+              aria-label={brand}
+            >
+              {collapsed
+                ? (brandMarkCollapsed ?? brandMark ?? (
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-[11px] font-bold text-white">
+                      VB
+                    </span>
+                  ))
+                : (brandMark ?? (
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-[11px] font-bold text-white">
+                      VB
+                    </span>
+                  ))}
+            </Link>
           </div>
 
           {sidebarTop && !collapsed ? (
@@ -183,7 +201,9 @@ export function AppShell({
             />
             <aside className="bos-glass-strong absolute inset-y-0 left-0 flex w-72 flex-col pbos-animate-rise shadow-elevated">
               <div className="flex h-14 items-center justify-between border-b border-border/60 px-4">
-                <span className="text-sm font-semibold">{brand}</span>
+                <Link href={brandHref} className="inline-flex min-w-0 items-center" aria-label={brand}>
+                  {brandMark ?? <span className="text-sm font-semibold">{brand}</span>}
+                </Link>
                 <Button
                   variant="ghost"
                   size="sm"

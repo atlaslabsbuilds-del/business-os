@@ -11,6 +11,7 @@ import {
   transferWorkspaceOwnership,
   updateWorkspaceSettings,
 } from "@repo/database/workspace";
+import { emitWorkspaceNotification } from "@repo/database/notifications";
 import {
   WORKSPACE_COOKIE,
   createWorkspaceSchema,
@@ -127,6 +128,17 @@ export async function inviteMemberAction(
       invitedBy: user.id,
     });
 
+    await emitWorkspaceNotification({
+      workspaceId,
+      module: "workspace",
+      category: "team_invite",
+      title: "Team invite sent",
+      body: `${parsed.data.email} invited as ${parsed.data.role}`,
+      actionUrl: "/team",
+      userId: user.id,
+      metadata: { email: parsed.data.email, role: parsed.data.role },
+    });
+
     return {
       ok: true,
       message: `Invitation created for ${parsed.data.email}.`,
@@ -177,6 +189,16 @@ export async function updateWorkspaceAction(
       name: parsed.data.name,
       slug: parsed.data.slug,
       logoUrl: parsed.data.logoUrl ? parsed.data.logoUrl : null,
+    });
+
+    await emitWorkspaceNotification({
+      workspaceId,
+      module: "workspace",
+      category: "workspace_update",
+      title: "Workspace updated",
+      body: `${parsed.data.name} settings were saved.`,
+      actionUrl: "/settings",
+      userId: user.id,
     });
 
     return { ok: true, message: "Workspace settings saved." };

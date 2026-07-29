@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { CreditTransaction, Database, Json, WorkspaceCredits } from "@repo/types";
 import { createServerClient } from "./server";
+import { emitWorkspaceNotification } from "./notifications";
 
 type CreditsRow = Database["public"]["Tables"]["workspace_credits"]["Row"];
 type TransactionRow = Database["public"]["Tables"]["credit_transactions"]["Row"];
@@ -78,12 +79,23 @@ export async function deductWorkspaceCredits(input: {
 
   if (error) {
     if (error.message.includes("INSUFFICIENT_CREDITS")) {
+      await emitWorkspaceNotification({
+        workspaceId: input.workspaceId,
+        module: "billing",
+        category: "billing_alert",
+        title: "AI credits exhausted",
+        body: "Add credits or upgrade your plan to keep using AI features.",
+        actionUrl: "/pricing",
+        metadata: { reason: input.reason },
+        client: input.client,
+      }).catch(() => undefined);
       throw new Error("Insufficient workspace credits");
     }
     throw new Error(`Failed to deduct credits: ${error.message}`);
   }
 
-  return { balance: Number(data) };
+  const balance = Number(data);
+  return { balance };
 }
 
 export async function listCreditTransactions(input: {

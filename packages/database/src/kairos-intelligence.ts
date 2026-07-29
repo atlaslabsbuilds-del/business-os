@@ -8,6 +8,7 @@ import type {
   WorkspaceOnboardingProgress,
 } from "@repo/types";
 import { clientOrDefault, jsonToRecord } from "./platform-helpers";
+import { emitWorkspaceNotification } from "./notifications";
 
 type AgentRunRow = Database["public"]["Tables"]["kairos_agent_runs"]["Row"];
 type VersionRow = Database["public"]["Tables"]["ai_output_versions"]["Row"];
@@ -402,6 +403,23 @@ export async function upsertAiSuggestions(input: {
     )
     .select("*");
   if (error) throw new Error(`Failed to save suggestions: ${error.message}`);
+
+  await Promise.all(
+    toInsert.map((item) =>
+      emitWorkspaceNotification({
+        workspaceId: input.workspaceId,
+        module: "assistant",
+        category: "kairos_suggestion",
+        title: item.title,
+        body: item.body,
+        actionUrl: item.actionUrl ?? "/ai",
+        userId: input.userId ?? null,
+        metadata: { module: item.module },
+        client: input.client,
+      }),
+    ),
+  );
+
   return [...(data ?? []).map(mapSuggestion), ...existing].slice(0, 12);
 }
 

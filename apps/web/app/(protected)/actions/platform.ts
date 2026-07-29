@@ -1,7 +1,13 @@
 "use server";
 
 import { z } from "zod";
-import { getDashboardSnapshot } from "@repo/database/dashboard";
+import {
+  getDashboardSnapshot,
+} from "@repo/database/dashboard";
+import {
+  countUnreadNotificationsForUser,
+  listNotificationsForUser,
+} from "@repo/database/notifications";
 import {
   createWorkspaceActivityEvent,
   listWorkspaceActivityEvents,
@@ -86,15 +92,8 @@ export async function globalSearchAction(
 
 export async function workspaceNotificationsAction(): Promise<
   PlatformActionResult<{
-    notifications: Array<{
-      id: string;
-      title: string;
-      body: string | null;
-      module: string;
-      actionUrl: string | null;
-      readAt: string | null;
-      createdAt: string;
-    }>;
+    notifications: Awaited<ReturnType<typeof listNotificationsForUser>>;
+    unreadCount: number;
   }>
 > {
   const context = await resolveActiveWorkspace();
@@ -103,14 +102,18 @@ export async function workspaceNotificationsAction(): Promise<
   }
 
   try {
-    const snapshot = await getDashboardSnapshot({
-      workspaceId: context.active.workspace.id,
-      userId: context.userId,
-      membershipCount: context.memberships.length,
-      role: context.active.role,
-      workspaceName: context.active.workspace.name,
-    });
-    return { ok: true, data: { notifications: snapshot.notifications } };
+    const [notifications, unreadCount] = await Promise.all([
+      listNotificationsForUser({
+        workspaceId: context.active.workspace.id,
+        userId: context.userId,
+        limit: 8,
+      }),
+      countUnreadNotificationsForUser({
+        workspaceId: context.active.workspace.id,
+        userId: context.userId,
+      }),
+    ]);
+    return { ok: true, data: { notifications, unreadCount } };
   } catch (error) {
     return {
       ok: false,

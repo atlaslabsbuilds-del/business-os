@@ -22,13 +22,9 @@ export default function AuthLayout({
         <div className="mb-8 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground transition duration-200 hover:text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="inline-flex items-center justify-center py-1 transition duration-200 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           >
-            <VanderBaseLogo compact priority />
-            <span className="uppercase tracking-[0.18em]">
-              <span className="text-white">VANDER</span>
-              <span className="text-primary">BASE</span>
-            </span>
+            <VanderBaseLogo size="nav" priority />
           </Link>
           <p className="mt-3 text-xs text-muted">The AI-native Business OS</p>
         </div>

@@ -755,12 +755,8 @@ export function LandingFooter() {
     <footer id="blog" className="relative border-t border-white/5 px-5 py-16 sm:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
         <div>
-          <div className="flex items-center gap-2.5">
-            <VanderBaseLogo compact />
-            <span className="text-sm font-semibold uppercase tracking-[0.18em]">
-              <span className="text-white">VANDER</span>
-              <span className="text-primary">BASE</span>
-            </span>
+          <div className="flex items-center py-1">
+            <VanderBaseLogo size="md" />
           </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-secondary">
             The AI-native operating system for founders, operators, and modern teams.

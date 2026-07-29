@@ -43,8 +43,8 @@ const PRESETS = {
   },
   notifications: {
     icon: BellOff,
-    title: "No notifications",
-    body: "You’re all caught up. Workspace alerts will show up here.",
+    title: "You're all caught up 🎉",
+    body: "No new notifications.",
   },
   inbox: {
     icon: Inbox,

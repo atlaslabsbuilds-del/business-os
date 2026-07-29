@@ -26,12 +26,8 @@ export function ErrorShell({
   return (
     <div className="bos-atmosphere flex min-h-screen items-center justify-center px-5 py-16">
       <div className="relative z-10 w-full max-w-lg text-center">
-        <Link href="/" className="inline-flex items-center gap-2.5">
-          <VanderBaseLogo compact priority />
-          <span className="text-sm font-semibold uppercase tracking-[0.18em]">
-            <span className="text-white">VANDER</span>
-            <span className="text-primary">BASE</span>
-          </span>
+        <Link href="/" className="inline-flex items-center py-1">
+          <VanderBaseLogo size="nav" priority />
         </Link>
         <div className="mt-10 rounded-3xl border border-border bg-surface/90 p-8 shadow-elevated sm:p-10">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary">

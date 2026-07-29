@@ -44,8 +44,17 @@ export {
 } from "./credits";
 export {
   listWorkspaceNotifications,
+  listNotificationsForUser,
+  countUnreadNotificationsForUser,
   createWorkspaceNotification,
+  emitWorkspaceNotification,
   markWorkspaceNotificationRead,
+  markNotificationReadForUser,
+  markAllNotificationsReadForUser,
+  deleteNotificationForUser,
+  deleteWorkspaceNotification,
+  getUserNotificationPreferences,
+  upsertUserNotificationPreferences,
 } from "./notifications";
 export {
   listWorkspaceActivityEvents,
@@ -176,6 +185,16 @@ export {
   type WaitlistSuccessData,
 } from "./waitlist";
 export { submitContactMessage, type ContactMessageInput } from "./contact";
+export {
+  listFinanceInvoices,
+  createFinanceInvoice,
+  updateFinanceInvoiceStatus,
+  listFinanceExpenses,
+  createFinanceExpense,
+  listFinanceTransactions,
+  createFinanceTransaction,
+  getFinanceDashboardStats,
+} from "./finance";
 export {
   getInboxAccountSecrets,
   getInboxAccountSecretsForSync,

@@ -312,8 +312,8 @@ function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
   const [tools, setTools] = useState(8);
   const toolCost = tools * 29;
   const timeSavedHours = teamSize * 4;
-  const builderPlan = PRICING_PLANS.find((plan) => plan.id === "builder")!;
-  const builderMonthly = builderPlan.monthly ?? 40;
+  const proPlan = PRICING_PLANS.find((plan) => plan.id === "builder")!;
+  const builderMonthly = proPlan.monthly ?? 40;
   const savings = Math.max(0, toolCost - builderMonthly);
 
   return (
@@ -358,7 +358,7 @@ function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
           <p className="text-[11px] text-secondary">/mo</p>
         </div>
         <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4 text-center">
-          <p className="text-xs text-primary">VanderBase Builder</p>
+          <p className="text-xs text-primary">VanderBase {proPlan.name}</p>
           <p className="mt-1 text-2xl font-semibold">${builderMonthly}</p>
           <p className="text-[11px] text-secondary">/mo</p>
         </div>

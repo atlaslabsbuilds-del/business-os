@@ -30,6 +30,7 @@ export type KairosWorkspaceModule =
   | "marketing"
   | "settings"
   | "calendar"
+  | "finance"
   | "chat"
   | "ai"
   | "other";

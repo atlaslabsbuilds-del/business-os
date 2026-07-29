@@ -77,6 +77,14 @@ export const IconCalendar = icon(
   "IconCalendar",
 );
 
+export const IconCreditCard = icon(
+  <>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M3 10h18M7 15h3" />
+  </>,
+  "IconCreditCard",
+);
+
 export const IconSearch = icon(
   <>
     <circle cx="11" cy="11" r="7" />
@@ -159,4 +167,12 @@ export const IconMail = icon(
     <path d="m3 7 9 6 9-6" />
   </>,
   "IconMail",
+);
+
+export const IconBell = icon(
+  <>
+    <path d="M12 3a5 5 0 0 0-5 5v2.5c0 .8-.3 1.6-.8 2.2L5 14.5h14l-1.2-1.8c-.5-.6-.8-1.4-.8-2.2V8a5 5 0 0 0-5-5Z" />
+    <path d="M10 17a2 2 0 0 0 4 0" />
+  </>,
+  "IconBell",
 );

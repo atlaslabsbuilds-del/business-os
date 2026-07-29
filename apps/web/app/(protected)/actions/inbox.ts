@@ -3,6 +3,7 @@
 import { getUser } from "@repo/auth/server";
 import { getSiteUrl } from "@repo/auth/site-url";
 import { getMembershipRole } from "@repo/database/workspace";
+import { emitWorkspaceNotification } from "@repo/database/notifications";
 import {
   assignInboxLabel,
   connectInboxAccount,
@@ -507,6 +508,17 @@ export async function createInboxTaskAction(
       },
       { workspaceId: ctx.workspaceId, userId: ctx.userId },
     )) as { created: boolean; task: { id: string; title: string } };
+    await emitWorkspaceNotification({
+      workspaceId: ctx.workspaceId,
+      module: "inbox",
+      category: "task_assigned",
+      title: "Task assigned",
+      body: result.task.title,
+      actionUrl: "/inbox/tasks",
+      userId: ctx.userId,
+      recipientUserId: ctx.userId,
+      metadata: { taskId: result.task.id },
+    });
     return { ok: true, data: { task: result.task }, tools: ctx.tools };
   } catch (error) {
     return fail(error);
