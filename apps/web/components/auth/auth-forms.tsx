@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildAuthCallbackUrl,
   getAuthSession,
+  getAuthUser,
+  isEmailVerified,
   onPasswordRecovery,
   requestPasswordReset,
   resendVerificationEmail,
@@ -28,6 +30,8 @@ import { Input } from "@repo/ui/input";
 import { PasswordInput } from "@repo/ui/password-input";
 import { cn } from "@repo/ui/utils";
 import { CheckCircle2, Mail } from "lucide-react";
+import { useAuthToast } from "./auth-toast";
+import { useResendCountdown } from "./use-resend-countdown";
 
 function fieldErrors(error: { issues: { path: PropertyKey[]; message: string }[] }) {
   const result: Record<string, string> = {};
@@ -89,6 +93,16 @@ export function SignInForm() {
     startTransition(async () => {
       try {
         await signInWithPassword(parsed.data);
+        const user = await getAuthUser();
+        if (!isEmailVerified(user)) {
+          const verifyUrl = new URL("/verify-email", window.location.origin);
+          verifyUrl.searchParams.set("email", parsed.data.email);
+          verifyUrl.searchParams.set("from", "signin");
+          verifyUrl.searchParams.set("next", nextPath);
+          router.replace(`${verifyUrl.pathname}${verifyUrl.search}`);
+          router.refresh();
+          return;
+        }
         const target =
           oauthStatus && nextPath.startsWith("/")
             ? `${nextPath}${nextPath.includes("?") ? "&" : "?"}oauth=${encodeURIComponent(oauthStatus)}${
@@ -154,10 +168,13 @@ export function SignInForm() {
 
 export function SignupForm() {
   const router = useRouter();
+  const { showToast } = useAuthToast();
+  const { secondsLeft, canResend, startCountdown } = useResendCountdown();
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [signupEmail, setSignupEmail] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
+  const [resendPending, startResendTransition] = useTransition();
   const redirectTo = useMemo(
     () => buildAuthCallbackUrl("/verify-email"),
     [],
@@ -165,7 +182,6 @@ export function SignupForm() {
 
   function onSubmit(formData: FormData) {
     setError(null);
-    setMessage(null);
     const parsed = signUpSchema.safeParse({
       fullName: formData.get("fullName"),
       email: formData.get("email"),
@@ -190,23 +206,84 @@ export function SignupForm() {
         if (typeof window !== "undefined") {
           window.sessionStorage.setItem("vb_verify_email", parsed.data.email);
         }
-        if (result.session) {
+        if (result.session && isEmailVerified(result.user)) {
           router.replace("/dashboard");
           router.refresh();
           return;
         }
-        setMessage("Check your email to verify your account.");
-        router.push(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
+        setSignupEmail(parsed.data.email);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to sign up");
       }
     });
   }
 
+  function onResendVerification() {
+    if (!signupEmail || !canResend) return;
+
+    startResendTransition(async () => {
+      try {
+        await resendVerificationEmail(signupEmail, redirectTo);
+        startCountdown();
+        showToast("Verification email sent. Check your inbox and spam folder.", "success");
+      } catch (err) {
+        showToast(
+          err instanceof Error ? err.message : "Unable to send verification email.",
+          "error",
+        );
+      }
+    });
+  }
+
+  if (signupEmail) {
+    return (
+      <div className="grid gap-5 animate-in fade-in zoom-in-95 duration-300">
+        <div className="flex flex-col items-center rounded-2xl border border-primary/25 bg-primary-muted/20 px-5 py-8 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary shadow-[0_0_32px_rgba(255,122,0,0.25)]">
+            <Mail className="h-7 w-7" aria-hidden />
+          </span>
+          <h2 className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+            Check your email
+          </h2>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-secondary">
+            We&apos;ve sent a verification link to your email address. Please
+            verify your account to continue.
+          </p>
+          <p className="mt-3 break-all text-xs font-medium text-primary">{signupEmail}</p>
+          <p className="mt-4 text-xs leading-5 text-muted">
+            Didn&apos;t receive it? Check spam or resend below. Links expire for
+            your security.
+          </p>
+        </div>
+        <Button
+          type="button"
+          loading={resendPending}
+          disabled={!canResend}
+          className="w-full"
+          onClick={onResendVerification}
+        >
+          {canResend ? "Resend email" : `Resend in ${secondsLeft}s`}
+        </Button>
+        <Link href={`/verify-email?email=${encodeURIComponent(signupEmail)}`}>
+          <Button variant="secondary" className="w-full">
+            Open verification page
+          </Button>
+        </Link>
+        <p className="text-center text-sm text-secondary">
+          <Link
+            href="/signin"
+            className="font-medium text-foreground transition duration-200 hover:text-secondary"
+          >
+            Back to sign in
+          </Link>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <form action={onSubmit} className="grid gap-4">
       {error ? <Alert variant="error">{error}</Alert> : null}
-      {message ? <Alert variant="success">{message}</Alert> : null}
       <FormField label="Full name" htmlFor="fullName" error={errors.fullName}>
         <Input id="fullName" name="fullName" autoComplete="name" required invalid={Boolean(errors.fullName)} />
       </FormField>
@@ -623,68 +700,6 @@ export function ResetPasswordForm() {
         Update password
       </Button>
     </form>
-  );
-}
-
-export function VerifyEmailForm() {
-  const searchParams = useSearchParams();
-  const emailFromQuery = searchParams.get("email") ?? "";
-  const [email, setEmail] = useState(emailFromQuery);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-  const redirectTo = useMemo(() => buildAuthCallbackUrl("/dashboard"), []);
-
-  useEffect(() => {
-    if (!email && typeof window !== "undefined") {
-      const stored = window.sessionStorage.getItem("vb_verify_email");
-      if (stored) setEmail(stored);
-    }
-  }, [email]);
-
-  function onResend() {
-    setError(null);
-    setMessage(null);
-    if (!email.trim()) {
-      setError("Enter the email address you used to sign up.");
-      return;
-    }
-    startTransition(async () => {
-      try {
-        await resendVerificationEmail(email.trim(), redirectTo);
-        setMessage("Verification email resent. Check your inbox and spam folder.");
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to resend verification email");
-      }
-    });
-  }
-
-  return (
-    <div className="grid gap-4">
-      {error ? <Alert variant="error">{error}</Alert> : null}
-      {message ? <Alert variant="success">{message}</Alert> : null}
-      <Alert variant="info">
-        We sent a verification link from VanderBase. Confirm your email to unlock your workspace.
-      </Alert>
-      <FormField label="Email" htmlFor="verify-email" description="Used only to resend your verification link.">
-        <Input
-          id="verify-email"
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          autoComplete="email"
-          placeholder="you@company.com"
-        />
-      </FormField>
-      <Button type="button" loading={pending} className="w-full" onClick={onResend}>
-        Resend verification email
-      </Button>
-      <Link href="/signin">
-        <Button className="w-full" variant="secondary">
-          Back to sign in
-        </Button>
-      </Link>
-    </div>
   );
 }
 

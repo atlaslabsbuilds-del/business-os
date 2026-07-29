@@ -156,7 +156,7 @@ export async function resendVerificationEmail(email: string, emailRedirectTo: st
   });
 
   if (error) {
-    throw new Error(error.message);
+    throw new Error(mapResendVerificationError(error.message));
   }
 
   return data;
@@ -171,6 +171,50 @@ export async function getAuthSession() {
   return data.session;
 }
 
+export async function getAuthUser() {
+  const supabase = createBrowserClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data.user;
+}
+
+export function isEmailVerified(
+  user: { email_confirmed_at?: string | null } | null | undefined,
+): boolean {
+  return Boolean(user?.email_confirmed_at);
+}
+
+export async function refreshAuthSession() {
+  const supabase = createBrowserClient();
+  const { data, error } = await supabase.auth.refreshSession();
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data.session;
+}
+
+function mapResendVerificationError(message: string): string {
+  const lower = message.toLowerCase();
+  if (lower.includes("rate") || lower.includes("too many")) {
+    return "Too many requests. Wait a moment and try again.";
+  }
+  if (lower.includes("network") || lower.includes("fetch")) {
+    return "Network error. Check your connection and try again.";
+  }
+  if (
+    lower.includes("already") &&
+    (lower.includes("confirmed") || lower.includes("verified"))
+  ) {
+    return "This email is already verified. You can sign in.";
+  }
+  if (lower.includes("invalid") || lower.includes("not found")) {
+    return "We couldn't send a verification email to this address. Check the email or sign up again.";
+  }
+  return message || "Unable to send verification email. Please try again.";
+}
+
 /** Listen for password-recovery session establishment (email link). */
 export function onPasswordRecovery(
   callback: (ready: boolean) => void,
@@ -183,5 +227,37 @@ export function onPasswordRecovery(
       callback(Boolean(session));
     }
   });
+  return () => subscription.unsubscribe();
+}
+
+/** Listen for email verification completion (link click or session refresh). */
+export function onEmailVerification(
+  callback: (verified: boolean) => void,
+): () => void {
+  const supabase = createBrowserClient();
+
+  async function checkVerified() {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      callback(false);
+      return;
+    }
+    callback(isEmailVerified(data.user));
+  }
+
+  void checkVerified();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event) => {
+    if (
+      event === "SIGNED_IN" ||
+      event === "USER_UPDATED" ||
+      event === "TOKEN_REFRESHED"
+    ) {
+      void checkVerified();
+    }
+  });
+
   return () => subscription.unsubscribe();
 }

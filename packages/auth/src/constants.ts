@@ -18,6 +18,8 @@ export const AUTH_ROUTES = [
   AUTH_CALLBACK_PATH,
 ] as const;
 
+export const PUBLIC_API_ROUTES = ["/api/waitlist/stats"] as const;
+
 export const PUBLIC_ROUTES = [
   "/",
   "/pricing",
@@ -33,6 +35,7 @@ export const PUBLIC_ROUTES = [
   "/unauthorized",
   "/session-expired",
   "/api/waitlist",
+  "/api/waitlist/stats",
   "/api/contact",
   ...AUTH_ROUTES,
   GMAIL_OAUTH_CALLBACK_PATH,
@@ -60,6 +63,10 @@ function matchesRoute(pathname: string, route: string): boolean {
     return pathname === "/";
   }
   return pathname === route || pathname.startsWith(`${route}/`);
+}
+
+export function isPublicApiRoute(pathname: string): boolean {
+  return PUBLIC_API_ROUTES.some((route) => matchesRoute(pathname, route));
 }
 
 export function isAuthRoute(pathname: string): boolean {

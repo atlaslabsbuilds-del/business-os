@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { VerifyEmailForm } from "../../../components/auth/auth-forms";
+import { VerifyEmailForm } from "../../../components/auth/verify-email-form";
 import { Spinner } from "@repo/ui/spinner";
 
 export const metadata: Metadata = {
@@ -8,20 +8,19 @@ export const metadata: Metadata = {
   description: "Confirm your email to finish setting up VanderBase.",
 };
 
+function VerifyEmailFallback() {
+  return (
+    <div className="grid gap-6 py-4" role="status" aria-busy="true">
+      <Spinner label="Loading verification" className="mx-auto" />
+      <p className="text-center text-sm text-secondary">Loading verification…</p>
+    </div>
+  );
+}
+
 export default function VerifyEmailPage() {
   return (
-    <div className="grid gap-6">
-      <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          Verify your email
-        </h1>
-        <p className="text-sm text-secondary">
-          Confirm your email address to finish setting up your VanderBase account.
-        </p>
-      </div>
-      <Suspense fallback={<Spinner label="Loading verification" />}>
-        <VerifyEmailForm />
-      </Suspense>
-    </div>
+    <Suspense fallback={<VerifyEmailFallback />}>
+      <VerifyEmailForm />
+    </Suspense>
   );
 }

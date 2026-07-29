@@ -18,10 +18,16 @@ export async function handleAuthCallback(request: NextRequest) {
   const code = searchParams.get("code");
   const next = sanitizeAuthNextPath(searchParams.get("next"));
   const isPasswordReset = next === "/reset-password" || next.startsWith("/reset-password/");
+  const isEmailVerification =
+    next === "/verify-email" ||
+    next.startsWith("/verify-email/") ||
+    (next === "/dashboard" && !isPasswordReset);
 
   const failPath = isPasswordReset
     ? "/reset-password?error=invalid"
-    : "/signin?error=auth_callback";
+    : isEmailVerification
+      ? "/verify-email?error=invalid"
+      : "/signin?error=auth_callback";
 
   if (!code) {
     // Auth provider may bounce back with error_* query params on a bad/used link.
@@ -29,16 +35,18 @@ export async function handleAuthCallback(request: NextRequest) {
       searchParams.get("error") ||
       searchParams.get("error_code") ||
       searchParams.get("error_description");
-    if (providerError && isPasswordReset) {
+    if (providerError && (isPasswordReset || isEmailVerification)) {
       const expired =
         /expired|otp_expired|flow_state_expired/i.test(providerError) ||
         searchParams.get("error_code") === "otp_expired";
-      return NextResponse.redirect(
-        new URL(
-          expired ? "/reset-password?error=expired" : "/reset-password?error=invalid",
-          origin,
-        ),
-      );
+      const verified =
+        /already|verified|confirmed/i.test(providerError) ||
+        searchParams.get("error_code") === "email_already_confirmed";
+      const errorCode = verified ? "verified" : expired ? "expired" : "invalid";
+      const path = isPasswordReset
+        ? `/reset-password?error=${errorCode === "verified" ? "used" : errorCode}`
+        : `/verify-email?error=${errorCode}`;
+      return NextResponse.redirect(new URL(path, origin));
     }
     return NextResponse.redirect(new URL(failPath, origin));
   }
@@ -86,7 +94,32 @@ export async function handleAuthCallback(request: NextRequest) {
         new URL(`/reset-password?error=${errorCode}`, origin),
       );
     }
+    if (isEmailVerification) {
+      const expired = /expired|otp_expired|flow_state/i.test(message);
+      const verified = /already|verified|confirmed|reuse|consumed/i.test(message);
+      const errorCode = verified ? "verified" : expired ? "expired" : "invalid";
+      return NextResponse.redirect(
+        new URL(`/verify-email?error=${errorCode}`, origin),
+      );
+    }
     return NextResponse.redirect(new URL("/signin?error=auth_callback", origin));
+  }
+
+  if (isEmailVerification && data.user?.email_confirmed_at) {
+    const verifiedDestination = new URL("/verify-email", origin);
+    verifiedDestination.searchParams.set("verified", "1");
+    if (data.user.email) {
+      verifiedDestination.searchParams.set("email", data.user.email);
+    }
+    const preservedNext = sanitizeAuthNextPath(searchParams.get("next"));
+    if (preservedNext !== "/verify-email") {
+      verifiedDestination.searchParams.set("next", preservedNext);
+    }
+    const nextResponse = NextResponse.redirect(verifiedDestination);
+    redirectResponse.cookies.getAll().forEach((cookie) => {
+      nextResponse.cookies.set(cookie.name, cookie.value);
+    });
+    redirectResponse = nextResponse;
   }
 
   return redirectResponse;

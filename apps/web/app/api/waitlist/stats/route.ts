@@ -1,18 +1,29 @@
 import { NextResponse } from "next/server";
-import { getWaitlistStats } from "@repo/database/waitlist";
+import {
+  EMPTY_WAITLIST_STATS,
+  getPublicWaitlistStats,
+} from "@repo/database/waitlist";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const stats = await getWaitlistStats();
+    const stats = await getPublicWaitlistStats();
     return NextResponse.json(stats, {
+      status: 200,
       headers: {
         "Cache-Control": "no-store, max-age=0",
       },
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load waitlist stats.";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.warn("[waitlist.stats] public stats unavailable", {
+      message: error instanceof Error ? error.message : String(error),
+    });
+    return NextResponse.json(EMPTY_WAITLIST_STATS, {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    });
   }
 }

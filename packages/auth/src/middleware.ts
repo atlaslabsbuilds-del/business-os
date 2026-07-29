@@ -5,6 +5,7 @@ import {
   AUTH_CALLBACK_PATH,
   ONBOARDING_PATH,
   isGuestOnlyRoute,
+  isPublicApiRoute,
   isPublicRoute,
   requiresAdmin,
 } from "./constants";
@@ -88,6 +89,11 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
   return async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    // Public read-only API routes must not run session refresh or auth gates.
+    if (isPublicApiRoute(pathname)) {
+      return NextResponse.next();
+    }
+
     // If Supabase returns the OAuth code to Site URL (/), forward it to the
     // App Router callback so exchangeCodeForSession can run.
     const oauthCode = request.nextUrl.searchParams.get("code");
@@ -158,6 +164,22 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
       const nextParam = request.nextUrl.searchParams.get("next");
       const oauth = request.nextUrl.searchParams.get("oauth");
       const url = request.nextUrl.clone();
+
+      if (!user.email_confirmed_at) {
+        url.pathname = "/verify-email";
+        url.search = "";
+        if (user.email) url.searchParams.set("email", user.email);
+        if (
+          nextParam &&
+          nextParam.startsWith("/") &&
+          !nextParam.startsWith("//")
+        ) {
+          url.searchParams.set("next", nextParam);
+        }
+        url.searchParams.set("from", "signin");
+        return redirectForRequest(request, url, response);
+      }
+
       if (
         oauth &&
         nextParam &&
@@ -192,6 +214,11 @@ export function createWebMiddleware(options: MiddlewareAuthOptions = {}) {
       const url = request.nextUrl.clone();
       url.pathname = "/verify-email";
       url.search = "";
+      if (user.email) url.searchParams.set("email", user.email);
+      const returnPath = `${pathname}${request.nextUrl.search}`;
+      if (returnPath.startsWith("/") && !returnPath.startsWith("//")) {
+        url.searchParams.set("next", returnPath);
+      }
       return redirectForRequest(request, url, response);
     }
 

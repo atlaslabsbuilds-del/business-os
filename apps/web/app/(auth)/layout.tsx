@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { VanderBaseLogo } from "../../components/branding/vanderbase-logo";
+import { AuthToastProvider } from "../../components/auth/auth-toast";
 
 export const metadata: Metadata = {
   title: {
@@ -34,7 +35,8 @@ export default function AuthLayout({
   const year = new Date().getFullYear();
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0B0B0B] px-4 py-12 text-foreground">
+    <AuthToastProvider>
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0B0B0B] px-4 py-12 text-foreground">
       {/* Landing-matched atmosphere */}
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute -left-[8%] -top-[12%] h-[42vw] w-[42vw] rounded-full bg-[radial-gradient(circle,rgba(255,122,0,0.32),transparent_70%)] blur-3xl" />
@@ -97,5 +99,6 @@ export default function AuthLayout({
         </div>
       </div>
     </div>
+    </AuthToastProvider>
   );
 }

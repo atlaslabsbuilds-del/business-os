@@ -1,4 +1,5 @@
 -- VanderBase pre-launch waitlist.
+-- Canonical table: public.waitlist (verified against live Supabase schema).
 
 create table if not exists public.waitlist (
   id uuid primary key default gen_random_uuid(),

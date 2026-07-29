@@ -2372,6 +2372,10 @@ export type Database = {
         Args: { target_workspace_id: string };
         Returns: undefined;
       };
+      get_waitlist_public_stats: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
       deduct_workspace_credits: {
         Args: {
           target_workspace_id: string;

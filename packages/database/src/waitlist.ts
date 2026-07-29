@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@repo/types";
 import { createAdminClient } from "./admin";
+import { getPublicSupabaseEnv } from "./env";
 
 export const WAITLIST_TEAM_SIZES = ["1", "2-10", "11-50", "51-200", "200+"] as const;
 export type WaitlistTeamSize = (typeof WAITLIST_TEAM_SIZES)[number];
@@ -30,6 +32,8 @@ export type WaitlistStats = {
   recent: WaitlistPublicSignup[];
 };
 
+export const EMPTY_WAITLIST_STATS: WaitlistStats = { count: 0, recent: [] };
+
 export type WaitlistSuccessData = {
   id: string;
   name: string;
@@ -44,6 +48,32 @@ type WaitlistRow = Database["public"]["Tables"]["waitlist"]["Row"];
 function adminOrDefault(client?: SupabaseClient<Database>) {
   return client ?? createAdminClient();
 }
+
+function createAnonClient() {
+  const env = getPublicSupabaseEnv();
+  return createClient<Database>(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    },
+  );
+}
+
+type PublicStatsRpcRow = {
+  id: string;
+  createdAt: string;
+  company: string | null;
+  shareCompanyPublicly: boolean;
+};
+
+type PublicStatsRpcResult = {
+  count: number;
+  recent: PublicStatsRpcRow[];
+};
 
 function mapWaitlistRow(row: WaitlistRow): WaitlistEntry {
   return {
@@ -144,6 +174,37 @@ export async function getWaitlistCount(client?: SupabaseClient<Database>): Promi
   }
 
   return count ?? 0;
+}
+
+export async function getPublicWaitlistStats(): Promise<WaitlistStats> {
+  const supabase = createAnonClient();
+  const { data, error } = await supabase.rpc("get_waitlist_public_stats");
+
+  if (error) {
+    throw new Error(`Failed to load public waitlist stats: ${error.message}`);
+  }
+
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    return EMPTY_WAITLIST_STATS;
+  }
+
+  const payload = data as PublicStatsRpcResult;
+  const recent = (payload.recent ?? []).map((row, index) => ({
+    id: row.id,
+    message: formatPublicSignupMessage(
+      {
+        company: row.company,
+        share_company_publicly: row.shareCompanyPublicly,
+      },
+      index,
+    ),
+    createdAt: row.createdAt,
+  }));
+
+  return {
+    count: typeof payload.count === "number" ? payload.count : 0,
+    recent,
+  };
 }
 
 export async function getWaitlistStats(client?: SupabaseClient<Database>): Promise<WaitlistStats> {
