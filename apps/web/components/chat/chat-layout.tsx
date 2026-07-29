@@ -30,6 +30,8 @@ type ChatLayoutProps = {
   initialProvider: AiProviderId;
   initialCreditBalance: number;
   initialPrompt?: string;
+  variant?: "page" | "panel";
+  streamEndpoint?: string;
 };
 
 function createLocalMessage(input: {
@@ -58,6 +60,8 @@ export function ChatLayout({
   initialProvider,
   initialCreditBalance,
   initialPrompt,
+  variant = "page",
+  streamEndpoint = "/api/chat/stream",
 }: ChatLayoutProps) {
   const [conversations, setConversations] = React.useState(initialConversations);
   const [activeId, setActiveId] = React.useState<string | undefined>(
@@ -77,6 +81,7 @@ export function ChatLayout({
   const [kairosPhase, setKairosPhase] = React.useState<"success" | "completed" | null>(null);
   const abortRef = React.useRef<AbortController | null>(null);
   const searchTimer = React.useRef<number | null>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const refreshConversations = React.useCallback(async (query?: string) => {
     const result = await listChatConversationsAction({ query });
@@ -96,6 +101,15 @@ export function ChatLayout({
       if (searchTimer.current) window.clearTimeout(searchTimer.current);
     };
   }, [searchQuery, refreshConversations]);
+
+  React.useEffect(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: isStreaming ? "auto" : "smooth",
+    });
+  }, [messages, streamingContent, isStreaming]);
 
   async function selectConversation(conversationId: string) {
     setError(null);
@@ -156,6 +170,7 @@ export function ChatLayout({
           provider,
           regenerate: input.regenerate,
           signal: controller.signal,
+          endpoint: streamEndpoint,
         },
         {
           onEvent(event) {
@@ -301,7 +316,13 @@ export function ChatLayout({
   });
 
   return (
-    <div className="-mx-4 -my-4 flex h-[calc(100vh-3.5rem)] overflow-hidden sm:-mx-6 lg:-mx-8 lg:h-[calc(100vh-4rem)]">
+    <div
+      className={
+        variant === "panel"
+          ? "flex h-full overflow-hidden"
+          : "-mx-4 -my-4 flex h-[calc(100vh-3.5rem)] overflow-hidden sm:-mx-6 lg:-mx-8 lg:h-[calc(100vh-4rem)]"
+      }
+    >
       <ChatSidebar
         conversations={conversations}
         activeId={activeId}
@@ -318,29 +339,43 @@ export function ChatLayout({
       />
 
       <div className="flex min-w-0 flex-1 flex-col bg-background">
-        <header className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-3">
+        {variant === "page" ? (
+          <header className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="lg:hidden"
+                onClick={() => setMobileOpen(true)}
+              >
+                <IconMenu />
+              </Button>
+              <div>
+                <h1 className="text-sm font-semibold text-foreground">
+                  {activeId
+                    ? conversations.find((c) => c.id === activeId)?.title ?? "Chat"
+                    : "Ask Kairos"}
+                </h1>
+                {usageLabel ? (
+                  <p className="text-xs text-muted">{usageLabel}</p>
+                ) : null}
+              </div>
+            </div>
+          </header>
+        ) : (
+          <header className="flex items-center justify-between border-b border-border px-4 py-2.5 sm:px-4 lg:hidden">
             <Button
               type="button"
               variant="ghost"
               size="sm"
-              className="lg:hidden"
               onClick={() => setMobileOpen(true)}
             >
               <IconMenu />
             </Button>
-            <div>
-              <h1 className="text-sm font-semibold text-foreground">
-                {activeId
-                  ? conversations.find((c) => c.id === activeId)?.title ?? "Chat"
-                  : "Ask Kairos"}
-              </h1>
-              {usageLabel ? (
-                <p className="text-xs text-muted">{usageLabel}</p>
-              ) : null}
-            </div>
-          </div>
-        </header>
+            {usageLabel ? <p className="text-xs text-muted">{usageLabel}</p> : <span />}
+          </header>
+        )}
 
         {error ? (
           <div className="border-b border-error/30 bg-error/10 px-4 py-2 text-sm text-error sm:px-6">
@@ -356,7 +391,7 @@ export function ChatLayout({
               compact
             />
           </aside>
-          <div className="flex-1 overflow-y-auto">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto">
           {messages.length === 0 && !isStreaming ? (
             <EmptyState
               kairosState={kairosState}

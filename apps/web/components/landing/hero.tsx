@@ -24,12 +24,25 @@ export function LandingHero({
     <section className="relative px-5 pb-20 pt-32 sm:px-8 sm:pb-24 sm:pt-36 lg:pt-44">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-4xl text-center">
-          <motion.h1
+          <motion.div
             {...fadeUp(0)}
+            className="mb-5 flex justify-center sm:mb-6"
+          >
+            <span className="landing-glass-strong inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-gradient-to-r from-primary/15 via-[#FFB15C]/10 to-primary/15 px-3.5 py-1.5 shadow-[0_0_28px_rgba(255,122,0,0.14)] backdrop-blur-md">
+              <span aria-hidden className="text-[11px] leading-none sm:text-xs">
+                🌍
+              </span>
+              <span className="bg-gradient-to-r from-primary via-[#FFB15C] to-primary bg-clip-text text-[10px] font-semibold uppercase tracking-[0.24em] text-transparent sm:text-[11px]">
+                World&apos;s First
+              </span>
+            </span>
+          </motion.div>
+
+          <motion.h1
+            {...fadeUp(0.06)}
             className="text-balance text-[2.75rem] font-extrabold leading-[1.02] tracking-[-0.025em] text-white sm:text-6xl lg:text-[4.75rem] xl:text-[5.25rem]"
           >
-            <span className="block">The AI-Native</span>
-            <span className="block">Business OS</span>
+            AI-Native Business OS
           </motion.h1>
 
           <motion.p

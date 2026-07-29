@@ -3,6 +3,7 @@
 import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Copy, Check } from "lucide-react";
 import { Button } from "@repo/ui/button";
 import { cn } from "@repo/ui/utils";
 import type { ChatMessage } from "@repo/types";
@@ -64,6 +65,14 @@ export function Message({
   kairosState = "idle",
 }: MessageProps) {
   const isUser = message.role === "user";
+  const [copied, setCopied] = React.useState(false);
+
+  async function copyMessage() {
+    if (!message.content.trim()) return;
+    await navigator.clipboard.writeText(message.content);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1500);
+  }
 
   return (
     <div
@@ -110,13 +119,28 @@ export function Message({
             </ReactMarkdown>
           )}
         </div>
-        {!isUser && canRegenerate && onRegenerate ? (
-          <div className="opacity-0 transition group-hover:opacity-100">
+        <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+          {!isUser && message.content.trim() ? (
+            <Button type="button" variant="ghost" size="sm" onClick={copyMessage}>
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5" aria-hidden />
+                  Copied
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" aria-hidden />
+                  Copy
+                </>
+              )}
+            </Button>
+          ) : null}
+          {!isUser && canRegenerate && onRegenerate ? (
             <Button type="button" variant="ghost" size="sm" onClick={onRegenerate}>
               Regenerate
             </Button>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
       </div>
     </div>
   );

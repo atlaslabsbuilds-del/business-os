@@ -15,6 +15,7 @@ import { AppToastStack } from "./app-toast-stack";
 import { PageTransition } from "./page-transition";
 import { KairosFab } from "../kairos/kairos-fab";
 import { KairosChromeOverlays } from "../kairos/kairos-chrome-overlays";
+import { KairosChatPanel, KairosChatProvider } from "../kairos/chat";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
 import { useNotificationsRealtime, useUnreadNotificationCount } from "../../lib/notifications-realtime";
 
@@ -60,47 +61,50 @@ export function ProtectedAppShell({
   );
 
   return (
-    <AppChromeProvider
-      workspaceContext={{
-        workspaceId,
-        organizationName: workspaceName,
-        userEmail: email,
-      }}
-    >
-      <AppShell
-        brand="VanderBase"
-        brandMark={<VanderBaseLogo size="sm" className="max-w-full" />}
-        brandMarkCollapsed={<VanderBaseLogo variant="icon" size="md" />}
-        brandHref="/dashboard"
-        title={workspaceName}
-        userEmail={email}
-        navItems={navWithBadge}
-        sidebarTop={
-          <WorkspaceSwitcher workspaces={memberships} activeWorkspaceId={activeWorkspaceId} />
-        }
-        searchSlot={<CommandPaletteTrigger />}
-        toolbar={
-          <>
-            <AppQuickActionsPanel />
-            <AppNotificationsCenter
-              workspaceId={workspaceId}
-              userId={userId}
-              initialUnreadCount={count}
-            />
-            <InviteMemberModal workspaceId={workspaceId} canInvite={canInvite} />
-            <span className="hidden sm:inline">
-              <AppProfileMenu email={email} role={role} />
-            </span>
-          </>
-        }
-        helpSlot={<AppHelpButton />}
+    <KairosChatProvider>
+      <AppChromeProvider
+        workspaceContext={{
+          workspaceId,
+          organizationName: workspaceName,
+          userEmail: email,
+        }}
       >
-        <PageTransition>{children}</PageTransition>
-      </AppShell>
+        <AppShell
+          brand="VanderBase"
+          brandMark={<VanderBaseLogo size="sm" className="max-w-full" />}
+          brandMarkCollapsed={<VanderBaseLogo variant="icon" size="md" />}
+          brandHref="/dashboard"
+          title={workspaceName}
+          userEmail={email}
+          navItems={navWithBadge}
+          sidebarTop={
+            <WorkspaceSwitcher workspaces={memberships} activeWorkspaceId={activeWorkspaceId} />
+          }
+          searchSlot={<CommandPaletteTrigger />}
+          toolbar={
+            <>
+              <AppQuickActionsPanel />
+              <AppNotificationsCenter
+                workspaceId={workspaceId}
+                userId={userId}
+                initialUnreadCount={count}
+              />
+              <InviteMemberModal workspaceId={workspaceId} canInvite={canInvite} />
+              <span className="hidden sm:inline">
+                <AppProfileMenu email={email} role={role} />
+              </span>
+            </>
+          }
+          helpSlot={<AppHelpButton />}
+        >
+          <PageTransition>{children}</PageTransition>
+        </AppShell>
       <AppCommandPalette />
       <AppToastStack />
       <KairosFab />
+      <KairosChatPanel />
       <KairosChromeOverlays />
-    </AppChromeProvider>
+      </AppChromeProvider>
+    </KairosChatProvider>
   );
 }

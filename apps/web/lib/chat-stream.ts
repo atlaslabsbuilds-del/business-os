@@ -7,6 +7,7 @@ export type StreamChatInput = {
   provider?: string;
   regenerate?: boolean;
   signal?: AbortSignal;
+  endpoint?: string;
 };
 
 export type StreamChatCallbacks = {
@@ -17,7 +18,8 @@ export async function streamChatRequest(
   input: StreamChatInput,
   callbacks: StreamChatCallbacks,
 ): Promise<void> {
-  const response = await fetch("/api/chat/stream", {
+  const endpoint = input.endpoint ?? "/api/chat/stream";
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

@@ -52,7 +52,7 @@ export function MessageList({
           />
         );
       })}
-      {isStreaming && visible.length === 0 ? (
+      {isStreaming && (!streamingContent || streamingContent.trim().length === 0) ? (
         <div className="px-6 py-4">
           <TypingIndicator />
         </div>

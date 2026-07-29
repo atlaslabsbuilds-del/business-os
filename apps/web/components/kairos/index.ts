@@ -7,3 +7,4 @@ export { KairosQuickCreateModal } from "./kairos-quick-create-modal";
 export { KairosWorkflowRunner } from "./kairos-workflow-runner";
 export { KairosWorkspaceObserver } from "./kairos-workspace-observer";
 export { KairosChromeOverlays } from "./kairos-chrome-overlays";
+export { KairosChatPanel, KairosChatProvider, useKairosChat } from "./chat";
