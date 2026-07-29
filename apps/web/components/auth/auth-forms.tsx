@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildAuthCallbackUrl,
+  getAuthSession,
   requestPasswordReset,
+  resendVerificationEmail,
   signInWithGoogle,
   signInWithPassword,
   signUpWithPassword,
@@ -34,6 +36,22 @@ function fieldErrors(error: { issues: { path: PropertyKey[]; message: string }[]
   return result;
 }
 
+function AuthLegalNote() {
+  return (
+    <p className="text-center text-xs leading-5 text-muted">
+      By continuing, you agree to VanderBase{" "}
+      <Link href="/terms" className="text-secondary underline-offset-2 hover:text-foreground hover:underline">
+        Terms
+      </Link>{" "}
+      and{" "}
+      <Link href="/privacy" className="text-secondary underline-offset-2 hover:text-foreground hover:underline">
+        Privacy Policy
+      </Link>
+      .
+    </p>
+  );
+}
+
 export function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -42,7 +60,11 @@ export function SignInForm() {
   const oauthStatus = searchParams.get("oauth");
   const oauthEmail = searchParams.get("email");
   const [error, setError] = useState<string | null>(
-    authError === "auth_callback" ? "Authentication failed. Please try again." : null,
+    authError === "auth_callback"
+      ? "Authentication failed. Please try again."
+      : authError === "session_expired"
+        ? "Your session expired. Please sign in again."
+        : null,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
@@ -63,7 +85,6 @@ export function SignInForm() {
     startTransition(async () => {
       try {
         await signInWithPassword(parsed.data);
-        // Preserve Gmail OAuth result query when returning to inbox accounts.
         const target =
           oauthStatus && nextPath.startsWith("/")
             ? `${nextPath}${nextPath.includes("?") ? "&" : "?"}oauth=${encodeURIComponent(oauthStatus)}${
@@ -113,6 +134,7 @@ export function SignInForm() {
         </div>
       </div>
       <GoogleButton label="Continue with Google" nextPath={nextPath} />
+      <AuthLegalNote />
       <p className="text-center text-sm text-secondary">
         No account?{" "}
         <Link
@@ -152,17 +174,25 @@ export function SignupForm() {
       return;
     }
 
+    if (formData.get("terms") !== "on") {
+      setErrors({ terms: "Please accept the Terms and Privacy Policy." });
+      return;
+    }
+
     setErrors({});
     startTransition(async () => {
       try {
         const result = await signUpWithPassword(parsed.data, redirectTo);
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("vb_verify_email", parsed.data.email);
+        }
         if (result.session) {
           router.replace("/dashboard");
           router.refresh();
           return;
         }
         setMessage("Check your email to verify your account.");
-        router.push("/verify-email");
+        router.push(`/verify-email?email=${encodeURIComponent(parsed.data.email)}`);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to sign up");
       }
@@ -185,6 +215,26 @@ export function SignupForm() {
       <FormField label="Confirm password" htmlFor="confirmPassword" error={errors.confirmPassword}>
         <PasswordInput id="confirmPassword" name="confirmPassword" autoComplete="new-password" required invalid={Boolean(errors.confirmPassword)} />
       </FormField>
+      <label className="flex items-start gap-3 rounded-xl border border-border bg-elevated/40 px-3 py-3 text-sm text-secondary">
+        <input
+          type="checkbox"
+          name="terms"
+          className="mt-0.5 h-4 w-4 rounded border-border accent-primary"
+          required
+        />
+        <span>
+          I agree to the{" "}
+          <Link href="/terms" className="text-foreground underline-offset-2 hover:underline">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="text-foreground underline-offset-2 hover:underline">
+            Privacy Policy
+          </Link>
+          .
+        </span>
+      </label>
+      {errors.terms ? <p className="text-xs text-red-400">{errors.terms}</p> : null}
       <Button type="submit" loading={pending} className="w-full">
         Create account
       </Button>
@@ -197,6 +247,7 @@ export function SignupForm() {
         </div>
       </div>
       <GoogleButton label="Sign up with Google" nextPath="/dashboard" />
+      <AuthLegalNote />
       <p className="text-center text-sm text-secondary">
         Already have an account?{" "}
         <Link
@@ -236,7 +287,7 @@ export function ForgotPasswordForm() {
     startTransition(async () => {
       try {
         await requestPasswordReset(parsed.data, redirectTo);
-        setMessage("If an account exists, a reset link has been sent.");
+        setMessage("If an account exists for that email, a VanderBase reset link has been sent.");
       } catch (err) {
         setError(err instanceof Error ? err.message : "Unable to send reset email");
       }
@@ -267,10 +318,43 @@ export function ForgotPasswordForm() {
 
 export function ResetPasswordForm() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const linkError = searchParams.get("error");
+  const [error, setError] = useState<string | null>(
+    linkError === "expired"
+      ? "This reset link has expired. Request a new one."
+      : linkError === "invalid"
+        ? "This reset link is invalid. Request a new one."
+        : null,
+  );
   const [message, setMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
+  const [checking, setChecking] = useState(true);
+  const [sessionReady, setSessionReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const session = await getAuthSession();
+        if (cancelled) return;
+        setSessionReady(Boolean(session));
+        if (!session && !linkError) {
+          setError("Open the reset link from your email to continue. Links expire after a short time.");
+        }
+      } catch {
+        if (!cancelled) {
+          setError("Unable to validate this reset session. Request a new link.");
+        }
+      } finally {
+        if (!cancelled) setChecking(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [linkError]);
 
   function onSubmit(formData: FormData) {
     setError(null);
@@ -293,9 +377,34 @@ export function ResetPasswordForm() {
         router.replace("/signin");
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to reset password");
+        const msg = err instanceof Error ? err.message : "Unable to reset password";
+        if (/expired|invalid|session/i.test(msg)) {
+          setError("This reset link has expired or is invalid. Request a new one from Forgot password.");
+        } else {
+          setError(msg);
+        }
       }
     });
+  }
+
+  if (checking) {
+    return <p className="text-sm text-secondary">Validating reset link…</p>;
+  }
+
+  if (!sessionReady) {
+    return (
+      <div className="grid gap-4">
+        <Alert variant="error">{error ?? "This reset link is no longer valid."}</Alert>
+        <Link href="/forgot-password">
+          <Button className="w-full">Request a new reset link</Button>
+        </Link>
+        <p className="text-center text-sm text-secondary">
+          <Link href="/signin" className="font-medium text-foreground hover:text-secondary">
+            Back to sign in
+          </Link>
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -312,6 +421,68 @@ export function ResetPasswordForm() {
         Update password
       </Button>
     </form>
+  );
+}
+
+export function VerifyEmailForm() {
+  const searchParams = useSearchParams();
+  const emailFromQuery = searchParams.get("email") ?? "";
+  const [email, setEmail] = useState(emailFromQuery);
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const redirectTo = useMemo(() => buildAuthCallbackUrl("/dashboard"), []);
+
+  useEffect(() => {
+    if (!email && typeof window !== "undefined") {
+      const stored = window.sessionStorage.getItem("vb_verify_email");
+      if (stored) setEmail(stored);
+    }
+  }, [email]);
+
+  function onResend() {
+    setError(null);
+    setMessage(null);
+    if (!email.trim()) {
+      setError("Enter the email address you used to sign up.");
+      return;
+    }
+    startTransition(async () => {
+      try {
+        await resendVerificationEmail(email.trim(), redirectTo);
+        setMessage("Verification email resent. Check your inbox and spam folder.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unable to resend verification email");
+      }
+    });
+  }
+
+  return (
+    <div className="grid gap-4">
+      {error ? <Alert variant="error">{error}</Alert> : null}
+      {message ? <Alert variant="success">{message}</Alert> : null}
+      <Alert variant="info">
+        We sent a verification link from VanderBase. Confirm your email to unlock your workspace.
+      </Alert>
+      <FormField label="Email" htmlFor="verify-email" description="Used only to resend your verification link.">
+        <Input
+          id="verify-email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          autoComplete="email"
+          placeholder="you@company.com"
+        />
+      </FormField>
+      <Button type="button" loading={pending} className="w-full" onClick={onResend}>
+        Resend verification email
+      </Button>
+      <Link href="/signin">
+        <Button className="w-full" variant="secondary">
+          Back to sign in
+        </Button>
+      </Link>
+    </div>
   );
 }
 

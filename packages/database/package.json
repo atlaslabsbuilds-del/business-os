@@ -27,7 +27,8 @@
     "./ai-reply-drafts": "./src/ai-reply-drafts.ts",
     "./security": "./src/security.ts",
     "./kairos-intelligence": "./src/kairos-intelligence.ts",
-    "./waitlist": "./src/waitlist.ts"
+    "./waitlist": "./src/waitlist.ts",
+    "./contact": "./src/contact.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

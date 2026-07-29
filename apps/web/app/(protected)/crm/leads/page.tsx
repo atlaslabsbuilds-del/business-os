@@ -6,6 +6,7 @@ import { resolveActiveWorkspace } from "../../../../lib/workspace-context";
 import { ensureCrmAiToolsRegistered } from "../../../../lib/crm-ai";
 import { CrmShell } from "../../../../components/crm/crm-shell";
 import { CrmSearch } from "../../../../components/crm/crm-search";
+import { EmptyState } from "../../../../components/dashboard/section-shell";
 import {
   CreateContactForm,
   DeleteButton,
@@ -47,8 +48,11 @@ export default async function CrmLeadsPage({ searchParams }: Props) {
           <tbody>
             {leads.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted">
-                  No leads yet
+                <td colSpan={5} className="p-4">
+                  <EmptyState
+                    title="No leads yet"
+                    body="Capture your first lead with the form above to grow the funnel."
+                  />
                 </td>
               </tr>
             ) : (

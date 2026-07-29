@@ -20,6 +20,19 @@ export const AUTH_ROUTES = [
 
 export const PUBLIC_ROUTES = [
   "/",
+  "/pricing",
+  "/contact",
+  "/terms",
+  "/privacy",
+  "/cookies",
+  "/refund",
+  "/waitlist",
+  "/ref",
+  "/offline",
+  "/unauthorized",
+  "/session-expired",
+  "/api/waitlist",
+  "/api/contact",
   ...AUTH_ROUTES,
   GMAIL_OAUTH_CALLBACK_PATH,
 ] as const;

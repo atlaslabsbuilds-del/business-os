@@ -553,7 +553,7 @@ export function PricingSection() {
                     <PlanCreditsBlock plan={plan} highlighted={plan.popular} />
                   </div>
                   {plan.id === "enterprise" ? (
-                    <Link href="mailto:sales@vanderbase.example" className="mt-5 block">
+                    <Link href="mailto:sales@vanderbase.com" className="mt-5 block">
                       <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
                         Contact sales
                       </Button>
@@ -723,30 +723,30 @@ export function FinalCta() {
 export function LandingFooter() {
   const columns = [
     {
-      title: "Resources",
+      title: "Product",
       links: [
         ["Pricing", "/pricing"],
-        ["Docs", "#docs"],
-        ["Roadmap", "#about"],
-        ["Status", "#about"],
-        ["Blog", "#blog"],
+        ["Features", "#features"],
+        ["Integrations", "#integrations"],
+        ["Contact", "/contact"],
       ],
     },
     {
       title: "Company",
       links: [
         ["About", "#about"],
-        ["Privacy", "#docs"],
-        ["Terms", "#docs"],
+        ["Privacy", "/privacy"],
+        ["Terms", "/terms"],
+        ["Cookies", "/cookies"],
+        ["Refunds", "/refund"],
       ],
     },
     {
-      title: "Social",
+      title: "Account",
       links: [
-        ["Twitter", "https://x.com"],
-        ["LinkedIn", "https://linkedin.com"],
-        ["GitHub", "https://github.com"],
-        ["Discord", "https://discord.com"],
+        ["Sign in", "/signin"],
+        ["Create account", "/signup"],
+        ["Waitlist", "/#waitlist"],
       ],
     },
   ] as const;
@@ -782,7 +782,7 @@ export function LandingFooter() {
         ))}
       </div>
       <p className="mx-auto mt-12 max-w-7xl text-xs text-muted">
-        ©️ 2026 VanderBase. All rights reserved.
+        © {new Date().getFullYear()} VanderBase. All rights reserved.
       </p>
     </footer>
   );

@@ -175,6 +175,7 @@ export {
   type WaitlistPublicSignup,
   type WaitlistSuccessData,
 } from "./waitlist";
+export { submitContactMessage, type ContactMessageInput } from "./contact";
 export {
   getInboxAccountSecrets,
   getInboxAccountSecretsForSync,

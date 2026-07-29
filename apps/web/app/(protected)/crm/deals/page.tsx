@@ -6,6 +6,7 @@ import { resolveActiveWorkspace } from "../../../../lib/workspace-context";
 import { ensureCrmAiToolsRegistered } from "../../../../lib/crm-ai";
 import { CrmShell } from "../../../../components/crm/crm-shell";
 import { CrmSearch } from "../../../../components/crm/crm-search";
+import { EmptyState } from "../../../../components/dashboard/section-shell";
 import {
   CreateDealForm,
   DealStageSelect,
@@ -83,8 +84,11 @@ export default async function CrmDealsPage({ searchParams }: Props) {
           <tbody>
             {deals.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted">
-                  No deals yet
+                <td colSpan={5} className="p-4">
+                  <EmptyState
+                    title="No deals yet"
+                    body="Create your first deal with the form above to track pipeline value."
+                  />
                 </td>
               </tr>
             ) : (

@@ -1,5 +1,15 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { VanderBaseLogo } from "../../components/branding/vanderbase-logo";
+
+export const metadata: Metadata = {
+  title: {
+    default: "Account",
+    template: "%s | VanderBase",
+  },
+  description: "Secure VanderBase authentication — sign in, sign up, and manage your account.",
+  robots: { index: false, follow: false },
+};
 
 export default function AuthLayout({
   children,
@@ -12,7 +22,7 @@ export default function AuthLayout({
         <div className="mb-8 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground transition duration-200 hover:text-secondary"
+            className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground transition duration-200 hover:text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             <VanderBaseLogo compact priority />
             <span className="uppercase tracking-[0.18em]">
@@ -20,10 +30,24 @@ export default function AuthLayout({
               <span className="text-primary">BASE</span>
             </span>
           </Link>
+          <p className="mt-3 text-xs text-muted">The AI-native Business OS</p>
         </div>
         <div className="rounded-2xl border border-border bg-surface p-6 shadow-elevated sm:p-8 pbos-animate-scale">
           {children}
         </div>
+        <p className="mt-6 text-center text-xs text-muted">
+          <Link href="/terms" className="hover:text-foreground">
+            Terms
+          </Link>
+          {" · "}
+          <Link href="/privacy" className="hover:text-foreground">
+            Privacy
+          </Link>
+          {" · "}
+          <Link href="/contact" className="hover:text-foreground">
+            Contact
+          </Link>
+        </p>
       </div>
     </div>
   );

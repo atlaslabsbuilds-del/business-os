@@ -195,9 +195,11 @@ export function AiAssistantWidget() {
 export function JoinWaitlistButton({
   children,
   className = "",
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }) {
   const { openOverlay, fireStartFreeConfetti } = useLandingInteractions();
   return (
@@ -205,6 +207,7 @@ export function JoinWaitlistButton({
       type="button"
       className={className}
       onClick={() => {
+        onClick?.();
         fireStartFreeConfetti();
         openOverlay("waitlist");
       }}

@@ -75,7 +75,7 @@ export function AppProfileMenu({
           ⌘K Command palette
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/#docs" className="flex items-center gap-2">
+          <Link href="/contact" className="flex items-center gap-2">
             <HelpCircle className="h-4 w-4" aria-hidden />
             Help & docs
           </Link>

@@ -18,10 +18,7 @@ export function NotificationsPanel({
       actionLabel="Workspace"
     >
       {snapshot.notifications.length === 0 ? (
-        <EmptyState
-          title="You're all caught up"
-          body="Module notifications will appear here as CRM, Inbox, and AI workflows run."
-        />
+        <EmptyState preset="notifications" />
       ) : (
         <ul className="space-y-2">
           {snapshot.notifications.map((notification) => (

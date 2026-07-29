@@ -109,3 +109,29 @@ export async function signOutClient() {
     throw new Error(error.message);
   }
 }
+
+export async function resendVerificationEmail(email: string, emailRedirectTo: string) {
+  const supabase = createBrowserClient();
+  const { data, error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: {
+      emailRedirectTo,
+    },
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+export async function getAuthSession() {
+  const supabase = createBrowserClient();
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data.session;
+}

@@ -5,6 +5,7 @@ import { resolveActiveWorkspace } from "../../../../lib/workspace-context";
 import { ensureCrmAiToolsRegistered } from "../../../../lib/crm-ai";
 import { CrmShell } from "../../../../components/crm/crm-shell";
 import { CrmSearch } from "../../../../components/crm/crm-search";
+import { EmptyState } from "../../../../components/dashboard/section-shell";
 import {
   CreateCompanyForm,
   DeleteButton,
@@ -45,8 +46,11 @@ export default async function CrmCompaniesPage({ searchParams }: Props) {
           <tbody>
             {companies.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-muted">
-                  No companies yet
+                <td colSpan={4} className="p-4">
+                  <EmptyState
+                    title="No companies yet"
+                    body="Add a company with the form above to organize accounts in CRM."
+                  />
                 </td>
               </tr>
             ) : (

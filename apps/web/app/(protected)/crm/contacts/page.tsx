@@ -6,6 +6,7 @@ import { resolveActiveWorkspace } from "../../../../lib/workspace-context";
 import { ensureCrmAiToolsRegistered } from "../../../../lib/crm-ai";
 import { CrmShell } from "../../../../components/crm/crm-shell";
 import { CrmSearch } from "../../../../components/crm/crm-search";
+import { EmptyState } from "../../../../components/dashboard/section-shell";
 import {
   CreateContactForm,
   DeleteButton,
@@ -80,8 +81,12 @@ export default async function CrmContactsPage({ searchParams }: Props) {
           <tbody>
             {contacts.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted">
-                  No contacts match your filters
+                <td colSpan={5} className="p-4">
+                  <EmptyState
+                    preset="customers"
+                    title="No customers yet"
+                    body="Use the form above to add your first contact and start building pipeline."
+                  />
                 </td>
               </tr>
             ) : (
