@@ -29,7 +29,8 @@
     "./kairos-intelligence": "./src/kairos-intelligence.ts",
     "./waitlist": "./src/waitlist.ts",
     "./contact": "./src/contact.ts",
-    "./finance": "./src/finance.ts"
+    "./finance": "./src/finance.ts",
+    "./feedback": "./src/feedback.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

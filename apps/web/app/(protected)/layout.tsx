@@ -6,6 +6,7 @@ import {
   IconGlobe,
   IconLayout,
   IconMail,
+  IconMessage,
   IconPen,
   IconSettings,
   IconShare,
@@ -58,6 +59,7 @@ export default async function ProtectedLayout({
         { href: "/calendar", label: "Calendar OS", icon: <IconCalendar /> },
         { href: "/finance", label: "Finance", icon: <IconCreditCard /> },
         { href: "/notifications", label: "Notifications", icon: <IconBell /> },
+        { href: "/feedback", label: "Feedback", icon: <IconMessage /> },
         { href: "/team", label: "Team", icon: <IconUsers /> },
         { href: "/settings", label: "Settings", icon: <IconSettings /> },
       ]}

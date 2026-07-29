@@ -3,7 +3,7 @@ import { requireAdmin } from "@repo/auth/server";
 import { AppShell } from "@repo/ui/app-shell";
 import { Badge } from "@repo/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/card";
-import { IconShield, IconUsers } from "@repo/ui/icons";
+import { IconMessage, IconShield, IconUsers } from "@repo/ui/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -48,6 +48,11 @@ export default async function AdminHomePage() {
           href: "/",
           label: "Overview",
           icon: <IconShield />,
+        },
+        {
+          href: "/feedback",
+          label: "Feedback",
+          icon: <IconMessage />,
         },
         {
           href: "/",

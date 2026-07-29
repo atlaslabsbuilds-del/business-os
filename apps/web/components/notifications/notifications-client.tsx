@@ -8,6 +8,7 @@ import {
   CheckCheck,
   CreditCard,
   Lightbulb,
+  MessageSquare,
   Receipt,
   Shield,
   Sparkles,
@@ -41,6 +42,7 @@ const CATEGORY_ICONS: Record<string, typeof Bell> = {
   billing_alert: CreditCard,
   system_update: Bell,
   security_alert: Shield,
+  feedback_update: MessageSquare,
 };
 
 const FILTER_OPTIONS: Array<{ value: "all" | NotificationCategory; label: string }> = [
@@ -56,6 +58,7 @@ const FILTER_OPTIONS: Array<{ value: "all" | NotificationCategory; label: string
   { value: "billing_alert", label: "Billing" },
   { value: "system_update", label: "System" },
   { value: "security_alert", label: "Security" },
+  { value: "feedback_update", label: "Feedback" },
 ];
 
 export function NotificationRow({

@@ -1982,6 +1982,78 @@ export type Database = {
         };
         Relationships: [];
       };
+      feedback_items: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          created_by: string;
+          title: string;
+          description: string;
+          category: string;
+          priority: string;
+          status: string;
+          screenshot_path: string | null;
+          assignee_id: string | null;
+          vote_count: number;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          created_by: string;
+          title: string;
+          description: string;
+          category: string;
+          priority?: string;
+          status?: string;
+          screenshot_path?: string | null;
+          assignee_id?: string | null;
+          vote_count?: number;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          created_by?: string;
+          title?: string;
+          description?: string;
+          category?: string;
+          priority?: string;
+          status?: string;
+          screenshot_path?: string | null;
+          assignee_id?: string | null;
+          vote_count?: number;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      feedback_votes: {
+        Row: {
+          id: string;
+          feedback_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          feedback_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          feedback_id?: string;
+          user_id?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       calendar_booking_links: {
         Row: {
           id: string; workspace_id: string; created_by: string; name: string; slug: string;

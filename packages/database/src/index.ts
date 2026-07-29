@@ -196,6 +196,16 @@ export {
   getFinanceDashboardStats,
 } from "./finance";
 export {
+  listFeedbackItems,
+  listAllFeedbackForAdmin,
+  listRoadmapFeedback,
+  getFeedbackItem,
+  createFeedbackItem,
+  updateFeedbackItem,
+  voteOnFeedback,
+  getFeedbackStats,
+} from "./feedback";
+export {
   getInboxAccountSecrets,
   getInboxAccountSecretsForSync,
   listGmailAccountSecrets,

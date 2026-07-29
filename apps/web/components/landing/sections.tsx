@@ -726,6 +726,7 @@ export function LandingFooter() {
       title: "Product",
       links: [
         ["Pricing", "/pricing"],
+        ["Roadmap", "/roadmap"],
         ["Features", "#features"],
         ["Integrations", "#integrations"],
         ["Contact", "/contact"],

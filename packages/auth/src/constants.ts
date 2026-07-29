@@ -27,6 +27,7 @@ export const PUBLIC_ROUTES = [
   "/cookies",
   "/refund",
   "/waitlist",
+  "/roadmap",
   "/ref",
   "/offline",
   "/unauthorized",

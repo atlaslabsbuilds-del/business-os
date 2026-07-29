@@ -12,6 +12,7 @@ export const notificationCategorySchema = z.enum([
   "billing_alert",
   "system_update",
   "security_alert",
+  "feedback_update",
 ]);
 export type NotificationCategory = z.infer<typeof notificationCategorySchema>;
 
@@ -105,4 +106,5 @@ export const NOTIFICATION_CATEGORY_LABELS: Record<NotificationCategory, string> 
   billing_alert: "Billing",
   system_update: "System",
   security_alert: "Security",
+  feedback_update: "Feedback",
 };

@@ -281,6 +281,31 @@ export {
 } from "./finance";
 
 export type {
+  FeedbackCategory,
+  FeedbackPriority,
+  FeedbackStatus,
+  FeedbackItem,
+  FeedbackVote,
+  CreateFeedbackInput,
+  UpdateFeedbackStatusInput,
+  ListFeedbackInput,
+} from "./feedback";
+
+export {
+  feedbackCategorySchema,
+  feedbackPrioritySchema,
+  feedbackStatusSchema,
+  createFeedbackSchema,
+  updateFeedbackStatusSchema,
+  listFeedbackSchema,
+  voteFeedbackSchema,
+  FEEDBACK_CATEGORY_LABELS,
+  FEEDBACK_STATUS_LABELS,
+  FEEDBACK_PRIORITY_LABELS,
+  ROADMAP_STATUSES,
+} from "./feedback";
+
+export type {
   InboxProvider,
   InboxAccountStatus,
   InboxThreadStatus,

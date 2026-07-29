@@ -176,3 +176,11 @@ export const IconBell = icon(
   </>,
   "IconBell",
 );
+
+export const IconMessage = icon(
+  <>
+    <path d="M21 12a8 8 0 0 1-8 8H7l-4 3V12a8 8 0 1 1 18 0Z" />
+    <path d="M8 11h8M8 14h5" />
+  </>,
+  "IconMessage",
+);
