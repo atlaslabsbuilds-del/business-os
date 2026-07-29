@@ -115,10 +115,10 @@ function buildInsights(input: {
   if (input.aiCredits < 1000) {
     insights.push({
       title: "AI credits are running low",
-      body: "Top up billing soon to keep smart replies, summaries, and assistant workflows available.",
+      body: "Buy a one-time AI credit pack to keep smart replies, summaries, and assistant workflows available.",
       module: "billing",
       severity: "warning",
-      actionUrl: "/settings",
+      actionUrl: "/credits",
     });
   }
 
@@ -420,7 +420,7 @@ export async function getDashboardSnapshot(input: {
             entityType: "credit_transaction",
             entityId: transaction.id,
             actorId: transaction.userId,
-            actionUrl: "/settings",
+            actionUrl: "/billing",
             metadata: transaction.metadata,
             createdAt: transaction.createdAt,
           })),

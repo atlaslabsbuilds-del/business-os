@@ -51,8 +51,9 @@ export default function TermsPage() {
         </LegalSection>
         <LegalSection title="6. Billing">
           <p>
-            Paid plans, if offered, are billed according to the pricing presented at purchase. Taxes
-            may apply. See our Refund Policy for cancellation and refund terms.
+            Paid products use one-time purchases (Pro, team seats, and AI credit packs)—not recurring
+            monthly or yearly subscriptions. Prices and taxes are shown at checkout. See our Refund
+            Policy for refund terms.
           </p>
         </LegalSection>
         <LegalSection title="7. Intellectual property">

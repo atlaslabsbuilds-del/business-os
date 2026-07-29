@@ -69,10 +69,10 @@ const responses: Record<string, string> = {
 
 const faqs: [string, string][] = [
   ["What is VanderBase?", "VanderBase is one AI-native platform with CRM, Inbox, Content, Calendar, Analytics, and Kairos in the same workspace."],
-  ["What can I do on the Free plan?", "Start with one workspace, 25 AI credits/month, and the essentials across CRM, Inbox, and Content OS."],
-  ["How do AI credits work?", "Credits are shared across the workspace for AI features like chat, summaries, drafts, forecasting, and agents."],
-  ["Can teams collaborate?", "Yes. Higher plans unlock team collaboration, roles, unlimited workspaces, and enterprise controls."],
-  ["Do you support Stripe and Razorpay?", "The billing boundary is provider-ready for Stripe and Razorpay while staying workspace-aware."],
+  ["What can I do on the Free plan?", "Start with one workspace, up to 3 team members, 100 AI credits, and basic Business OS features—forever free."],
+  ["How do AI credits work?", "Credits are shared across the workspace. Free and Pro include a starter pool. Buy one-time credit packs only when you need more—never a monthly subscription."],
+  ["Can teams collaborate?", "Yes. Free includes up to 3 members and Pro includes up to 10. Additional seats are $25 each as a one-time purchase."],
+  ["Do you support Stripe and Razorpay?", "Checkout uses one-time payments via Stripe or Razorpay—not recurring subscriptions."],
 ];
 
 export function SocialProof() {
@@ -133,7 +133,7 @@ export function OneBusinessOs() {
             <div className="landing-glass-strong landing-gradient-border rounded-3xl p-6">
               <p className="text-sm font-semibold text-primary">VanderBase</p>
               <div className="mt-5 space-y-3">
-                {["One Login", "One Workspace", "One Subscription", "One AI"].map((item, index) => (
+                {["One Login", "One Workspace", "One Purchase", "One AI"].map((item, index) => (
                   <motion.div
                     key={item}
                     initial={{ opacity: 0, x: 16 }}
@@ -467,7 +467,6 @@ export function AiShowcase() {
 }
 
 export function PricingSection() {
-  const [cycle, setCycle] = useState<"monthly" | "annual">("annual");
   const { openOverlay } = useLandingInteractions();
   return (
     <section id="pricing" className="relative px-5 py-20 sm:px-8">
@@ -475,8 +474,11 @@ export function PricingSection() {
         <Reveal className="mx-auto max-w-2xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">Pricing</p>
           <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
-            One subscription for the whole operating system.
+            Own VanderBase with a one-time purchase.
           </h2>
+          <p className="mt-4 text-sm leading-6 text-secondary">
+            Buy AI credits only when you need them. No monthly or yearly subscriptions.
+          </p>
           <div className="mx-auto mt-6 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
@@ -486,6 +488,10 @@ export function PricingSection() {
               How AI credits work
             </button>
             <span className="text-muted">·</span>
+            <Link href="/credits" className="text-sm text-primary underline-offset-4 hover:underline">
+              Credit packs
+            </Link>
+            <span className="text-muted">·</span>
             <button
               type="button"
               onClick={() => openOverlay("roi-calculator")}
@@ -494,92 +500,89 @@ export function PricingSection() {
               ROI calculator
             </button>
           </div>
-          <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/10 bg-white/[0.03] p-1">
-            <button
-              type="button"
-              onClick={() => setCycle("monthly")}
-              className={`rounded-xl px-4 py-2 text-sm ${cycle === "monthly" ? "bg-elevated text-foreground" : "text-secondary"}`}
-            >
-              Monthly
-            </button>
-            <button
-              type="button"
-              onClick={() => setCycle("annual")}
-              className={`rounded-xl px-4 py-2 text-sm ${cycle === "annual" ? "bg-primary text-white" : "text-secondary"}`}
-            >
-              Yearly · 20% off
-            </button>
+        </Reveal>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {PRICING_PLANS.map((plan) => (
+            <Reveal key={plan.id}>
+              <div
+                className={`landing-glass relative flex h-full flex-col rounded-3xl p-6 ${
+                  plan.popular
+                    ? "landing-gradient-border border-primary/50 shadow-[0_0_40px_rgba(249,115,22,0.1)]"
+                    : ""
+                }`}
+              >
+                {plan.popular ? (
+                  <span className="absolute -top-3 left-4 flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
+                    <Star className="h-3 w-3 fill-current" aria-hidden />
+                    Most popular
+                  </span>
+                ) : null}
+                <div className="flex flex-1 flex-col">
+                  <p className="text-lg font-semibold">{plan.name}</p>
+                  <p className="mt-1.5 text-xs leading-5 text-secondary">{plan.description}</p>
+                  <div className="mt-5 flex items-baseline gap-2">
+                    {plan.price === null ? (
+                      <span className="text-3xl font-semibold tracking-tight">Custom</span>
+                    ) : (
+                      <>
+                        <span className="text-3xl font-semibold tracking-tight">${plan.price}</span>
+                        {plan.price > 0 ? (
+                          <span className="text-xs text-muted">once</span>
+                        ) : null}
+                      </>
+                    )}
+                  </div>
+                  <p className="mt-1 text-[11px] font-medium text-primary">{plan.billingLabel}</p>
+                  <PlanCreditsBlock plan={plan} highlighted={plan.popular} />
+                </div>
+                {plan.id === "enterprise" ? (
+                  <Link href="mailto:sales@vanderbase.com" className="mt-5 block">
+                    <Button variant="secondary" className="w-full">
+                      Contact sales
+                    </Button>
+                  </Link>
+                ) : plan.id === "pro" ? (
+                  <Link href="/checkout?product=pro" className="mt-5 block">
+                    <Button className="w-full">Buy Pro — $99</Button>
+                  </Link>
+                ) : (
+                  <JoinWaitlistButton className="mt-5 block w-full">
+                    <Button variant="secondary" className="w-full">
+                      Get started free
+                    </Button>
+                  </JoinWaitlistButton>
+                )}
+                <ul className="mt-5 space-y-2 border-t border-white/5 pt-5">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex gap-2 text-xs leading-5 text-secondary">
+                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        <Reveal className="mt-10">
+          <div className="landing-glass rounded-3xl p-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
+            <div>
+              <p className="text-sm font-semibold">Additional team members</p>
+              <p className="mt-1 text-xs text-secondary">
+                $25 per member · one-time purchase. Expand beyond Free (3) or Pro (10) seats.
+              </p>
+            </div>
+            <Link href="/checkout?product=additional-seat" className="mt-4 block sm:mt-0">
+              <Button variant="secondary" size="sm">
+                Add seats
+              </Button>
+            </Link>
           </div>
         </Reveal>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {PRICING_PLANS.map((plan) => {
-            const price =
-              plan.monthly === null
-                ? null
-                : cycle === "annual" && plan.monthly > 0
-                  ? Math.round(plan.monthly * 0.8)
-                  : plan.monthly;
-            return (
-              <Reveal key={plan.id}>
-                <div
-                  className={`landing-glass relative flex h-full flex-col rounded-3xl p-5 ${
-                    plan.popular
-                      ? "landing-gradient-border border-primary/50 shadow-[0_0_40px_rgba(249,115,22,0.1)]"
-                      : ""
-                  }`}
-                >
-                  {plan.popular ? (
-                    <span className="absolute -top-3 left-4 flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white">
-                      <Star className="h-3 w-3 fill-current" aria-hidden />
-                      Most popular
-                    </span>
-                  ) : null}
-                  <div className="flex flex-1 flex-col">
-                    <p className="text-lg font-semibold">{plan.name}</p>
-                    <p className="mt-1.5 text-xs leading-5 text-secondary">{plan.description}</p>
-                    <div className="mt-5 flex items-baseline gap-1">
-                      {price === null ? (
-                        <span className="text-2xl font-semibold tracking-tight">Custom</span>
-                      ) : (
-                        <>
-                          <span className="text-3xl font-semibold tracking-tight">${price}</span>
-                          <span className="text-xs text-muted">/mo</span>
-                        </>
-                      )}
-                    </div>
-                    {cycle === "annual" && plan.monthly ? (
-                      <p className="mt-1 text-[11px] text-muted">${plan.monthly}/mo billed annually</p>
-                    ) : null}
-                    <PlanCreditsBlock plan={plan} highlighted={plan.popular} />
-                  </div>
-                  {plan.id === "enterprise" ? (
-                    <Link href="mailto:sales@vanderbase.com" className="mt-5 block">
-                      <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
-                        Contact sales
-                      </Button>
-                    </Link>
-                  ) : (
-                    <JoinWaitlistButton className="mt-5 block w-full">
-                      <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
-                        Join the Waitlist
-                      </Button>
-                    </JoinWaitlistButton>
-                  )}
-                  <ul className="mt-5 space-y-2 border-t border-white/5 pt-5">
-                    {plan.features.slice(0, 5).map((feature) => (
-                      <li key={feature} className="flex gap-2 text-xs leading-5 text-secondary">
-                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            );
-          })}
-        </div>
+
         <Reveal className="mt-10 overflow-x-auto rounded-3xl border border-white/10">
-          <table className="w-full min-w-[850px] text-left text-xs">
+          <table className="w-full min-w-[640px] text-left text-xs">
             <thead>
               <tr className="border-b border-white/10 text-secondary">
                 <th className="p-4 font-medium">Capability</th>

@@ -31,7 +31,7 @@ export default async function SettingsPage() {
       <aside className="w-full shrink-0 lg:w-56">
         <div className="mb-4 space-y-2 lg:sticky lg:top-20">
           <Badge variant="accent">Settings</Badge>
-          <p className="text-sm text-secondary">Workspace, billing, and security</p>
+          <p className="text-sm text-secondary">Workspace, purchases, and security</p>
         </div>
         <SettingsNav />
       </aside>

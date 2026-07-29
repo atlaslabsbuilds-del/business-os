@@ -2,43 +2,124 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Check, ChevronDown, CreditCard, Gauge, LockKeyhole, Sparkles, Star, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  ChevronDown,
+  CreditCard,
+  LockKeyhole,
+  Sparkles,
+  Star,
+  Users,
+  Zap,
+} from "lucide-react";
 import { Badge } from "@repo/ui/badge";
 import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
-import { COMPARISON_ROWS, PRICING_PLANS, type PricingPlan } from "../../lib/pricing";
+import {
+  ADDITIONAL_TEAM_SEAT,
+  AI_CREDIT_PACKS,
+  COMPARISON_ROWS,
+  CREDITS_USAGE_HINT,
+  PRICING_PLANS,
+  PRICING_TAGLINE,
+  formatCreditPackPrice,
+  formatPlanCredits,
+  formatPlanPrice,
+  type PricingPlan,
+} from "../../lib/pricing";
 import { PlanCreditsBlock } from "./plan-credits-block";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
 
-type BillingCycle = "monthly" | "annual";
-
 const faqs: [string, string][] = [
-  ["Can I change plans later?", "Yes. Your workspace plan can be upgraded or downgraded as your needs change. Billing providers will prorate changes once connected."],
-  ["What are AI credits?", "AI credits are the shared workspace allowance used by AI features across Inbox, CRM, Content, Social, Calendar, and AI Studio. Usage is visible from your workspace."],
-  ["Do you support teams and multiple workspaces?", "Team and workspace limits depend on the plan. Elite includes up to 10 members and unlimited workspaces; Enterprise supports custom policies."],
-  ["Are Stripe and Razorpay supported?", "The pricing and upgrade boundary is provider-neutral and ready for Stripe or Razorpay checkout, webhooks, invoices, and workspace entitlements."],
-  ["Is there a free trial?", "The Free plan is available without a time limit. You can upgrade when you need more credits or capabilities."],
+  [
+    "Is this a subscription?",
+    "No. VanderBase Pro is a one-time purchase. You own access to the Business OS—there are no monthly or yearly plans.",
+  ],
+  [
+    "What are AI credits?",
+    "AI credits power Kairos and AI features across Inbox, CRM, Content, and agents. Free and Pro include a starter pool. Buy credit packs only when you need more.",
+  ],
+  [
+    "How do additional team members work?",
+    "Free includes up to 3 members and Pro includes up to 10. Extra seats are $25 each as a one-time purchase.",
+  ],
+  [
+    "Are Stripe and Razorpay supported?",
+    "Checkout uses one-time payments via Stripe or Razorpay—never recurring subscriptions.",
+  ],
+  [
+    "Is there a free option?",
+    "Yes. Free forever includes 1 workspace, up to 3 team members, 100 AI credits, and basic Business OS features.",
+  ],
 ];
 
 export function PricingPage() {
-  const [cycle, setCycle] = useState<BillingCycle>("annual");
   return (
     <div className="bos-atmosphere min-h-screen overflow-hidden">
       <PricingHeader />
       <main className="relative mx-auto max-w-7xl px-5 pb-24 pt-14 sm:px-8 lg:pt-20">
         <section className="mx-auto max-w-3xl text-center">
-          <Badge variant="accent" className="gap-1.5"><Sparkles className="h-3 w-3" aria-hidden /> One workspace. Every growth system.</Badge>
-          <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-6xl">The operating system for <span className="text-primary">ambitious work.</span></h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-secondary sm:text-lg">Bring your CRM, inbox, content, marketing, finances, and AI workflows into one calm, intelligent workspace.</p>
-          <BillingToggle cycle={cycle} onChange={setCycle} />
+          <Badge variant="accent" className="gap-1.5">
+            <Sparkles className="h-3 w-3" aria-hidden /> One-time purchase
+          </Badge>
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-6xl">
+            Own your Business OS.{" "}
+            <span className="text-primary">Pay once.</span>
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-secondary sm:text-lg">
+            {PRICING_TAGLINE}
+          </p>
         </section>
-        <section className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">{PRICING_PLANS.map((plan) => <PricingCard key={plan.id} plan={plan} cycle={cycle} />)}</section>
-        <div className="mx-auto mt-6 flex max-w-4xl items-center justify-center gap-6 text-xs text-muted"><span className="flex items-center gap-1.5"><LockKeyhole className="h-3.5 w-3.5 text-primary" aria-hidden /> Workspace-aware access</span><span className="flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5 text-primary" aria-hidden /> Secure billing-ready architecture</span><span className="hidden items-center gap-1.5 sm:flex"><Zap className="h-3.5 w-3.5 text-primary" aria-hidden /> Cancel anytime</span></div>
-        <RoiSection />
-        <section className="mt-24"><SectionIntro eyebrow="Compare plans" title="Choose the operating layer you need." body="Every plan keeps your work in one workspace. Move up when you need more AI capacity, automation, and collaboration." /><ComparisonTable cycle={cycle} /></section>
-        <CreditsSection />
-        <Testimonials />
-        <section className="mt-24 grid gap-4 lg:grid-cols-[1fr_1.1fr]"><SectionIntro eyebrow="Questions" title="Clear answers before you commit." body="No hidden complexity. Just a workspace that grows with the way you work." /><div className="space-y-2">{faqs.map(([question,answer]) => <Faq key={question} question={question} answer={answer} />)}</div></section>
+
+        <section className="mt-12 grid gap-5 md:grid-cols-3">
+          {PRICING_PLANS.map((plan) => (
+            <PricingCard key={plan.id} plan={plan} />
+          ))}
+        </section>
+
+        <div className="mx-auto mt-6 flex max-w-4xl flex-wrap items-center justify-center gap-6 text-xs text-muted">
+          <span className="flex items-center gap-1.5">
+            <LockKeyhole className="h-3.5 w-3.5 text-primary" aria-hidden /> No
+            recurring fees
+          </span>
+          <span className="flex items-center gap-1.5">
+            <CreditCard className="h-3.5 w-3.5 text-primary" aria-hidden />{" "}
+            One-time Stripe / Razorpay checkout
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Zap className="h-3.5 w-3.5 text-primary" aria-hidden /> Credits
+            only when you need them
+          </span>
+        </div>
+
+        <TeamSeatsSection />
+        <CreditPacksSection />
+
+        <section className="mt-24">
+          <SectionIntro
+            eyebrow="Compare"
+            title="Everything you need at a glance."
+            body="Simple tiers. Clear ownership. Scale with seats and credit packs—not a subscription ladder."
+          />
+          <ComparisonTable />
+        </section>
+
+        <CreditsHowItWorks />
+
+        <section className="mt-24 grid gap-4 lg:grid-cols-[1fr_1.1fr]">
+          <SectionIntro
+            eyebrow="Questions"
+            title="Clear answers before you commit."
+            body="No monthly traps. No yearly lock-ins. Own the OS, top up AI when work picks up."
+          />
+          <div className="space-y-2">
+            {faqs.map(([question, answer]) => (
+              <Faq key={question} question={question} answer={answer} />
+            ))}
+          </div>
+        </section>
+
         <SalesCta />
       </main>
     </div>
@@ -52,6 +133,11 @@ function PricingHeader() {
         <VanderBaseLogo size="nav" priority />
       </Link>
       <div className="flex items-center gap-2">
+        <Link href="/credits">
+          <Button size="sm" variant="ghost">
+            AI Credits
+          </Button>
+        </Link>
         <Link href="/signin">
           <Button size="sm" variant="ghost">
             Sign in
@@ -64,19 +150,12 @@ function PricingHeader() {
     </header>
   );
 }
-function BillingToggle({ cycle, onChange }: { cycle: BillingCycle; onChange: (cycle: BillingCycle) => void }) { return <div className="mx-auto mt-9 inline-flex rounded-2xl border border-border bg-surface p-1 shadow-soft"><button type="button" onClick={() => onChange("monthly")} className={`rounded-xl px-4 py-2 text-sm transition ${cycle === "monthly" ? "bg-elevated text-foreground shadow-soft" : "text-secondary"}`}>Monthly</button><button type="button" onClick={() => onChange("annual")} className={`rounded-xl px-4 py-2 text-sm transition ${cycle === "annual" ? "bg-primary text-white shadow-soft" : "text-secondary"}`}>Annual <span className="ml-1 text-xs opacity-80">20% off</span></button></div>; }
-function PricingCard({ plan, cycle }: { plan: PricingPlan; cycle: BillingCycle }) {
-  const price =
-    plan.monthly === null
-      ? null
-      : cycle === "annual" && plan.monthly > 0
-        ? Math.round(plan.monthly * 0.8)
-        : plan.monthly;
 
+function PricingCard({ plan }: { plan: PricingPlan }) {
   return (
     <Card
       elevated={plan.popular}
-      className={`relative flex h-full flex-col p-5 ${
+      className={`relative flex h-full flex-col p-6 ${
         plan.popular ? "border-primary/70 shadow-[0_0_40px_rgba(249,115,22,0.12)]" : ""
       }`}
     >
@@ -88,36 +167,27 @@ function PricingCard({ plan, cycle }: { plan: PricingPlan; cycle: BillingCycle }
       ) : null}
       <div className="flex flex-1 flex-col">
         <p className="text-lg font-semibold">{plan.name}</p>
-        <p className="mt-1.5 text-xs leading-5 text-secondary">{plan.description}</p>
-        <div className="mt-5 flex items-baseline gap-1">
-          {price === null ? (
-            <span className="text-2xl font-semibold tracking-tight">Custom</span>
-          ) : (
-            <>
-              <span className="text-3xl font-semibold tracking-tight">${price}</span>
-              <span className="text-xs text-muted">/mo</span>
-            </>
-          )}
+        <p className="mt-1.5 text-sm leading-6 text-secondary">{plan.description}</p>
+        <div className="mt-6 flex items-baseline gap-2">
+          <span className="text-4xl font-semibold tracking-tight">
+            {formatPlanPrice(plan)}
+          </span>
+          {plan.price !== null && plan.price > 0 ? (
+            <span className="text-xs text-muted">once</span>
+          ) : null}
         </div>
-        {cycle === "annual" && plan.monthly ? (
-          <p className="mt-1 text-[11px] text-muted">${plan.monthly}/mo billed annually</p>
-        ) : null}
+        <p className="mt-1 text-xs font-medium text-primary">{plan.billingLabel}</p>
         <PlanCreditsBlock plan={plan} highlighted={plan.popular} />
       </div>
-      <Link
-        href={plan.id === "enterprise" ? "#contact-sales" : "/?join=waitlist"}
-        className="mt-5"
-      >
+      <Link href={plan.ctaHref} className="mt-6">
         <Button variant={plan.popular ? "primary" : "secondary"} className="w-full">
-          {plan.id === "enterprise"
-            ? "Contact sales"
-            : "Join the Waitlist"}
+          {plan.cta}
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
         </Button>
       </Link>
-      <ul className="mt-5 space-y-2.5 border-t border-border pt-5">
+      <ul className="mt-6 space-y-2.5 border-t border-border pt-5">
         {plan.features.map((feature) => (
-          <li key={feature} className="flex gap-2 text-xs leading-5 text-secondary">
+          <li key={feature} className="flex gap-2 text-sm leading-5 text-secondary">
             <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
             {feature}
           </li>
@@ -126,10 +196,246 @@ function PricingCard({ plan, cycle }: { plan: PricingPlan; cycle: BillingCycle }
     </Card>
   );
 }
-function SectionIntro({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) { return <div className="max-w-xl"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">{eyebrow}</p><h2 className="mt-3 text-3xl font-semibold tracking-tight">{title}</h2><p className="mt-3 text-sm leading-6 text-secondary">{body}</p></div>; }
-function RoiSection() { return <section className="mt-24 grid gap-4 lg:grid-cols-[1.05fr_0.95fr]"><Card elevated className="relative overflow-hidden"><div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/10 blur-3xl" /><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">ROI, without the spreadsheet theater</p><h2 className="mt-4 max-w-xl text-3xl font-semibold tracking-tight">One intelligent workspace can replace a stack of disconnected tools.</h2><p className="mt-4 max-w-xl text-sm leading-6 text-secondary">Spend less time moving context between inboxes, CRMs, calendars, and content tools—and more time turning attention into revenue.</p><Link href="/?join=waitlist" className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-primary">Join the waitlist <ArrowRight className="h-4 w-4" aria-hidden /></Link></Card><div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">{[["Context", "One shared memory across every module."], ["Leverage", "AI that can take the next step, not just answer."], ["Clarity", "A single view of the work that matters now."]].map(([title,body]) => <Card key={title}><Gauge className="h-5 w-5 text-primary" aria-hidden /><p className="mt-3 text-sm font-semibold">{title}</p><p className="mt-1 text-xs leading-5 text-secondary">{body}</p></Card>)}</div></section>; }
-function ComparisonTable({ cycle }: { cycle: BillingCycle }) { return <div className="mt-8 overflow-x-auto rounded-2xl border border-border bg-surface shadow-soft"><table className="w-full min-w-[850px] text-left text-xs"><thead><tr className="border-b border-border text-secondary"><th className="p-4 font-medium">Capability</th>{PRICING_PLANS.map((plan) => <th key={plan.id} className={`p-4 font-semibold ${plan.popular ? "text-primary" : "text-foreground"}`}>{plan.name}<span className="mt-1 block font-normal text-muted">{plan.monthly === null ? "Custom" : `$${cycle === "annual" ? Math.round(plan.monthly * 0.8) : plan.monthly}/mo`}</span></th>)}</tr></thead><tbody>{COMPARISON_ROWS.map(([label, ...values]) => <tr key={label} className="border-b border-border last:border-0"><th className="p-4 font-medium text-foreground">{label}</th>{values.map((value, index) => { const displayValue = value ?? "—"; return <td key={`${label}-${index}`} className={`p-4 ${displayValue === "—" ? "text-muted" : "text-secondary"}`}>{displayValue}</td>; })}</tr>)}</tbody></table></div>; }
-function CreditsSection() { return <section className="mt-24 grid gap-4 lg:grid-cols-2"><Card className="bg-primary text-white"><Sparkles className="h-6 w-6" aria-hidden /><h2 className="mt-5 text-3xl font-semibold tracking-tight">AI credits are shared across your workspace.</h2><p className="mt-4 text-sm leading-6 text-orange-100">Use credits wherever the work happens: summarize an email, qualify a lead, draft content, analyze revenue, or run an agent workflow.</p></Card><Card><p className="text-sm font-semibold">How credits work</p><div className="mt-5 space-y-4">{[["01", "One pool", "Credits belong to the workspace, not a single app."], ["02", "Visible usage", "See balance and transaction history from your workspace dashboard."], ["03", "Room to scale", "Upgrade for a larger monthly allowance or ask Enterprise for custom capacity."]].map(([number,title,body]) => <div key={number} className="flex gap-3"><span className="font-mono text-xs text-primary">{number}</span><div><p className="text-sm font-medium">{title}</p><p className="mt-1 text-xs leading-5 text-secondary">{body}</p></div></div>)}</div></Card></section>; }
-function Testimonials() { return null; }
-function Faq({ question, answer }: { question: string; answer: string }) { const [open,setOpen]=useState(false); return <div className="rounded-2xl border border-border bg-surface"><button type="button" onClick={() => setOpen(!open)} className="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-medium"><span>{question}</span><ChevronDown className={`h-4 w-4 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`} aria-hidden /></button>{open ? <p className="px-4 pb-4 text-sm leading-6 text-secondary">{answer}</p> : null}</div>; }
-function SalesCta() { return <section id="contact-sales" className="mt-24 overflow-hidden rounded-3xl border border-primary/30 bg-primary/10 p-8 text-center sm:p-14"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Ready when you are</p><h2 className="mx-auto mt-3 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">Give your business one intelligent home.</h2><p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-secondary">Join the waitlist for early access, or talk with us about a secure workspace built around your team.</p><div className="mt-7 flex flex-wrap justify-center gap-3"><Link href="/?join=waitlist"><Button size="lg" className="gap-2">Join the Waitlist <ArrowRight className="h-4 w-4" aria-hidden /></Button></Link><a href="mailto:sales@vanderbase.com"><Button size="lg" variant="secondary">Contact sales</Button></a></div></section>; }
+
+function TeamSeatsSection() {
+  return (
+    <section id="team-seats" className="mt-24">
+      <SectionIntro
+        eyebrow="Team"
+        title="Additional team members"
+        body={`${ADDITIONAL_TEAM_SEAT.description} Included seats: Free 3 · Pro 10.`}
+      />
+      <Card elevated className="mt-8 flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
+            <Users className="h-5 w-5" aria-hidden />
+          </div>
+          <div>
+            <p className="text-lg font-semibold">{ADDITIONAL_TEAM_SEAT.name}</p>
+            <p className="mt-1 text-sm text-secondary">{ADDITIONAL_TEAM_SEAT.billingLabel}</p>
+            <p className="mt-3 text-3xl font-semibold tracking-tight">
+              ${ADDITIONAL_TEAM_SEAT.price}
+              <span className="ml-2 text-sm font-normal text-muted">per member · once</span>
+            </p>
+          </div>
+        </div>
+        <Link href="/checkout?product=additional-seat">
+          <Button size="lg" className="gap-2">
+            Add team members
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Button>
+        </Link>
+      </Card>
+    </section>
+  );
+}
+
+function CreditPacksSection() {
+  return (
+    <section id="ai-credits" className="mt-24">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <SectionIntro
+          eyebrow="AI Credits"
+          title="Buy credits when you need them."
+          body={CREDITS_USAGE_HINT}
+        />
+        <Link href="/credits">
+          <Button variant="secondary" className="gap-2">
+            Open credits page
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Button>
+        </Link>
+      </div>
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {AI_CREDIT_PACKS.map((pack) => (
+          <Card
+            key={pack.id}
+            className={`relative flex flex-col p-5 ${
+              pack.popular ? "border-primary/50" : ""
+            }`}
+          >
+            {pack.popular ? (
+              <span className="absolute -top-2.5 left-4 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                Best value
+              </span>
+            ) : null}
+            <p className="text-sm font-semibold">{pack.label}</p>
+            <p className="mt-3 text-2xl font-semibold tracking-tight">
+              {formatCreditPackPrice(pack)}
+            </p>
+            <p className="mt-1 text-xs text-muted">One-time purchase</p>
+            {pack.contactSales ? (
+              <a href="mailto:sales@vanderbase.com" className="mt-5">
+                <Button variant="secondary" className="w-full" size="sm">
+                  Contact sales
+                </Button>
+              </a>
+            ) : (
+              <Link href={`/checkout?pack=${pack.id}`} className="mt-5">
+                <Button
+                  variant={pack.popular ? "primary" : "secondary"}
+                  className="w-full"
+                  size="sm"
+                >
+                  Buy pack
+                </Button>
+              </Link>
+            )}
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function SectionIntro({
+  eyebrow,
+  title,
+  body,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="max-w-xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+        {eyebrow}
+      </p>
+      <h2 className="mt-3 text-3xl font-semibold tracking-tight">{title}</h2>
+      <p className="mt-3 text-sm leading-6 text-secondary">{body}</p>
+    </div>
+  );
+}
+
+function ComparisonTable() {
+  return (
+    <div className="mt-8 overflow-x-auto rounded-2xl border border-border bg-surface shadow-soft">
+      <table className="w-full min-w-[640px] text-left text-xs">
+        <thead>
+          <tr className="border-b border-border text-secondary">
+            <th className="p-4 font-medium">Capability</th>
+            {PRICING_PLANS.map((plan) => (
+              <th
+                key={plan.id}
+                className={`p-4 font-semibold ${plan.popular ? "text-primary" : "text-foreground"}`}
+              >
+                {plan.name}
+                <span className="mt-1 block font-normal text-muted">
+                  {formatPlanPrice(plan)}
+                  {plan.price && plan.price > 0 ? " once" : ""}
+                </span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {COMPARISON_ROWS.map(([label, ...values]) => (
+            <tr key={label} className="border-b border-border last:border-0">
+              <th className="p-4 font-medium text-foreground">{label}</th>
+              {values.map((value, index) => {
+                const displayValue = value ?? "—";
+                return (
+                  <td
+                    key={`${label}-${index}`}
+                    className={`p-4 ${displayValue === "—" ? "text-muted" : "text-secondary"}`}
+                  >
+                    {displayValue}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function CreditsHowItWorks() {
+  return (
+    <section className="mt-24 grid gap-4 lg:grid-cols-2">
+      <Card className="bg-primary text-white">
+        <Sparkles className="h-6 w-6" aria-hidden />
+        <h2 className="mt-5 text-3xl font-semibold tracking-tight">
+          AI credits are shared across your workspace.
+        </h2>
+        <p className="mt-4 text-sm leading-6 text-orange-100">
+          Use credits wherever work happens—summarize email, qualify a lead, draft content, or run
+          an agent. Top up with a one-time pack when you run low.
+        </p>
+        <p className="mt-6 text-sm font-medium text-white/90">{formatPlanCredits(PRICING_PLANS[1]!)}</p>
+      </Card>
+      <Card>
+        <p className="text-sm font-semibold">How credits work</p>
+        <div className="mt-5 space-y-4">
+          {[
+            ["01", "Included starter pool", "Free includes 100 credits. Pro includes 1,000."],
+            ["02", "Buy only what you need", "Eight pack sizes from 1,000 to 250,000—or contact sales for 500,000+."],
+            ["03", "Never a subscription", "Credit packs are one-time purchases. No monthly burn rate you didn’t choose."],
+          ].map(([number, title, body]) => (
+            <div key={number} className="flex gap-3">
+              <span className="font-mono text-xs text-primary">{number}</span>
+              <div>
+                <p className="text-sm font-medium">{title}</p>
+                <p className="mt-1 text-xs leading-5 text-secondary">{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </section>
+  );
+}
+
+function Faq({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-2xl border border-border bg-surface">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between gap-4 p-4 text-left text-sm font-medium"
+      >
+        <span>{question}</span>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden
+        />
+      </button>
+      {open ? <p className="px-4 pb-4 text-sm leading-6 text-secondary">{answer}</p> : null}
+    </div>
+  );
+}
+
+function SalesCta() {
+  return (
+    <section
+      id="contact-sales"
+      className="mt-24 overflow-hidden rounded-3xl border border-primary/30 bg-primary/10 p-8 text-center sm:p-14"
+    >
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+        Ready when you are
+      </p>
+      <h2 className="mx-auto mt-3 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
+        Own VanderBase. Scale with credits and seats.
+      </h2>
+      <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-secondary">
+        {PRICING_TAGLINE}
+      </p>
+      <div className="mt-7 flex flex-wrap justify-center gap-3">
+        <Link href="/checkout?product=pro">
+          <Button size="lg" className="gap-2">
+            Buy Pro — $99
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </Button>
+        </Link>
+        <a href="mailto:sales@vanderbase.com">
+          <Button size="lg" variant="secondary">
+            Contact sales
+          </Button>
+        </a>
+      </div>
+    </section>
+  );
+}

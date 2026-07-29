@@ -11,6 +11,7 @@ import { VanderBaseLogo } from "../branding/vanderbase-logo";
 const links = [
   { href: "#features", label: "Features" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/credits", label: "AI Credits" },
   { href: "#integrations", label: "Integrations" },
   { href: "/contact", label: "Contact" },
   { href: "#about", label: "About" },

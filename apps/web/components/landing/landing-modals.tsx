@@ -189,18 +189,16 @@ export function LandingModals() {
             ))}
           </div>
           <div className="mt-6 grid gap-2 sm:grid-cols-3">
-            {PRICING_PLANS.filter((plan) => plan.credits !== null)
-              .slice(0, 3)
-              .map((plan) => (
-                <div key={plan.id} className="rounded-2xl border border-white/5 p-3 text-center">
-                  <p className="text-xs text-muted">{plan.name}</p>
-                  <p className="mt-1 text-lg font-semibold">{plan.credits}</p>
-                  <p className="text-[11px] text-secondary">credits / mo</p>
-                </div>
-              ))}
+            {PRICING_PLANS.filter((plan) => plan.credits !== null).map((plan) => (
+              <div key={plan.id} className="rounded-2xl border border-white/5 p-3 text-center">
+                <p className="text-xs text-muted">{plan.name}</p>
+                <p className="mt-1 text-lg font-semibold">{plan.credits?.toLocaleString()}</p>
+                <p className="text-[11px] text-secondary">credits included</p>
+              </div>
+            ))}
           </div>
-          <Link href="/pricing" className="mt-6 inline-block" onClick={closeOverlay}>
-            <Button variant="secondary">Compare all plans</Button>
+          <Link href="/credits" className="mt-6 inline-block" onClick={closeOverlay}>
+            <Button variant="secondary">Buy credit packs</Button>
           </Link>
         </ModalShell>
       ) : null}
@@ -213,7 +211,7 @@ export function LandingModals() {
         <ModalShell key="exit" label="Before you go" onClose={closeOverlay} size="md">
           <h2 className="text-2xl font-semibold tracking-tight">See the OS in action first?</h2>
           <p className="mt-2 text-sm leading-6 text-secondary">
-            Take a 60-second guided demo or start free with 25 AI credits—no card required.
+            Take a 60-second guided demo or start free with 100 AI credits—no card required.
           </p>
           <div className="mt-6 flex flex-col gap-2 sm:flex-row">
             <Button
@@ -312,9 +310,11 @@ function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
   const [tools, setTools] = useState(8);
   const toolCost = tools * 29;
   const timeSavedHours = teamSize * 4;
-  const proPlan = PRICING_PLANS.find((plan) => plan.id === "builder")!;
-  const builderMonthly = proPlan.monthly ?? 40;
-  const savings = Math.max(0, toolCost - builderMonthly);
+  const proPlan = PRICING_PLANS.find((plan) => plan.id === "pro")!;
+  const proOnce = proPlan.price ?? 99;
+  /** Rough monthly equivalent of replaced SaaS vs one-time Pro amortized over 12 months. */
+  const proMonthlyEquivalent = Math.round(proOnce / 12);
+  const savings = Math.max(0, toolCost - proMonthlyEquivalent);
 
   return (
     <ModalShell label="ROI calculator" onClose={onClose} size="lg">
@@ -324,7 +324,9 @@ function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
         </div>
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Estimate your stack savings</h2>
-          <p className="text-sm text-secondary">Demo calculator — adjust inputs to explore scenarios.</p>
+          <p className="text-sm text-secondary">
+            Demo calculator — Pro is a ${proOnce} one-time purchase (shown as ~${proMonthlyEquivalent}/mo over year one).
+          </p>
         </div>
       </div>
       <div className="mt-6 space-y-5">
@@ -359,17 +361,18 @@ function RoiCalculatorModal({ onClose }: { onClose: () => void }) {
         </div>
         <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4 text-center">
           <p className="text-xs text-primary">VanderBase {proPlan.name}</p>
-          <p className="mt-1 text-2xl font-semibold">${builderMonthly}</p>
-          <p className="text-[11px] text-secondary">/mo</p>
+          <p className="mt-1 text-2xl font-semibold">${proOnce}</p>
+          <p className="text-[11px] text-secondary">one-time</p>
         </div>
         <div className="rounded-2xl border border-white/5 p-4 text-center">
           <p className="text-xs text-muted">Potential savings</p>
           <p className="mt-1 text-2xl font-semibold text-primary">${savings}</p>
-          <p className="text-[11px] text-secondary">/mo</p>
+          <p className="text-[11px] text-secondary">/mo vs stack</p>
         </div>
       </div>
       <p className="mt-4 text-sm text-secondary">
         Plus ~{timeSavedHours} operator hours/month from unified inbox, CRM, and AI workflows (demo estimate).
+        Buy AI credits only when you need them.
       </p>
       <div className="mt-6 flex gap-2">
         <Button

@@ -64,7 +64,7 @@ export function AppProfileMenu({
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/pricing" className="flex items-center gap-2">
+          <Link href="/billing" className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" aria-hidden />
             Billing
           </Link>

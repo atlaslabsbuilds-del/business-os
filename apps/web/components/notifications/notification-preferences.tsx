@@ -52,7 +52,7 @@ const PREFERENCE_ITEMS: Array<{
   {
     key: "billingAlerts",
     title: "Billing alerts",
-    description: "Invoices, payment issues, credits, and subscription changes.",
+    description: "Invoices, payment issues, credit purchases, and one-time billing updates.",
   },
 ];
 

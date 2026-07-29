@@ -19,25 +19,26 @@ export default function RefundPage() {
             payment is required to join the waitlist.
           </p>
         </LegalSection>
-        <LegalSection title="2. Paid subscriptions">
+        <LegalSection title="2. One-time purchases">
           <p>
-            When paid plans become available, charges will be disclosed at checkout. Unless otherwise
-            stated at purchase, monthly subscriptions renew until cancelled, and annual plans are
-            billed up front for the term.
+            VanderBase uses a one-time purchase model—not monthly or yearly subscriptions. Pro,
+            additional team seats, and AI credit packs are charged once at checkout. Charges and
+            product details are disclosed before payment via Stripe or Razorpay.
           </p>
         </LegalSection>
-        <LegalSection title="3. Cancellations">
+        <LegalSection title="3. Credits and seats">
           <p>
-            You may cancel a paid subscription from workspace billing settings (when available).
-            Access continues through the end of the paid period.
+            AI credit packs and additional team member seats are also one-time purchases. Unused
+            credits remain available in your workspace unless otherwise stated at purchase. There is
+            no auto-renewal for credit packs or seats.
           </p>
         </LegalSection>
         <LegalSection title="4. Refunds">
           <p>
-            Refund eligibility will follow the terms shown at purchase. As a general guideline, we
-            aim to resolve billing issues fairly within 14 days of an initial paid charge when a
-            material service defect is reported. This section is a placeholder and will be finalized
-            before public paid launch.
+            Refund eligibility follows the terms shown at purchase. As a general guideline, we aim to
+            resolve billing issues fairly within 14 days of a paid one-time charge when a material
+            service defect is reported. This section is a placeholder and will be finalized before
+            public paid launch.
           </p>
         </LegalSection>
         <LegalSection title="5. Contact">

@@ -8,7 +8,8 @@ const SETTINGS_NAV = [
   { href: "/settings", label: "General", exact: true },
   { href: "/notifications/preferences", label: "Notifications" },
   { href: "/team", label: "Team" },
-  { href: "/pricing", label: "Billing" },
+  { href: "/billing", label: "Billing" },
+  { href: "/credits", label: "AI Credits" },
 ];
 
 export function SettingsNav() {

@@ -23,6 +23,8 @@ export const PUBLIC_API_ROUTES = ["/api/waitlist/stats"] as const;
 export const PUBLIC_ROUTES = [
   "/",
   "/pricing",
+  "/credits",
+  "/checkout",
   "/contact",
   "/terms",
   "/privacy",
@@ -37,6 +39,7 @@ export const PUBLIC_ROUTES = [
   "/api/waitlist",
   "/api/waitlist/stats",
   "/api/contact",
+  "/api/checkout",
   ...AUTH_ROUTES,
   GMAIL_OAUTH_CALLBACK_PATH,
 ] as const;

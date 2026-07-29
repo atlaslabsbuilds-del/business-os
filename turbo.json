@@ -20,7 +20,10 @@
     "GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET",
     "MICROSOFT_CLIENT_ID",
-    "GMAIL_CRON_SECRET"
+    "GMAIL_CRON_SECRET",
+    "STRIPE_SECRET_KEY",
+    "RAZORPAY_KEY_ID",
+    "RAZORPAY_KEY_SECRET"
   ],
   "tasks": {
     "build": {

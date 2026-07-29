@@ -84,8 +84,8 @@ export async function deductWorkspaceCredits(input: {
         module: "billing",
         category: "billing_alert",
         title: "AI credits exhausted",
-        body: "Add credits or upgrade your plan to keep using AI features.",
-        actionUrl: "/pricing",
+        body: "Buy a one-time AI credit pack to keep using AI features.",
+        actionUrl: "/credits",
         metadata: { reason: input.reason },
         client: input.client,
       }).catch(() => undefined);

@@ -137,7 +137,7 @@ export const INTEGRATION_DETAILS: Record<string, { sync: string; features: strin
     features: ["OAuth connect", "Field mapping", "Webhook events", "Workspace-scoped permissions"],
   },
   stripe: {
-    sync: "Real-time payment and subscription events.",
+    sync: "Real-time one-time payment and invoice events.",
     features: ["Checkout sync", "Invoice webhooks", "Customer linking", "Revenue reporting"],
   },
   openai: {
