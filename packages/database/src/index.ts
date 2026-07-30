@@ -134,6 +134,18 @@ export {
   getCrmDashboardStats,
   getCustomerTimeline,
   contactDisplayName,
+  listCrmTasks,
+  createCrmTask,
+  updateCrmTask,
+  deleteCrmTask,
+  listCrmPipelines,
+  listCrmPipelineStages,
+  ensureDefaultCrmPipeline,
+  createCrmPipelineStage,
+  getCrmSettings,
+  updateCrmSettings,
+  getCrmReportSnapshot,
+  searchCrmGlobal,
 } from "./crm";
 export {
   parseParticipants,

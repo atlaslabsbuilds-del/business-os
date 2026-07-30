@@ -237,6 +237,8 @@ export type {
   CrmDealStage,
   CrmActivityType,
   CrmEntityType,
+  CrmPriority,
+  CrmTaskStatus,
   CrmCompany,
   CrmContact,
   CrmDeal,
@@ -246,6 +248,11 @@ export type {
   CrmTagging,
   CrmTimelineItem,
   CrmDashboardStats,
+  CrmTask,
+  CrmPipeline,
+  CrmPipelineStage,
+  CrmSettings,
+  CrmReportSnapshot,
 } from "./crm";
 
 export {
@@ -253,6 +260,8 @@ export {
   crmDealStageSchema,
   crmActivityTypeSchema,
   crmEntityTypeSchema,
+  crmPrioritySchema,
+  crmTaskStatusSchema,
   createCompanySchema,
   updateCompanySchema,
   createContactSchema,
@@ -267,6 +276,10 @@ export {
   assignTagSchema,
   crmSearchSchema,
   deleteCrmEntitySchema,
+  createCrmTaskSchema,
+  updateCrmTaskSchema,
+  createPipelineStageSchema,
+  updateCrmSettingsSchema,
 } from "./crm";
 
 export type {

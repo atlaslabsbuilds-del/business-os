@@ -25,6 +25,7 @@ import {
 import { parseKairosActionCommand } from "./parser";
 import { KairosToolRegistry } from "./registry";
 import { buildKairosIntegrationTools } from "./integrations";
+import { buildKairosCrmTools } from "./crm";
 import type {
   KairosActionExecutionContext,
   KairosActionResponse,
@@ -559,6 +560,10 @@ function ensureDefaultKairosTools() {
   });
 
   for (const tool of buildKairosIntegrationTools()) {
+    registerTool(tool);
+  }
+
+  for (const tool of buildKairosCrmTools()) {
     registerTool(tool);
   }
 }

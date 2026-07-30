@@ -187,6 +187,7 @@ export function CreateDealForm() {
           className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm text-foreground"
           defaultValue="qualified"
         >
+          <option value="lead">Lead</option>
           <option value="qualified">Qualified</option>
           <option value="proposal">Proposal</option>
           <option value="negotiation">Negotiation</option>
@@ -410,6 +411,7 @@ export function DealStageSelect({
         });
       }}
     >
+      <option value="lead">Lead</option>
       <option value="qualified">Qualified</option>
       <option value="proposal">Proposal</option>
       <option value="negotiation">Negotiation</option>

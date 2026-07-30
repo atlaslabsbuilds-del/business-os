@@ -32,6 +32,7 @@ function parseAmount(command: string): number | undefined {
 function parseStage(
   command: string,
 ):
+  | "lead"
   | "qualified"
   | "proposal"
   | "negotiation"
@@ -39,10 +40,11 @@ function parseStage(
   | "lost"
   | undefined {
   const stageMatch = command.match(
-    /\b(qualified|proposal|negotiation|won|lost)\b/i,
+    /\b(lead|qualified|proposal|negotiation|won|lost)\b/i,
   );
   if (!stageMatch) return undefined;
   return stageMatch[1]!.toLowerCase() as
+    | "lead"
     | "qualified"
     | "proposal"
     | "negotiation"
@@ -421,6 +423,85 @@ export function parseKairosActionCommand(input: {
     return {
       tool: "findUnnecessaryExpenses",
       label: "Find unnecessary expenses",
+      input: {},
+    };
+  }
+
+  if (
+    /show\s+hot\s+leads\b/.test(command) ||
+    /list\s+hot\s+leads\b/.test(command)
+  ) {
+    return {
+      tool: "showHotLeads",
+      label: "Show hot leads",
+      input: { limit: 8 },
+    };
+  }
+
+  if (
+    /summarize\s+(customer|contact)\s+history\b/.test(command) ||
+    /summarize\s+this\s+customer\b/.test(command)
+  ) {
+    const customerName = raw
+      .replace(/summarize\s+(customer|contact)\s+history\b/i, "")
+      .replace(/summarize\s+this\s+customer\b/i, "")
+      .trim();
+    return {
+      tool: "summarizeCustomerHistory",
+      label: "Summarize customer history",
+      input: {
+        customerName: customerName || undefined,
+        contactId: pickSelectedRecordId(selectedRecords, "customer"),
+      },
+    };
+  }
+
+  if (
+    /predict\s+which\s+deals\s+will\s+close\b/.test(command) ||
+    /predict\s+deal\s+closures?\b/.test(command)
+  ) {
+    return {
+      tool: "predictDealClosures",
+      label: "Predict which deals will close",
+      input: { limit: 5 },
+    };
+  }
+
+  if (
+    /generate\s+(a\s+)?follow[- ]up\s+email\b/.test(command) ||
+    /draft\s+(a\s+)?follow[- ]up\s+email\b/.test(command)
+  ) {
+    const topic = raw
+      .replace(/^(generate|draft)\s+(a\s+)?follow[- ]up\s+email\b/i, "")
+      .trim();
+    return {
+      tool: "generateFollowUpEmail",
+      label: "Generate follow-up email",
+      input: {
+        topic: topic || undefined,
+        contactId: pickSelectedRecordId(selectedRecords, "customer"),
+      },
+    };
+  }
+
+  if (
+    /find\s+inactive\s+customers\b/.test(command) ||
+    /show\s+inactive\s+customers\b/.test(command)
+  ) {
+    return {
+      tool: "findInactiveCustomers",
+      label: "Find inactive customers",
+      input: { days: 30 },
+    };
+  }
+
+  if (
+    /suggest\s+next\s+sales\s+actions\b/.test(command) ||
+    /what\s+should\s+i\s+do\s+next\s+in\s+(sales|crm)\b/.test(command)
+  ) {
+    return {
+      tool: "suggestNextSalesActions",
+      label: "Suggest next sales actions",
       input: {},
     };
   }

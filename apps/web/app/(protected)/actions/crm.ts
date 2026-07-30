@@ -11,26 +11,36 @@ import {
   contactDisplayName,
   createNote,
   createTag,
+  createCrmTask,
+  createCrmPipelineStage,
   deleteActivity,
   deleteCompany,
   deleteContact,
   deleteDeal,
   deleteNote,
   deleteTag,
+  deleteCrmTask,
+  ensureDefaultCrmPipeline,
   getCrmDashboardStats,
+  getCrmReportSnapshot,
+  getCrmSettings,
   getCustomerTimeline,
   listActivities,
   listCompanies,
   listContacts,
+  listCrmTasks,
   listDeals,
   listLeads,
   listNotes,
   listTags,
   searchCompanies,
+  searchCrmGlobal,
   unassignTag,
   updateActivity,
   updateCompany,
   updateContact,
+  updateCrmSettings,
+  updateCrmTask,
   updateDeal,
 } from "@repo/database/crm";
 import { getMembershipRole } from "@repo/database/workspace";
@@ -44,11 +54,15 @@ import {
   createLeadSchema,
   createNoteSchema,
   createTagSchema,
+  createCrmTaskSchema,
+  createPipelineStageSchema,
   crmSearchSchema,
   deleteCrmEntitySchema,
   updateActivitySchema,
   updateCompanySchema,
   updateContactSchema,
+  updateCrmSettingsSchema,
+  updateCrmTaskSchema,
   updateDealSchema,
 } from "@repo/types";
 import { ensureCrmAiToolsRegistered } from "../../../lib/crm-ai";
@@ -649,6 +663,155 @@ export async function getCrmTimelineAction(input: {
       contactId: input.contactId,
     });
     return { ok: true, data: { items }, tools: ctx.tools };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function getCrmModuleData() {
+  const ctx = await requireCrmContext();
+  const [
+    stats,
+    deals,
+    activities,
+    tasks,
+    report,
+    settings,
+    pipelineBundle,
+    contacts,
+    companies,
+    leads,
+  ] = await Promise.all([
+    getCrmDashboardStats({ workspaceId: ctx.workspaceId }),
+    listDeals({ workspaceId: ctx.workspaceId }),
+    listActivities({ workspaceId: ctx.workspaceId }),
+    listCrmTasks({ workspaceId: ctx.workspaceId }),
+    getCrmReportSnapshot({ workspaceId: ctx.workspaceId }),
+    getCrmSettings({ workspaceId: ctx.workspaceId }),
+    ensureDefaultCrmPipeline({
+      workspaceId: ctx.workspaceId,
+      userId: ctx.userId,
+    }),
+    listContacts({ workspaceId: ctx.workspaceId }),
+    listCompanies({ workspaceId: ctx.workspaceId }),
+    listLeads({ workspaceId: ctx.workspaceId }),
+  ]);
+
+  return {
+    stats,
+    deals,
+    activities,
+    tasks,
+    report,
+    settings,
+    pipeline: pipelineBundle.pipeline,
+    stages: pipelineBundle.stages,
+    contacts,
+    companies,
+    leads,
+    tools: ctx.tools,
+  };
+}
+
+export async function createCrmTaskAction(
+  input: unknown,
+): Promise<CrmActionResult<{ id: string }>> {
+  try {
+    const ctx = await requireCrmContext();
+    const parsed = createCrmTaskSchema.parse(input);
+    const task = await createCrmTask({
+      workspaceId: ctx.workspaceId,
+      userId: ctx.userId,
+      ...parsed,
+    });
+    return { ok: true, data: { id: task.id }, tools: ctx.tools };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function updateCrmTaskAction(
+  input: unknown,
+): Promise<CrmActionResult<{ id: string }>> {
+  try {
+    const ctx = await requireCrmContext();
+    const parsed = updateCrmTaskSchema.parse(input);
+    const { id, ...patch } = parsed;
+    const task = await updateCrmTask({
+      workspaceId: ctx.workspaceId,
+      id,
+      ...patch,
+    });
+    return { ok: true, data: { id: task.id }, tools: ctx.tools };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function deleteCrmTaskAction(
+  input: unknown,
+): Promise<CrmActionResult<{ id: string }>> {
+  try {
+    const ctx = await requireCrmContext();
+    const parsed = deleteCrmEntitySchema.parse(input);
+    await deleteCrmTask({
+      workspaceId: ctx.workspaceId,
+      id: parsed.id,
+    });
+    return { ok: true, data: { id: parsed.id }, tools: ctx.tools };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function createCrmPipelineStageAction(
+  input: unknown,
+): Promise<CrmActionResult<{ id: string }>> {
+  try {
+    const ctx = await requireCrmContext();
+    const parsed = createPipelineStageSchema.parse(input);
+    const stage = await createCrmPipelineStage({
+      workspaceId: ctx.workspaceId,
+      ...parsed,
+    });
+    return { ok: true, data: { id: stage.id }, tools: ctx.tools };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function updateCrmSettingsAction(
+  input: unknown,
+): Promise<CrmActionResult<{ workspaceId: string }>> {
+  try {
+    const ctx = await requireCrmContext();
+    const parsed = updateCrmSettingsSchema.parse(input);
+    const settings = await updateCrmSettings({
+      workspaceId: ctx.workspaceId,
+      ...parsed,
+    });
+    return {
+      ok: true,
+      data: { workspaceId: settings.workspaceId },
+      tools: ctx.tools,
+    };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+export async function searchCrmGlobalAction(input: {
+  query: string;
+}): Promise<
+  CrmActionResult<Awaited<ReturnType<typeof searchCrmGlobal>>>
+> {
+  try {
+    const ctx = await requireCrmContext();
+    const data = await searchCrmGlobal({
+      workspaceId: ctx.workspaceId,
+      query: input.query,
+    });
+    return { ok: true, data, tools: ctx.tools };
   } catch (error) {
     return fail(error);
   }

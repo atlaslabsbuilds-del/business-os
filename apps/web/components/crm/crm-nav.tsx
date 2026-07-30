@@ -3,14 +3,16 @@
 import { ModuleNav } from "../app/module-nav";
 
 const items = [
-  { href: "/crm", label: "Dashboard", exact: true },
+  { href: "/crm", label: "Overview", exact: true },
+  { href: "/crm/leads", label: "Leads" },
   { href: "/crm/contacts", label: "Contacts" },
   { href: "/crm/companies", label: "Companies" },
-  { href: "/crm/leads", label: "Leads" },
   { href: "/crm/deals", label: "Deals" },
+  { href: "/crm/pipeline", label: "Pipeline" },
   { href: "/crm/activities", label: "Activities" },
-  { href: "/crm/notes", label: "Notes" },
-  { href: "/crm/tags", label: "Tags" },
+  { href: "/crm/tasks", label: "Tasks" },
+  { href: "/crm/reports", label: "Reports" },
+  { href: "/crm/settings", label: "Settings" },
 ];
 
 export function CrmNav() {

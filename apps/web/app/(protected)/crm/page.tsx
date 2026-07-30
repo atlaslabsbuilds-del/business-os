@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
-import { getCrmDashboardStats, listActivities, listDeals } from "@repo/database/crm";
 import { Badge } from "@repo/ui/badge";
 import { Card, CardDescription, CardHeader, CardTitle } from "@repo/ui/card";
 import { ensureCrmAiToolsRegistered } from "../../../lib/crm-ai";
 import { resolveActiveWorkspace } from "../../../lib/workspace-context";
+import { getCrmModuleData } from "../actions/crm";
 import { CrmShell } from "../../../components/crm/crm-shell";
+import { CrmAiInsightsCard } from "../../../components/crm/crm-extra";
+import { CrmGlobalSearch } from "../../../components/crm/crm-global-search";
 
 export const dynamic = "force-dynamic";
 
@@ -13,62 +15,47 @@ export default async function CrmDashboardPage() {
   if (!context) redirect("/onboarding");
 
   const { registered } = ensureCrmAiToolsRegistered();
-  const workspaceId = context.active.workspace.id;
-  const [stats, deals, activities] = await Promise.all([
-    getCrmDashboardStats({ workspaceId }),
-    listDeals({ workspaceId }),
-    listActivities({ workspaceId }),
-  ]);
-
-  const recentDeals = deals.slice(0, 5);
-  const recentActivities = activities.slice(0, 5);
+  const data = await getCrmModuleData();
+  const recentActivities = data.activities.slice(0, 6);
 
   return (
     <CrmShell
-      title="CRM Dashboard"
-      description="Contacts, pipeline, and activity in one workspace-aware surface."
+      title="CRM Overview"
+      description="Leads, pipeline, and customer relationships in one AI-native workspace."
+      actions={<CrmGlobalSearch />}
     >
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard title="Contacts" value={stats.contacts} hint="People in this workspace" />
-        <StatCard title="Companies" value={stats.companies} hint="Accounts tracked" />
-        <StatCard title="Leads" value={stats.leads} hint="Lifecycle stage = lead" />
-        <StatCard title="Open deals" value={stats.openDeals} hint="Not won or lost" />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <StatCard title="Total leads" value={data.stats.leads} hint="Lifecycle = lead" />
         <StatCard
-          title="Pipeline"
-          value={`$${stats.pipelineValue.toLocaleString()}`}
+          title="Qualified leads"
+          value={data.stats.qualifiedLeads}
+          hint="Ready for outreach"
+        />
+        <StatCard title="Open deals" value={data.stats.openDeals} hint="Active pipeline" />
+        <StatCard title="Won deals" value={data.stats.wonDeals} hint="Closed won" />
+        <StatCard title="Lost deals" value={data.stats.lostDeals} hint="Closed lost" />
+        <StatCard
+          title="Revenue pipeline"
+          value={`$${data.stats.pipelineValue.toLocaleString()}`}
           hint="Open deal value"
         />
-        <StatCard title="Activities" value={stats.activities} hint="Calls, tasks, meetings" />
+        <StatCard
+          title="Conversion rate"
+          value={`${data.stats.conversionRate}%`}
+          hint="Won / closed"
+        />
+        <StatCard
+          title="Sales this month"
+          value={`$${data.stats.salesThisMonth.toLocaleString()}`}
+          hint="Won amount MTD"
+        />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Recent deals</CardTitle>
-            <CardDescription>Latest pipeline movement</CardDescription>
-          </CardHeader>
-          <ul className="space-y-2">
-            {recentDeals.length === 0 ? (
-              <li className="text-sm text-muted">No deals yet</li>
-            ) : (
-              recentDeals.map((deal) => (
-                <li
-                  key={deal.id}
-                  className="flex items-center justify-between rounded-xl bg-elevated/60 px-3 py-2 text-sm"
-                >
-                  <span className="truncate text-foreground">{deal.title}</span>
-                  <span className="text-secondary">
-                    ${deal.amount.toLocaleString()} · {deal.stage}
-                  </span>
-                </li>
-              ))
-            )}
-          </ul>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent activity</CardTitle>
-            <CardDescription>What the team has logged</CardDescription>
+            <CardTitle>Recent activities</CardTitle>
+            <CardDescription>Latest calls, meetings, emails, and tasks</CardDescription>
           </CardHeader>
           <ul className="space-y-2">
             {recentActivities.length === 0 ? (
@@ -86,13 +73,14 @@ export default async function CrmDashboardPage() {
             )}
           </ul>
         </Card>
+        <CrmAiInsightsCard stats={data.stats} />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>AI tools registered</CardTitle>
+          <CardTitle>Kairos CRM tools</CardTitle>
           <CardDescription>
-            CRM actions keep these tools available to the AI Tool Registry automatically.
+            Ask Kairos to show hot leads, create deals, summarize history, or predict closings.
           </CardDescription>
         </CardHeader>
         <div className="flex flex-wrap gap-2">

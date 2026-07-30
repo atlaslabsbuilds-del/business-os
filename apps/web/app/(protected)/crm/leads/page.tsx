@@ -11,6 +11,7 @@ import {
   CreateContactForm,
   DeleteButton,
 } from "../../../../components/crm/crm-forms";
+import { CrmCsvExportButton } from "../../../../components/crm/crm-csv";
 
 export const dynamic = "force-dynamic";
 
@@ -27,13 +28,25 @@ export default async function CrmLeadsPage({ searchParams }: Props) {
     query: params.q,
   });
 
+  const exportRows = leads.map((lead) => ({
+    name: contactDisplayName(lead),
+    email: lead.email ?? "",
+    phone: lead.phone ?? "",
+    source: lead.source ?? "",
+    priority: lead.priority,
+    stage: lead.lifecycleStage,
+  }));
+
   return (
     <CrmShell
       title="Leads"
-      description="Inbound and outbound leads — contacts with lifecycle stage lead."
+      description="Inbound and outbound leads with priority, source, and owner-ready workflows."
       actions={<CrmSearch placeholder="Search leads" />}
     >
-      <CreateContactForm asLead />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <CreateContactForm asLead />
+        <CrmCsvExportButton filename="crm-leads.csv" rows={exportRows} />
+      </div>
       <Card className="overflow-hidden p-0">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border bg-elevated/50 text-xs uppercase tracking-wide text-muted">
@@ -41,6 +54,7 @@ export default async function CrmLeadsPage({ searchParams }: Props) {
               <th className="px-4 py-3 font-medium">Name</th>
               <th className="px-4 py-3 font-medium">Email</th>
               <th className="px-4 py-3 font-medium">Source</th>
+              <th className="px-4 py-3 font-medium">Priority</th>
               <th className="px-4 py-3 font-medium">Stage</th>
               <th className="px-4 py-3 font-medium" />
             </tr>
@@ -48,7 +62,7 @@ export default async function CrmLeadsPage({ searchParams }: Props) {
           <tbody>
             {leads.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-4">
+                <td colSpan={6} className="p-4">
                   <EmptyState
                     title="No leads yet"
                     body="Capture your first lead with the form above to grow the funnel."
@@ -63,6 +77,9 @@ export default async function CrmLeadsPage({ searchParams }: Props) {
                   </td>
                   <td className="px-4 py-3 text-secondary">{lead.email ?? "—"}</td>
                   <td className="px-4 py-3 text-secondary">{lead.source ?? "—"}</td>
+                  <td className="px-4 py-3">
+                    <Badge variant="default">{lead.priority}</Badge>
+                  </td>
                   <td className="px-4 py-3">
                     <Badge variant="accent">{lead.lifecycleStage}</Badge>
                   </td>

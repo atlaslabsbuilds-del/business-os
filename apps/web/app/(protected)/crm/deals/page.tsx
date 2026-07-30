@@ -24,6 +24,7 @@ export default async function CrmDealsPage({ searchParams }: Props) {
 
   const params = await searchParams;
   const stage =
+    params.stage === "lead" ||
     params.stage === "qualified" ||
     params.stage === "proposal" ||
     params.stage === "negotiation" ||
@@ -47,7 +48,7 @@ export default async function CrmDealsPage({ searchParams }: Props) {
       <CreateDealForm />
 
       <div className="flex flex-wrap gap-2">
-        {["", "qualified", "proposal", "negotiation", "won", "lost"].map(
+        {["", "lead", "qualified", "proposal", "negotiation", "won", "lost"].map(
           (value) => {
             const href = value
               ? `/crm/deals?stage=${value}${params.q ? `&q=${params.q}` : ""}`
