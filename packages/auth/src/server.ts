@@ -1,4 +1,5 @@
-import { createServerClient, mapSupabaseUser } from "@repo/database";
+import { createServerClient } from "@repo/database/server";
+import { mapSupabaseUser } from "@repo/database/helpers";
 import type { AuthSession, AuthUser } from "@repo/types";
 import { userHasAdminAccess } from "./roles";
 

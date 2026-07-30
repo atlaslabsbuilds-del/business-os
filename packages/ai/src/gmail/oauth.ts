@@ -1,3 +1,4 @@
+import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 const GOOGLE_AUTH = "https://accounts.google.com/o/oauth2/v2/auth";

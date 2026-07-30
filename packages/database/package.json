@@ -31,7 +31,9 @@
     "./contact": "./src/contact.ts",
     "./finance": "./src/finance.ts",
     "./feedback": "./src/feedback.ts",
-    "./integrations": "./src/integrations.ts"
+    "./integrations": "./src/integrations.ts",
+    "./integration-tokens": "./src/integration-tokens.server.ts",
+    "./helpers": "./src/helpers.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
@@ -42,6 +44,7 @@
     "@repo/types": "*",
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.90.1",
+    "server-only": "^0.0.1",
     "zod": "^4.4.3"
   },
   "peerDependencies": {

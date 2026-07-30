@@ -14,6 +14,8 @@ import { getUser } from "@repo/auth/server";
 import { getSiteUrl } from "@repo/auth/site-url";
 import { getMembershipRole } from "@repo/database/workspace";
 
+export const runtime = "nodejs";
+
 /**
  * Google OAuth callback — exchanges code, stores tokens, redirects to accounts.
  *

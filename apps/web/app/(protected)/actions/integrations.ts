@@ -1,381 +1,43 @@
 "use server";
 
-import { getUser } from "@repo/auth/server";
-import { getSiteUrl } from "@repo/auth/site-url";
-import {
-  createIntegrationSyncJob,
-  deleteIntegrationAccount,
-  disconnectIntegrationAccount,
-  logIntegrationActivity,
-  markIntegrationSynced,
-  updateIntegrationAccountSettings,
-  updateIntegrationSyncJob,
-} from "@repo/database/integrations";
-import { getMembershipRole } from "@repo/database/workspace";
-import {
-  disconnectIntegrationSchema,
-  listIntegrationsSchema,
-  manualSyncIntegrationSchema,
-  startIntegrationOAuthSchema,
-  updateIntegrationSettingsSchema,
-} from "@repo/types";
-import { resolveActiveWorkspace } from "../../../lib/workspace-context";
-import {
-  encodeIntegrationOAuthState,
-  getIntegrationProvider,
-} from "../../../lib/integrations-hub/provider";
-import { ensureIntegrationProvidersRegistered } from "../../../lib/integrations-hub/providers";
-import {
-  buildIntegrationHubCards,
-  getIntegrationOAuthRedirectUri,
-  loadIntegrationDetail,
-  requireIntegrationAccount,
-} from "../../../lib/integrations-hub/service";
+export type { IntegrationActionResult } from "../../../lib/integrations-hub/integrations-action-types";
 
-export type IntegrationActionResult<T> =
-  | { ok: true; data: T }
-  | { ok: false; error: string };
-
-async function requireContext() {
-  const user = await getUser();
-  if (!user) throw new Error("Unauthorized");
-  const context = await resolveActiveWorkspace();
-  if (!context) throw new Error("No active workspace");
-  const role = await getMembershipRole(context.active.workspace.id, user.id);
-  if (!role) throw new Error("Forbidden");
-  return {
-    userId: user.id,
-    workspaceId: context.active.workspace.id,
-    email: context.email,
-  };
+export async function listIntegrationsHubAction(input?: unknown) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.listIntegrationsHub(input);
 }
 
-function fail(error: unknown): IntegrationActionResult<never> {
-  return {
-    ok: false,
-    error: error instanceof Error ? error.message : "Integration action failed",
-  };
+export async function getIntegrationDetailAction(input: { provider: string }) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.getIntegrationDetail(input);
 }
 
-export async function listIntegrationsHubAction(
-  input?: unknown,
-): Promise<
-  IntegrationActionResult<Awaited<ReturnType<typeof buildIntegrationHubCards>>>
-> {
-  try {
-    const ctx = await requireContext();
-    const parsed = listIntegrationsSchema.safeParse(input ?? {});
-    if (!parsed.success) {
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
-    }
-    ensureIntegrationProvidersRegistered();
-    const data = await buildIntegrationHubCards({
-      workspaceId: ctx.workspaceId,
-      query: parsed.data.query,
-      category: parsed.data.category,
-      status: parsed.data.status,
-    });
-    return { ok: true, data };
-  } catch (error) {
-    return fail(error);
-  }
+export async function startIntegrationOAuthAction(input: unknown) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.startIntegrationOAuth(input);
 }
 
-export async function getIntegrationDetailAction(input: {
-  provider: string;
-}): Promise<
-  IntegrationActionResult<NonNullable<Awaited<ReturnType<typeof loadIntegrationDetail>>>>
-> {
-  try {
-    const ctx = await requireContext();
-    ensureIntegrationProvidersRegistered();
-    const detail = await loadIntegrationDetail({
-      workspaceId: ctx.workspaceId,
-      provider: input.provider,
-    });
-    if (!detail) return { ok: false, error: "Integration not found" };
-    return { ok: true, data: detail };
-  } catch (error) {
-    return fail(error);
-  }
+export async function disconnectIntegrationAction(input: unknown) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.disconnectIntegration(input);
 }
 
-export async function startIntegrationOAuthAction(
-  input: unknown,
-): Promise<IntegrationActionResult<{ authUrl: string; configured: boolean }>> {
-  try {
-    const ctx = await requireContext();
-    const parsed = startIntegrationOAuthSchema.safeParse(input);
-    if (!parsed.success) {
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
-    }
-    ensureIntegrationProvidersRegistered();
-    const provider = getIntegrationProvider(parsed.data.provider);
-    if (!provider) return { ok: false, error: "Unknown integration provider" };
-
-    if (!provider.isConfigured()) {
-      return {
-        ok: false,
-        error: `${provider.name} OAuth is not configured. Add ${provider.requiredEnv.join(" and ")}.`,
-      };
-    }
-
-    const secret =
-      process.env.INTEGRATION_OAUTH_STATE_SECRET?.trim() ||
-      process.env.GOOGLE_CLIENT_SECRET?.trim() ||
-      process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-    if (!secret) {
-      return { ok: false, error: "OAuth state secret is not configured" };
-    }
-
-    const redirectUri = getIntegrationOAuthRedirectUri(getSiteUrl());
-    const state = encodeIntegrationOAuthState({
-      workspaceId: ctx.workspaceId,
-      userId: ctx.userId,
-      provider: provider.id,
-      secret,
-    });
-    const authUrl = provider.buildAuthUrl({
-      workspaceId: ctx.workspaceId,
-      userId: ctx.userId,
-      redirectUri,
-      state,
-    });
-
-    return { ok: true, data: { authUrl, configured: true } };
-  } catch (error) {
-    return fail(error);
-  }
+export async function deleteIntegrationConnectionAction(input: unknown) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.deleteIntegrationConnection(input);
 }
 
-export async function disconnectIntegrationAction(
-  input: unknown,
-): Promise<IntegrationActionResult<{ disconnected: true }>> {
-  try {
-    const ctx = await requireContext();
-    const parsed = disconnectIntegrationSchema.safeParse(input);
-    if (!parsed.success) {
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
-    }
-    const account = await requireIntegrationAccount({
-      workspaceId: ctx.workspaceId,
-      accountId: parsed.data.accountId,
-    });
-    await disconnectIntegrationAccount({
-      workspaceId: ctx.workspaceId,
-      accountId: account.id,
-    });
-    await logIntegrationActivity({
-      workspaceId: ctx.workspaceId,
-      accountId: account.id,
-      provider: account.provider,
-      eventType: "disconnected",
-      title: `Disconnected ${account.provider}`,
-      body: account.accountEmail,
-      actorId: ctx.userId,
-    });
-    return { ok: true, data: { disconnected: true } };
-  } catch (error) {
-    return fail(error);
-  }
+export async function updateIntegrationSettingsAction(input: unknown) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.updateIntegrationSettings(input);
 }
 
-export async function deleteIntegrationConnectionAction(
-  input: unknown,
-): Promise<IntegrationActionResult<{ deleted: true }>> {
-  try {
-    const ctx = await requireContext();
-    const parsed = disconnectIntegrationSchema.safeParse(input);
-    if (!parsed.success) {
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
-    }
-    const account = await requireIntegrationAccount({
-      workspaceId: ctx.workspaceId,
-      accountId: parsed.data.accountId,
-    });
-    await deleteIntegrationAccount({
-      workspaceId: ctx.workspaceId,
-      accountId: account.id,
-    });
-    await logIntegrationActivity({
-      workspaceId: ctx.workspaceId,
-      provider: account.provider,
-      eventType: "disconnected",
-      title: `Deleted ${account.provider} connection`,
-      actorId: ctx.userId,
-    });
-    return { ok: true, data: { deleted: true } };
-  } catch (error) {
-    return fail(error);
-  }
+export async function manualSyncIntegrationAction(input: unknown) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.manualSyncIntegration(input);
 }
 
-export async function updateIntegrationSettingsAction(
-  input: unknown,
-): Promise<IntegrationActionResult<{ accountId: string }>> {
-  try {
-    const ctx = await requireContext();
-    const parsed = updateIntegrationSettingsSchema.safeParse(input);
-    if (!parsed.success) {
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
-    }
-    const account = await updateIntegrationAccountSettings({
-      workspaceId: ctx.workspaceId,
-      accountId: parsed.data.accountId,
-      autoSync: parsed.data.autoSync,
-      notificationsEnabled: parsed.data.notificationsEnabled,
-      kairosAccess: parsed.data.kairosAccess,
-      syncFrequency: parsed.data.syncFrequency,
-    });
-    await logIntegrationActivity({
-      workspaceId: ctx.workspaceId,
-      accountId: account.id,
-      provider: account.provider,
-      eventType: "permission_updated",
-      title: "Integration settings updated",
-      actorId: ctx.userId,
-      metadata: parsed.data,
-    });
-    return { ok: true, data: { accountId: account.id } };
-  } catch (error) {
-    return fail(error);
-  }
-}
-
-export async function manualSyncIntegrationAction(
-  input: unknown,
-): Promise<IntegrationActionResult<{ jobId: string }>> {
-  try {
-    const ctx = await requireContext();
-    const parsed = manualSyncIntegrationSchema.safeParse(input);
-    if (!parsed.success) {
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
-    }
-    const account = await requireIntegrationAccount({
-      workspaceId: ctx.workspaceId,
-      accountId: parsed.data.accountId,
-    });
-    if (account.status !== "connected") {
-      return { ok: false, error: "Connect the integration before syncing" };
-    }
-
-    const job = await createIntegrationSyncJob({
-      workspaceId: ctx.workspaceId,
-      accountId: account.id,
-      provider: account.provider,
-      trigger: "manual",
-    });
-
-    // Optimistic sync path — providers can replace with real sync later
-    const startedAt = new Date().toISOString();
-    await updateIntegrationSyncJob({
-      workspaceId: ctx.workspaceId,
-      jobId: job.id,
-      status: "running",
-      attempts: 1,
-      startedAt,
-    });
-
-    try {
-      await markIntegrationSynced({
-        workspaceId: ctx.workspaceId,
-        accountId: account.id,
-      });
-      await updateIntegrationSyncJob({
-        workspaceId: ctx.workspaceId,
-        jobId: job.id,
-        status: "succeeded",
-        attempts: 1,
-        startedAt,
-        finishedAt: new Date().toISOString(),
-        result: { synced: true },
-      });
-      await logIntegrationActivity({
-        workspaceId: ctx.workspaceId,
-        accountId: account.id,
-        provider: account.provider,
-        eventType: "manual_sync",
-        title: `Manual sync completed for ${account.provider}`,
-        actorId: ctx.userId,
-      });
-    } catch (syncError) {
-      await updateIntegrationSyncJob({
-        workspaceId: ctx.workspaceId,
-        jobId: job.id,
-        status: "failed",
-        attempts: 1,
-        startedAt,
-        finishedAt: new Date().toISOString(),
-        errorMessage:
-          syncError instanceof Error ? syncError.message : "Sync failed",
-      });
-      await logIntegrationActivity({
-        workspaceId: ctx.workspaceId,
-        accountId: account.id,
-        provider: account.provider,
-        eventType: "error",
-        title: `Sync failed for ${account.provider}`,
-        body: syncError instanceof Error ? syncError.message : "Sync failed",
-        actorId: ctx.userId,
-      });
-      throw syncError;
-    }
-
-    return { ok: true, data: { jobId: job.id } };
-  } catch (error) {
-    return fail(error);
-  }
-}
-
-export async function refreshIntegrationTokenAction(
-  input: unknown,
-): Promise<IntegrationActionResult<{ expiresAt: string | null }>> {
-  try {
-    const ctx = await requireContext();
-    const parsed = disconnectIntegrationSchema.safeParse(input);
-    if (!parsed.success) {
-      return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
-    }
-
-    ensureIntegrationProvidersRegistered();
-    const account = await requireIntegrationAccount({
-      workspaceId: ctx.workspaceId,
-      accountId: parsed.data.accountId,
-    });
-    const provider = getIntegrationProvider(account.provider);
-    if (!provider?.refreshAccessToken) {
-      return { ok: false, error: "This provider does not support token refresh" };
-    }
-
-    const { getDecryptedIntegrationTokens, upsertIntegrationTokens } =
-      await import("@repo/database/integrations");
-    const tokens = await getDecryptedIntegrationTokens({ accountId: account.id });
-    if (!tokens?.refreshToken) {
-      return { ok: false, error: "No refresh token available — reconnect the integration" };
-    }
-
-    const refreshed = await provider.refreshAccessToken({
-      refreshToken: tokens.refreshToken,
-    });
-    await upsertIntegrationTokens({
-      workspaceId: ctx.workspaceId,
-      accountId: account.id,
-      accessToken: refreshed.accessToken,
-      refreshToken: refreshed.refreshToken ?? tokens.refreshToken,
-      expiresAt: refreshed.expiresAt,
-      tokenType: refreshed.tokenType,
-    });
-    await logIntegrationActivity({
-      workspaceId: ctx.workspaceId,
-      accountId: account.id,
-      provider: account.provider,
-      eventType: "token_refreshed",
-      title: `Refreshed ${account.provider} token`,
-      actorId: ctx.userId,
-    });
-
-    return { ok: true, data: { expiresAt: refreshed.expiresAt } };
-  } catch (error) {
-    return fail(error);
-  }
+export async function refreshIntegrationTokenAction(input: unknown) {
+  const mod = await import("../../../lib/integrations-hub/integrations-actions.server");
+  return mod.refreshIntegrationToken(input);
 }

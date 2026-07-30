@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { getPublicSupabaseEnv } from "@repo/config/env";
-import { mapSupabaseUser } from "@repo/database";
+import { mapSupabaseUser } from "@repo/database/helpers";
 import type { AuthUser } from "@repo/types";
 import type { NextRequest } from "next/server";
 

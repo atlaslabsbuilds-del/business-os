@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRole, Database } from "@repo/types";
-import { createAdminClient, createServerClient } from "@repo/database";
+import { createAdminClient } from "@repo/database/admin";
+import { createServerClient } from "@repo/database/server";
 
 const ADMIN_ROLES: readonly AppRole[] = ["admin", "owner"];
 

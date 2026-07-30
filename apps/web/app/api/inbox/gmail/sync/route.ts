@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getUser } from "@repo/auth/server";
 import { consumeRateLimit } from "@repo/auth/rate-limit";
+
+export const runtime = "nodejs";
 import {
   listGmailAccountSecrets,
 } from "@repo/database/gmail";

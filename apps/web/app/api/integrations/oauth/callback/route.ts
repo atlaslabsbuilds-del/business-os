@@ -3,14 +3,16 @@ import { getSiteUrl } from "@repo/auth/site-url";
 import {
   logIntegrationActivity,
   upsertIntegrationAccount,
-  upsertIntegrationTokens,
 } from "@repo/database/integrations";
+import { upsertIntegrationTokens } from "@repo/database/integration-tokens";
 import {
   decodeIntegrationOAuthState,
-  getIntegrationProvider,
-} from "../../../../../lib/integrations-hub/provider";
+} from "../../../../../lib/integrations-hub/oauth-state.server";
+import { getIntegrationProvider } from "../../../../../lib/integrations-hub/provider";
 import { ensureIntegrationProvidersRegistered } from "../../../../../lib/integrations-hub/providers";
 import { getIntegrationOAuthRedirectUri } from "../../../../../lib/integrations-hub/service";
+
+export const runtime = "nodejs";
 
 function redirectTo(path: string) {
   return NextResponse.redirect(new URL(path, getSiteUrl()));

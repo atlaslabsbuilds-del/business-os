@@ -241,8 +241,6 @@ export {
   updateIntegrationAccountSettings,
   disconnectIntegrationAccount,
   deleteIntegrationAccount,
-  upsertIntegrationTokens,
-  getDecryptedIntegrationTokens,
   logIntegrationActivity,
   listIntegrationActivity,
   createIntegrationSyncJob,
@@ -250,7 +248,3 @@ export {
   markIntegrationSynced,
   listConnectedKairosProviders,
 } from "./integrations";
-export {
-  encryptIntegrationSecret,
-  decryptIntegrationSecret,
-} from "./token-encryption";

@@ -4,6 +4,8 @@ import { resolveActiveWorkspace } from "../../../../lib/workspace-context";
 import { mapWorkspaceRoleToKairosRole } from "../../../../lib/kairos-actions/registry";
 import { executeKairosActionCommand } from "../../../../lib/kairos-actions/service";
 
+export const runtime = "nodejs";
+
 const requestSchema = z.object({
   command: z.string().trim().min(1).max(2000),
   confirm: z.boolean().optional(),

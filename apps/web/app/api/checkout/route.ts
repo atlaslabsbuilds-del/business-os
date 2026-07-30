@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { getUser } from "@repo/auth/server";
 import { getSiteUrl } from "@repo/auth/site-url";
+
+export const runtime = "nodejs";
 import {
   createOneTimeCheckoutSession,
   resolveCheckoutProduct,
