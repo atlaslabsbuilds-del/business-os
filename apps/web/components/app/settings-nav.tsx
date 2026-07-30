@@ -7,6 +7,7 @@ import { cn } from "@repo/ui/utils";
 const SETTINGS_NAV = [
   { href: "/settings", label: "Workspace", exact: true },
   { href: "/settings/security", label: "Security" },
+  { href: "/settings/appearance", label: "Appearance" },
   { href: "/notifications/preferences", label: "Notifications" },
   { href: "/team", label: "Members" },
   { href: "/integrations", label: "Integrations" },

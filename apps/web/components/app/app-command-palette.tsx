@@ -109,6 +109,15 @@ function iconForModule(module: string) {
       return PenLine;
     case "calendar":
       return CalendarDays;
+    case "projects":
+      return Workflow;
+    case "documents":
+      return PenLine;
+    case "finance":
+    case "analytics":
+      return BarChart3;
+    case "notifications":
+      return Bell;
     case "settings":
       return Settings;
     default:

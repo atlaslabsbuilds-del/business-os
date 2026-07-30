@@ -732,6 +732,8 @@ export function LandingFooter() {
         ["Roadmap", "/roadmap"],
         ["Features", "#features"],
         ["Integrations", "#integrations"],
+        ["Help Center", "/help"],
+        ["Support", "/support"],
         ["Contact", "/contact"],
       ],
     },

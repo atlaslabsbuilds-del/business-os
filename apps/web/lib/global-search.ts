@@ -9,6 +9,12 @@ import { listConversations } from "@repo/database/chat";
 import { listContentItems } from "@repo/database/content";
 import { listSocialPosts } from "@repo/database/social";
 import { listWorkspaceAiMemory } from "@repo/database/workspace-memory";
+import { listProjects, listProjectTasks } from "@repo/database/projects";
+import { listDocuments } from "@repo/database/documents";
+import { listFinanceExpenses, listFinanceInvoices } from "@repo/database/finance";
+import { listCalendarEvents } from "@repo/database/calendar-module";
+import { listAnalyticsReports } from "@repo/database/analytics";
+import { listNotificationsForUser } from "@repo/database/notifications";
 import { matchKairosCommands } from "./kairos-commands";
 import { KAIROS_AGENTS } from "./kairos-agents";
 
@@ -18,7 +24,12 @@ export type GlobalSearchModule =
   | "chat"
   | "content"
   | "social"
+  | "projects"
+  | "documents"
+  | "finance"
   | "calendar"
+  | "analytics"
+  | "notifications"
   | "tasks"
   | "memory"
   | "notes"
@@ -162,6 +173,151 @@ const socialSearchAdapter: GlobalSearchAdapter = {
         subtitle: post.platforms.join(", ") || "Social post",
         href: "/social",
       }));
+  },
+};
+
+const projectsSearchAdapter: GlobalSearchAdapter = {
+  module: "projects",
+  async search({ workspaceId, query, limit }) {
+    const [projects, tasks] = await Promise.all([
+      listProjects({ workspaceId, query }),
+      listProjectTasks({ workspaceId, query }),
+    ]);
+    return [
+      ...projects.slice(0, limit).map((project) => ({
+        id: project.id,
+        module: "projects" as const,
+        type: project.status,
+        title: project.name,
+        subtitle: project.description ?? "Project",
+        href: "/projects",
+      })),
+      ...tasks.slice(0, limit).map((task) => ({
+        id: task.id,
+        module: "tasks" as const,
+        type: task.status,
+        title: task.title,
+        subtitle: task.description ?? "Project task",
+        href: "/projects/tasks",
+      })),
+    ].slice(0, limit);
+  },
+};
+
+const documentsSearchAdapter: GlobalSearchAdapter = {
+  module: "documents",
+  async search({ workspaceId, query, limit }) {
+    const documents = await listDocuments({ workspaceId, query });
+    return documents.slice(0, limit).map((document) => ({
+      id: document.id,
+      module: "documents" as const,
+      type: document.isKnowledge ? "knowledge" : document.status,
+      title: document.title,
+      subtitle: document.summary ?? (document.content.slice(0, 80) || "Document"),
+      href: `/documents/${document.id}`,
+    }));
+  },
+};
+
+const financeSearchAdapter: GlobalSearchAdapter = {
+  module: "finance",
+  async search({ workspaceId, query, limit }) {
+    const [invoices, expenses] = await Promise.all([
+      listFinanceInvoices({ workspaceId, query }),
+      listFinanceExpenses({ workspaceId, query }),
+    ]);
+    return [
+      ...invoices.slice(0, limit).map((invoice) => ({
+        id: invoice.id,
+        module: "finance" as const,
+        type: invoice.status,
+        title: invoice.invoiceNumber,
+        subtitle: `${invoice.customerName} · ${invoice.currency} ${invoice.total.toLocaleString()}`,
+        href: "/finance/invoices",
+      })),
+      ...expenses.slice(0, limit).map((expense) => ({
+        id: expense.id,
+        module: "finance" as const,
+        type: expense.status,
+        title: expense.vendor,
+        subtitle: `${expense.category} · ${expense.currency} ${expense.amount.toLocaleString()}`,
+        href: "/finance/expenses",
+      })),
+    ].slice(0, limit);
+  },
+};
+
+const calendarSearchAdapter: GlobalSearchAdapter = {
+  module: "calendar",
+  async search({ workspaceId, query, limit }) {
+    const from = new Date();
+    from.setMonth(from.getMonth() - 1);
+    const to = new Date();
+    to.setMonth(to.getMonth() + 3);
+    const events = await listCalendarEvents({
+      workspaceId,
+      from: from.toISOString(),
+      to: to.toISOString(),
+    });
+    const q = query.toLowerCase();
+    return events
+      .filter(
+        (event) =>
+          event.title.toLowerCase().includes(q) ||
+          (event.description?.toLowerCase().includes(q) ?? false),
+      )
+      .slice(0, limit)
+      .map((event) => ({
+        id: event.id,
+        module: "calendar" as const,
+        type: event.status,
+        title: event.title,
+        subtitle: new Date(event.startsAt).toLocaleString(),
+        href: "/calendar",
+      }));
+  },
+};
+
+const analyticsSearchAdapter: GlobalSearchAdapter = {
+  module: "analytics",
+  async search({ workspaceId, query, limit }) {
+    const reports = await listAnalyticsReports({ workspaceId });
+    const q = query.toLowerCase();
+    return reports
+      .filter(
+        (report) =>
+          report.name.toLowerCase().includes(q) ||
+          report.reportType.toLowerCase().includes(q),
+      )
+      .slice(0, limit)
+      .map((report) => ({
+        id: report.id,
+        module: "analytics" as const,
+        type: report.reportType,
+        title: report.name,
+        subtitle: `Generated ${new Date(report.generatedAt).toLocaleDateString()}`,
+        href: "/analytics?view=reports",
+      }));
+  },
+};
+
+const notificationsSearchAdapter: GlobalSearchAdapter = {
+  module: "notifications",
+  async search({ workspaceId, userId, query, limit }) {
+    const notifications = await listNotificationsForUser({
+      workspaceId,
+      userId,
+      query,
+      limit,
+    });
+    return notifications.map((notification) => ({
+      id: notification.id,
+      module: "notifications" as const,
+      type: notification.category,
+      title: notification.title,
+      subtitle: notification.body ?? notification.priority,
+      href: notification.actionUrl ?? "/notifications",
+    }));
   },
 };
 
@@ -329,6 +485,78 @@ const NAV_ITEMS: GlobalSearchResult[] = [
     href: "/calendar",
   },
   {
+    id: "nav-projects",
+    module: "projects",
+    type: "page",
+    title: "Projects",
+    subtitle: "Tasks, Kanban, calendar, timeline, and reports",
+    href: "/projects",
+  },
+  {
+    id: "nav-documents",
+    module: "documents",
+    type: "page",
+    title: "Documents",
+    subtitle: "Docs, folders, knowledge base, and templates",
+    href: "/documents",
+  },
+  {
+    id: "nav-finance",
+    module: "finance",
+    type: "page",
+    title: "Finance",
+    subtitle: "Invoices, expenses, budgets, cash flow, and reports",
+    href: "/finance",
+  },
+  {
+    id: "nav-notifications",
+    module: "notifications",
+    type: "page",
+    title: "Notifications",
+    subtitle: "Unread alerts, mentions, tasks, finance, CRM, and system events",
+    href: "/notifications",
+  },
+  {
+    id: "nav-integrations",
+    module: "settings",
+    type: "page",
+    title: "Integrations",
+    subtitle: "Connect email, calendar, and business tools",
+    href: "/integrations",
+  },
+  {
+    id: "nav-billing",
+    module: "settings",
+    type: "page",
+    title: "Billing",
+    subtitle: "Plans, purchases, credits, and payment settings",
+    href: "/billing",
+  },
+  {
+    id: "nav-security",
+    module: "settings",
+    type: "page",
+    title: "Security",
+    subtitle: "Sessions, API keys, audit logs, and MFA readiness",
+    href: "/settings/security",
+  },
+  {
+    id: "nav-help",
+    module: "nav",
+    type: "page",
+    title: "Help Center",
+    subtitle: "Docs, tutorials, videos, FAQs, and release notes",
+    href: "/help",
+  },
+  {
+    id: "nav-support",
+    module: "nav",
+    type: "page",
+    title: "Support",
+    subtitle: "Contact support, bug reports, and feature requests",
+    href: "/support",
+  },
+  {
     id: "nav-settings",
     module: "settings",
     type: "page",
@@ -352,6 +580,12 @@ export const globalSearchAdapters: GlobalSearchAdapter[] = [
   chatSearchAdapter,
   contentSearchAdapter,
   socialSearchAdapter,
+  projectsSearchAdapter,
+  documentsSearchAdapter,
+  financeSearchAdapter,
+  calendarSearchAdapter,
+  analyticsSearchAdapter,
+  notificationsSearchAdapter,
   tasksSearchAdapter,
   memorySearchAdapter,
   notesSearchAdapter,

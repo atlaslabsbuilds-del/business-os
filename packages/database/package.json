@@ -35,6 +35,7 @@
     "./contact": "./src/contact.ts",
     "./finance": "./src/finance.ts",
     "./feedback": "./src/feedback.ts",
+    "./beta-launch": "./src/beta-launch.ts",
     "./integrations": "./src/integrations.ts",
     "./integration-tokens": "./src/integration-tokens.server.ts",
     "./helpers": "./src/helpers.ts"

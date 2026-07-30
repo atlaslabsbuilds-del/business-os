@@ -307,6 +307,15 @@ export {
   getFeedbackStats,
 } from "./feedback";
 export {
+  getWorkspaceBetaLaunchProfile,
+  upsertWorkspaceBetaLaunchProfile,
+  trackBetaAnalyticsEvent,
+  listBetaAnalyticsEvents,
+  listBetaReleaseNotes,
+  getBetaLaunchReadiness,
+  seedDemoWorkspace,
+} from "./beta-launch";
+export {
   getInboxAccountSecrets,
   getInboxAccountSecretsForSync,
   listGmailAccountSecrets,

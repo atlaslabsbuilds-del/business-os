@@ -4595,6 +4595,105 @@ export type Database = {
         };
         Relationships: [];
       };
+      workspace_beta_launch_profiles: {
+        Row: {
+          workspace_id: string;
+          template_key: string;
+          launch_stage: string;
+          demo_data_seeded_at: string | null;
+          checklist: Json;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          workspace_id: string;
+          template_key?: string;
+          launch_stage?: string;
+          demo_data_seeded_at?: string | null;
+          checklist?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          workspace_id?: string;
+          template_key?: string;
+          launch_stage?: string;
+          demo_data_seeded_at?: string | null;
+          checklist?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      beta_analytics_events: {
+        Row: {
+          id: string;
+          workspace_id: string | null;
+          user_id: string | null;
+          event_name: string;
+          event_category: string;
+          source: string;
+          path: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id?: string | null;
+          user_id?: string | null;
+          event_name: string;
+          event_category?: string;
+          source?: string;
+          path?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string | null;
+          user_id?: string | null;
+          event_name?: string;
+          event_category?: string;
+          source?: string;
+          path?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      beta_release_notes: {
+        Row: {
+          id: string;
+          version: string;
+          title: string;
+          summary: string;
+          highlights: string[];
+          published_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          version: string;
+          title: string;
+          summary: string;
+          highlights?: string[];
+          published_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          version?: string;
+          title?: string;
+          summary?: string;
+          highlights?: string[];
+          published_at?: string;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {

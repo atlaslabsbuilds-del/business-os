@@ -13,6 +13,8 @@ const links = [
   { href: "/pricing", label: "Pricing" },
   { href: "/credits", label: "AI Credits" },
   { href: "#integrations", label: "Integrations" },
+  { href: "/help", label: "Help" },
+  { href: "/support", label: "Support" },
   { href: "/contact", label: "Contact" },
   { href: "#about", label: "About" },
 ];

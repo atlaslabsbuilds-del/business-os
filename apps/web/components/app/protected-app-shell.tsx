@@ -15,10 +15,12 @@ import { AppQuickActionsPanel } from "./app-quick-actions-panel";
 import { AppToastStack } from "./app-toast-stack";
 import { MobileBottomNav } from "./mobile-bottom-nav";
 import { PageTransition } from "./page-transition";
+import { BetaAnalyticsTracker } from "../analytics/beta-analytics-tracker";
 import { KairosFab } from "../kairos/kairos-fab";
 import { KairosChromeOverlays } from "../kairos/kairos-chrome-overlays";
 import { KairosChatPanel, KairosChatProvider } from "../kairos/chat";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
+import { FeedbackWidget } from "../feedback/feedback-widget";
 import { ProductTour } from "../onboarding/product-tour";
 import { PwaRegister } from "../pwa/pwa-register";
 import { useNotificationsRealtime, useUnreadNotificationCount } from "../../lib/notifications-realtime";
@@ -106,11 +108,13 @@ export function ProtectedAppShell({
           </AppErrorBoundary>
         </AppShell>
         <MobileBottomNav items={navWithBadge} />
+        <BetaAnalyticsTracker />
         <PwaRegister />
         <ProductTour />
         <AppCommandPalette />
         <AppToastStack />
         <KairosFab />
+        <FeedbackWidget />
         <KairosChatPanel />
         <KairosChromeOverlays />
       </AppChromeProvider>

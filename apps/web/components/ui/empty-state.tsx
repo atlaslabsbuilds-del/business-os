@@ -43,8 +43,10 @@ const PRESETS = {
   },
   notifications: {
     icon: BellOff,
-    title: "You're all caught up 🎉",
-    body: "No new notifications.",
+    title: "You're all caught up",
+    body: "No new notifications. Ask Kairos to summarize today's activity or review workspace risk.",
+    cta: "Ask Kairos",
+    href: "/chat",
   },
   inbox: {
     icon: Inbox,
@@ -52,6 +54,20 @@ const PRESETS = {
     body: "Connect Gmail to sync threads, summaries, and smart replies.",
     cta: "Connect inbox",
     href: "/inbox/accounts",
+  },
+  projects: {
+    icon: ClipboardList,
+    title: "No projects yet",
+    body: "Create your first project or generate demo data from onboarding to preview delivery workflows.",
+    cta: "Create project",
+    href: "/projects",
+  },
+  documents: {
+    icon: FileText,
+    title: "No documents yet",
+    body: "Start a launch plan, SOP, or knowledge-base article. Kairos can help draft the first version.",
+    cta: "Create document",
+    href: "/documents",
   },
 } as const;
 

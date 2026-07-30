@@ -146,6 +146,24 @@ export {
 } from "./kairos-platform";
 
 export type {
+  WorkspaceTemplateKey,
+  BetaEventCategory,
+  WorkspaceBetaLaunchProfile,
+  BetaAnalyticsEvent,
+  BetaReleaseNote,
+  TrackBetaAnalyticsEventInput,
+  UpsertWorkspaceBetaProfileInput,
+} from "./beta-launch";
+
+export {
+  workspaceTemplateKeySchema,
+  betaEventCategorySchema,
+  trackBetaAnalyticsEventSchema,
+  upsertWorkspaceBetaProfileSchema,
+  seedDemoWorkspaceSchema,
+} from "./beta-launch";
+
+export type {
   ContentType,
   ContentStatus,
   ContentAnalytics,
