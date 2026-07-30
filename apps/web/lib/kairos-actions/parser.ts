@@ -273,5 +273,97 @@ export function parseKairosActionCommand(input: {
     };
   }
 
+  if (
+    /summarize\s+(today'?s\s+)?gmail\b/.test(command) ||
+    /gmail\s+summary\b/.test(command)
+  ) {
+    return {
+      tool: "summarizeGmail",
+      label: "Summarize Gmail",
+      input: { query: "today" },
+    };
+  }
+
+  if (/upload\s+.+\s+to\s+(google\s+)?drive\b/.test(command)) {
+    const fileName =
+      raw
+        .replace(/^upload\s+/i, "")
+        .replace(/\s+to\s+(google\s+)?drive\b.*$/i, "")
+        .trim() || "file";
+    return {
+      tool: "uploadToGoogleDrive",
+      label: "Upload to Google Drive",
+      input: { fileName },
+    };
+  }
+
+  if (
+    /schedule\s+(tomorrow'?s\s+)?meeting\b/.test(command) ||
+    /create\s+(a\s+)?(google\s+)?calendar\s+meeting\b/.test(command)
+  ) {
+    const title =
+      raw
+        .replace(/^schedule\s+(tomorrow'?s\s+)?meeting\b/i, "")
+        .replace(/^create\s+(a\s+)?(google\s+)?calendar\s+meeting\b/i, "")
+        .trim() || "Meeting";
+    return {
+      tool: "createCalendarMeeting",
+      label: "Create calendar meeting",
+      input: { title, when: "tomorrow" },
+    };
+  }
+
+  if (/post\s+(this\s+)?to\s+slack\b/.test(command) || /send\s+to\s+slack\b/.test(command)) {
+    const message =
+      raw
+        .replace(/^post\s+(this\s+)?to\s+slack\b[:\s-]*/i, "")
+        .replace(/^send\s+to\s+slack\b[:\s-]*/i, "")
+        .trim() || "Update from Kairos";
+    return {
+      tool: "postToSlack",
+      label: "Post to Slack",
+      input: { message },
+    };
+  }
+
+  if (/create\s+(a\s+)?github\s+issue\b/.test(command)) {
+    const title =
+      raw.replace(/^create\s+(a\s+)?github\s+issue\b/i, "").trim() || "New issue";
+    return {
+      tool: "createGitHubIssue",
+      label: "Create GitHub issue",
+      input: { title },
+    };
+  }
+
+  if (/list\s+(stripe\s+)?payments\b/.test(command) || /show\s+stripe\s+payments\b/.test(command)) {
+    return {
+      tool: "listStripePayments",
+      label: "List Stripe payments",
+      input: { limit: 10 },
+    };
+  }
+
+  if (/create\s+(a\s+)?notion\s+page\b/.test(command)) {
+    const title =
+      raw.replace(/^create\s+(a\s+)?notion\s+page\b/i, "").trim() || "Untitled";
+    return {
+      tool: "createNotionPage",
+      label: "Create Notion page",
+      input: { title },
+    };
+  }
+
+  if (
+    /list\s+connected\s+integrations\b/.test(command) ||
+    /what\s+integrations\s+(are\s+)?connected\b/.test(command)
+  ) {
+    return {
+      tool: "listConnectedIntegrations",
+      label: "List connected integrations",
+      input: {},
+    };
+  }
+
   return null;
 }

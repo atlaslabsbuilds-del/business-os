@@ -21,6 +21,7 @@ import {
 } from "@repo/database";
 import { parseKairosActionCommand } from "./parser";
 import { KairosToolRegistry } from "./registry";
+import { buildKairosIntegrationTools } from "./integrations";
 import type {
   KairosActionExecutionContext,
   KairosActionResponse,
@@ -426,6 +427,10 @@ function ensureDefaultKairosTools() {
       return { cancelled: true, invoice };
     },
   });
+
+  for (const tool of buildKairosIntegrationTools()) {
+    registerTool(tool);
+  }
 }
 
 async function buildTimeline(

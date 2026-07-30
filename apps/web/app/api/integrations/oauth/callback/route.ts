@@ -1,0 +1,92 @@
+import { NextResponse } from "next/server";
+import { getSiteUrl } from "@repo/auth/site-url";
+import {
+  logIntegrationActivity,
+  upsertIntegrationAccount,
+  upsertIntegrationTokens,
+} from "@repo/database/integrations";
+import {
+  decodeIntegrationOAuthState,
+  getIntegrationProvider,
+} from "../../../../../lib/integrations-hub/provider";
+import { ensureIntegrationProvidersRegistered } from "../../../../../lib/integrations-hub/providers";
+import { getIntegrationOAuthRedirectUri } from "../../../../../lib/integrations-hub/service";
+
+function redirectTo(path: string) {
+  return NextResponse.redirect(new URL(path, getSiteUrl()));
+}
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
+  const oauthError = url.searchParams.get("error");
+
+  if (oauthError) {
+    return redirectTo(`/integrations?error=${encodeURIComponent(oauthError)}`);
+  }
+
+  if (!code || !state) {
+    return redirectTo(
+      `/integrations?error=${encodeURIComponent("Missing OAuth code or state")}`,
+    );
+  }
+
+  try {
+    ensureIntegrationProvidersRegistered();
+    const secret =
+      process.env.INTEGRATION_OAUTH_STATE_SECRET?.trim() ||
+      process.env.GOOGLE_CLIENT_SECRET?.trim() ||
+      process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+    if (!secret) throw new Error("OAuth state secret is not configured");
+
+    const decoded = decodeIntegrationOAuthState({ state, secret });
+    const provider = getIntegrationProvider(decoded.provider);
+    if (!provider) throw new Error("Unknown provider");
+
+    const redirectUri = getIntegrationOAuthRedirectUri(getSiteUrl());
+    const tokens = await provider.exchangeCode({ code, redirectUri });
+    const profile = await provider.fetchProfile({
+      accessToken: tokens.accessToken,
+    });
+
+    const account = await upsertIntegrationAccount({
+      workspaceId: decoded.workspaceId,
+      provider: provider.id,
+      userId: decoded.userId,
+      accountEmail: profile.email,
+      accountName: profile.name,
+      externalAccountId: profile.externalAccountId,
+      status: "connected",
+      permissions: provider.permissions,
+      scopes: tokens.scopes.length ? tokens.scopes : provider.scopes,
+      health: "healthy",
+    });
+
+    await upsertIntegrationTokens({
+      workspaceId: decoded.workspaceId,
+      accountId: account.id,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresAt: tokens.expiresAt,
+      tokenType: tokens.tokenType,
+    });
+
+    await logIntegrationActivity({
+      workspaceId: decoded.workspaceId,
+      accountId: account.id,
+      provider: provider.id,
+      eventType: "connected",
+      title: `Connected ${provider.name}`,
+      body: profile.email,
+      actorId: decoded.userId,
+      metadata: { scopes: account.scopes },
+    });
+
+    return redirectTo(`/integrations/${provider.id}?connected=1`);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "OAuth callback failed";
+    return redirectTo(`/integrations?error=${encodeURIComponent(message)}`);
+  }
+}

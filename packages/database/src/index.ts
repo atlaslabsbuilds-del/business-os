@@ -231,3 +231,26 @@ export {
   assignThreadLabelsByExternalIds,
   listWorkspaceGmailAccounts,
 } from "./gmail";
+export {
+  listIntegrationCatalog,
+  getIntegrationCatalogItem,
+  listWorkspaceIntegrationAccounts,
+  getIntegrationAccount,
+  getIntegrationAccountByProvider,
+  upsertIntegrationAccount,
+  updateIntegrationAccountSettings,
+  disconnectIntegrationAccount,
+  deleteIntegrationAccount,
+  upsertIntegrationTokens,
+  getDecryptedIntegrationTokens,
+  logIntegrationActivity,
+  listIntegrationActivity,
+  createIntegrationSyncJob,
+  updateIntegrationSyncJob,
+  markIntegrationSynced,
+  listConnectedKairosProviders,
+} from "./integrations";
+export {
+  encryptIntegrationSecret,
+  decryptIntegrationSecret,
+} from "./token-encryption";

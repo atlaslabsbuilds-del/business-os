@@ -2339,6 +2339,294 @@ export type Database = {
         };
         Relationships: [];
       };
+      integrations: {
+        Row: {
+          id: string;
+          name: string;
+          category: string;
+          description: string;
+          logo_key: string | null;
+          auth_type: string;
+          featured: boolean;
+          launch: boolean;
+          kairos_actions: Json;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          name: string;
+          category: string;
+          description?: string;
+          logo_key?: string | null;
+          auth_type?: string;
+          featured?: boolean;
+          launch?: boolean;
+          kairos_actions?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          category?: string;
+          description?: string;
+          logo_key?: string | null;
+          auth_type?: string;
+          featured?: boolean;
+          launch?: boolean;
+          kairos_actions?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      integration_accounts: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          provider: string;
+          account_email: string | null;
+          account_name: string | null;
+          external_account_id: string | null;
+          status:
+            | "connected"
+            | "not_connected"
+            | "error"
+            | "syncing"
+            | "disconnected";
+          permissions: string[];
+          scopes: string[];
+          last_sync_at: string | null;
+          sync_frequency: string;
+          auto_sync: boolean;
+          notifications_enabled: boolean;
+          kairos_access: boolean;
+          health: string;
+          error_message: string | null;
+          connected_by: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          provider: string;
+          account_email?: string | null;
+          account_name?: string | null;
+          external_account_id?: string | null;
+          status?:
+            | "connected"
+            | "not_connected"
+            | "error"
+            | "syncing"
+            | "disconnected";
+          permissions?: string[];
+          scopes?: string[];
+          last_sync_at?: string | null;
+          sync_frequency?: string;
+          auto_sync?: boolean;
+          notifications_enabled?: boolean;
+          kairos_access?: boolean;
+          health?: string;
+          error_message?: string | null;
+          connected_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          provider?: string;
+          account_email?: string | null;
+          account_name?: string | null;
+          external_account_id?: string | null;
+          status?:
+            | "connected"
+            | "not_connected"
+            | "error"
+            | "syncing"
+            | "disconnected";
+          permissions?: string[];
+          scopes?: string[];
+          last_sync_at?: string | null;
+          sync_frequency?: string;
+          auto_sync?: boolean;
+          notifications_enabled?: boolean;
+          kairos_access?: boolean;
+          health?: string;
+          error_message?: string | null;
+          connected_by?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      integration_tokens: {
+        Row: {
+          id: string;
+          account_id: string;
+          workspace_id: string;
+          access_token_encrypted: string;
+          refresh_token_encrypted: string | null;
+          token_type: string;
+          expires_at: string | null;
+          encryption_version: number;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          account_id: string;
+          workspace_id: string;
+          access_token_encrypted: string;
+          refresh_token_encrypted?: string | null;
+          token_type?: string;
+          expires_at?: string | null;
+          encryption_version?: number;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          account_id?: string;
+          workspace_id?: string;
+          access_token_encrypted?: string;
+          refresh_token_encrypted?: string | null;
+          token_type?: string;
+          expires_at?: string | null;
+          encryption_version?: number;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      integration_activity: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          account_id: string | null;
+          provider: string;
+          event_type:
+            | "connected"
+            | "disconnected"
+            | "permission_updated"
+            | "manual_sync"
+            | "automatic_sync"
+            | "error"
+            | "token_refreshed"
+            | "reconnect";
+          title: string;
+          body: string | null;
+          actor_id: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          account_id?: string | null;
+          provider: string;
+          event_type:
+            | "connected"
+            | "disconnected"
+            | "permission_updated"
+            | "manual_sync"
+            | "automatic_sync"
+            | "error"
+            | "token_refreshed"
+            | "reconnect";
+          title: string;
+          body?: string | null;
+          actor_id?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          account_id?: string | null;
+          provider?: string;
+          event_type?:
+            | "connected"
+            | "disconnected"
+            | "permission_updated"
+            | "manual_sync"
+            | "automatic_sync"
+            | "error"
+            | "token_refreshed"
+            | "reconnect";
+          title?: string;
+          body?: string | null;
+          actor_id?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      integration_sync_jobs: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          account_id: string;
+          provider: string;
+          status: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+          trigger: string;
+          attempts: number;
+          max_attempts: number;
+          started_at: string | null;
+          finished_at: string | null;
+          error_message: string | null;
+          result: Json;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          account_id: string;
+          provider: string;
+          status?: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+          trigger?: string;
+          attempts?: number;
+          max_attempts?: number;
+          started_at?: string | null;
+          finished_at?: string | null;
+          error_message?: string | null;
+          result?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          account_id?: string;
+          provider?: string;
+          status?: "queued" | "running" | "succeeded" | "failed" | "cancelled";
+          trigger?: string;
+          attempts?: number;
+          max_attempts?: number;
+          started_at?: string | null;
+          finished_at?: string | null;
+          error_message?: string | null;
+          result?: Json;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -2399,6 +2687,27 @@ export type Database = {
       inbox_thread_status: "open" | "archived" | "trashed" | "spam";
       inbox_message_direction: "inbound" | "outbound";
       inbox_task_status: "open" | "done" | "cancelled";
+      integration_connection_status:
+        | "connected"
+        | "not_connected"
+        | "error"
+        | "syncing"
+        | "disconnected";
+      integration_activity_event:
+        | "connected"
+        | "disconnected"
+        | "permission_updated"
+        | "manual_sync"
+        | "automatic_sync"
+        | "error"
+        | "token_refreshed"
+        | "reconnect";
+      integration_sync_job_status:
+        | "queued"
+        | "running"
+        | "succeeded"
+        | "failed"
+        | "cancelled";
     };
     CompositeTypes: Record<string, never>;
   };

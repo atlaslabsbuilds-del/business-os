@@ -3,6 +3,10 @@ export const AUTH_CALLBACK_PATH = "/auth/callback";
 /** Custom Gmail OAuth callback (not Supabase Auth). Must stay public. */
 export const GMAIL_OAUTH_CALLBACK_PATH = "/api/inbox/oauth/callback";
 
+/** Integrations Hub OAuth callback. Must stay public for provider redirects. */
+export const INTEGRATIONS_OAUTH_CALLBACK_PATH =
+  "/api/integrations/oauth/callback";
+
 /** Routes that signed-in users should leave (redirect to dashboard). */
 export const GUEST_ONLY_ROUTES = [
   "/signin",
@@ -42,6 +46,7 @@ export const PUBLIC_ROUTES = [
   "/api/checkout",
   ...AUTH_ROUTES,
   GMAIL_OAUTH_CALLBACK_PATH,
+  INTEGRATIONS_OAUTH_CALLBACK_PATH,
 ] as const;
 
 export const ONBOARDING_PATH = "/onboarding";

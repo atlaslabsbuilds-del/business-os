@@ -390,3 +390,27 @@ export {
   gmailSearchSchema,
   gmailCreateLeadSchema,
 } from "./gmail";
+
+export type {
+  IntegrationConnectionStatus,
+  IntegrationActivityEvent,
+  IntegrationSyncJobStatus,
+  IntegrationHubCategory,
+  IntegrationCatalogItem,
+  IntegrationAccount,
+  IntegrationActivity,
+  IntegrationSyncJob,
+  IntegrationHubCard,
+} from "./integrations";
+
+export {
+  integrationConnectionStatusSchema,
+  integrationActivityEventSchema,
+  integrationSyncJobStatusSchema,
+  integrationHubCategorySchema,
+  startIntegrationOAuthSchema,
+  disconnectIntegrationSchema,
+  updateIntegrationSettingsSchema,
+  manualSyncIntegrationSchema,
+  listIntegrationsSchema,
+} from "./integrations";

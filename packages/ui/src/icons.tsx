@@ -184,3 +184,11 @@ export const IconMessage = icon(
   </>,
   "IconMessage",
 );
+
+export const IconPlug = icon(
+  <>
+    <path d="M9 7V3M15 7V3" />
+    <path d="M7 7h10v4a5 5 0 0 1-5 5v4M12 16v5" />
+  </>,
+  "IconPlug",
+);
