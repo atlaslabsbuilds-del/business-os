@@ -185,11 +185,11 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
   {
     id: "analytics",
     label: "Analytics",
-    description: "Unify revenue, leads, content, audience, and client analytics.",
+    description: "Executive dashboards across revenue, finance, CRM, projects, team, and operations.",
     route: "/analytics",
-    status: "coming_soon",
-    origin: "pbos",
-    capabilities: ["Revenue", "Leads", "Audience", "Client analytics"],
+    status: "active",
+    origin: "vanderbase",
+    capabilities: ["Executive dashboard", "Finance", "CRM", "Projects", "Team", "Operations", "AI insights", "Reports"],
   },
   {
     id: "workspace",

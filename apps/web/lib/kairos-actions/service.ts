@@ -28,6 +28,8 @@ import { buildKairosIntegrationTools } from "./integrations";
 import { buildKairosCrmTools } from "./crm";
 import { buildKairosProjectsTools } from "./projects";
 import { buildKairosDocumentsTools } from "./documents";
+import { buildKairosCalendarTools } from "./calendar";
+import { buildKairosAnalyticsTools } from "./analytics";
 import type {
   KairosActionExecutionContext,
   KairosActionResponse,
@@ -574,6 +576,14 @@ function ensureDefaultKairosTools() {
   }
 
   for (const tool of buildKairosDocumentsTools()) {
+    registerTool(tool);
+  }
+
+  for (const tool of buildKairosCalendarTools()) {
+    registerTool(tool);
+  }
+
+  for (const tool of buildKairosAnalyticsTools()) {
     registerTool(tool);
   }
 }

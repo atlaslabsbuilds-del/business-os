@@ -492,3 +492,8 @@ export {
   createKnowledgeArticleSchema,
   updateDocumentSettingsSchema,
 } from "./documents";
+
+export type { CalendarEventStatus, CalendarEventPriority, CalendarIntegrationProvider, CalendarEvent, CalendarMeeting, CalendarParticipant, CalendarReminder, CalendarIntegration, CalendarWorkingAvailability, CalendarSettings, CalendarOverview } from "./calendar-module";
+export { calendarEventStatusSchema, calendarEventPrioritySchema, calendarIntegrationProviderSchema, createCalendarEventSchema, updateCalendarEventSchema, createCalendarReminderSchema, createCalendarMeetingSchema, updateCalendarAvailabilitySchema } from "./calendar-module";
+export type { AnalyticsWidgetType, AnalyticsDashboard, AnalyticsWidget, AnalyticsReport, SavedAnalyticsReport, AiInsight, AnalyticsForecast, ExecutiveAnalytics } from "./analytics";
+export { analyticsWidgetTypeSchema, createAnalyticsDashboardSchema, createAnalyticsReportSchema } from "./analytics";

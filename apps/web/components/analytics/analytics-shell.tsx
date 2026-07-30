@@ -1,0 +1,2 @@
+import type {ReactNode} from "react";import {ModulePageShell} from "../app/module-page-shell";import {AnalyticsNav} from "./analytics-nav";
+export function AnalyticsShell({title,description,children,actions}:{title:string;description?:string;children:ReactNode;actions?:ReactNode}){return <ModulePageShell badge="Analytics" title={title} description={description} actions={actions}><AnalyticsNav/>{children}</ModulePageShell>}

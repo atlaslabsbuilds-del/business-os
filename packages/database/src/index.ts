@@ -322,3 +322,6 @@ export {
   markIntegrationSynced,
   listConnectedKairosProviders,
 } from "./integrations";
+
+export { listCalendarEvents, createCalendarEvent, updateCalendarEvent, deleteCalendarEvent, listCalendarMeetings, createCalendarMeeting, listCalendarReminders, createCalendarReminder, listCalendarIntegrations, upsertCalendarIntegration, getCalendarWorkingAvailability, upsertCalendarWorkingAvailability, getCalendarSettings, updateCalendarSettings, getCalendarOverview } from "./calendar-module";
+export { listAnalyticsDashboards, createAnalyticsDashboard, listAnalyticsReports, createAnalyticsReport, listAiInsights, createAiInsight, getExecutiveAnalytics, generateExecutiveReport } from "./analytics";

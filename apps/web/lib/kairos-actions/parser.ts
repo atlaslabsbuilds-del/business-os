@@ -651,5 +651,16 @@ export function parseKairosActionCommand(input: {
     };
   }
 
+  if (/schedule\s+tomorrow'?s\s+meeting/.test(command)) return { tool: "scheduleTomorrowMeeting", label: "Schedule tomorrow's meeting", input: { title: "Tomorrow meeting" } };
+  if (/find\s+a\s+free\s+time|find\s+calendar\s+availability/.test(command)) return { tool: "findCalendarAvailability", label: "Find a free time", input: {} };
+  if (/summarize\s+today'?s\s+calendar/.test(command)) return { tool: "summarizeTodaysCalendar", label: "Summarize today's calendar", input: {} };
+  if (/prepare\s+(an?\s+)?agenda/.test(command)) return { tool: "prepareMeetingAgenda", label: "Prepare agenda", input: {} };
+  if (/schedule\s+follow[- ]up/.test(command)) return { tool: "scheduleFollowUpMeeting", label: "Schedule follow-up", input: {} };
+  if (/show\s+business\s+health/.test(command)) return { tool: "showBusinessHealth", label: "Show business health", input: {} };
+  if (/predict\s+next\s+month'?s\s+growth/.test(command)) return { tool: "predictNextMonthGrowth", label: "Predict next month's growth", input: {} };
+  if (/summarize\s+analytics/.test(command)) return { tool: "summarizeAnalytics", label: "Summarize analytics", input: {} };
+  if (/find\s+business\s+bottlenecks/.test(command)) return { tool: "findBusinessBottlenecks", label: "Find business bottlenecks", input: {} };
+  if (/generate\s+(an?\s+)?executive\s+report/.test(command)) return { tool: "generateExecutiveReport", label: "Generate executive report", input: {} };
+
   return null;
 }

@@ -21,6 +21,8 @@
     "./social": "./src/social.ts",
     "./website": "./src/website.ts",
     "./calendar": "./src/calendar.ts",
+    "./calendar-module": "./src/calendar-module.ts",
+    "./analytics": "./src/analytics.ts",
     "./crm": "./src/crm.ts",
     "./projects": "./src/projects.ts",
     "./documents": "./src/documents.ts",

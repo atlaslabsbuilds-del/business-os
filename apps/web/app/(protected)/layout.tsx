@@ -61,6 +61,7 @@ export default async function ProtectedLayout({
         { href: "/social", label: "Social OS", icon: <IconShare /> },
         { href: "/website", label: "Website OS", icon: <IconGlobe /> },
         { href: "/calendar", label: "Calendar OS", icon: <IconCalendar /> },
+        { href: "/analytics", label: "Analytics", icon: <IconLayout /> },
         { href: "/finance", label: "Finance", icon: <IconCreditCard /> },
         { href: "/notifications", label: "Notifications", icon: <IconBell /> },
         { href: "/feedback", label: "Feedback", icon: <IconMessage /> },
