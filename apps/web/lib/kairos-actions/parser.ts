@@ -506,5 +506,150 @@ export function parseKairosActionCommand(input: {
     };
   }
 
+  if (/^create\s+(a\s+)?new\s+project\b/.test(command) || /^create\s+(a\s+)?project\b/.test(command)) {
+    const name = raw
+      .replace(/^create\s+(a\s+)?(new\s+)?project\b/i, "")
+      .trim() || "New project";
+    return {
+      tool: "createProject",
+      label: "Create a new project",
+      input: { name },
+    };
+  }
+
+  if (/summarize\s+today'?s\s+tasks\b/.test(command)) {
+    return {
+      tool: "summarizeTodaysTasks",
+      label: "Summarize today's tasks",
+      input: {},
+    };
+  }
+
+  if (/move\s+all\s+overdue\s+tasks\b/.test(command)) {
+    return {
+      tool: "moveOverdueProjectTasks",
+      label: "Move all overdue tasks",
+      input: {},
+    };
+  }
+
+  if (/generate\s+(a\s+)?project\s+report\b/.test(command)) {
+    return {
+      tool: "generateProjectHealthReport",
+      label: "Generate project report",
+      input: {},
+    };
+  }
+
+  if (/estimate\s+project\s+completion\b/.test(command)) {
+    return {
+      tool: "estimateProjectCompletion",
+      label: "Estimate project completion",
+      input: {},
+    };
+  }
+
+  if (/assign\s+tasks\s+automatically\b/.test(command)) {
+    return {
+      tool: "assignTasksAutomatically",
+      label: "Assign tasks automatically",
+      input: {},
+    };
+  }
+
+  if (/^(write|create)\s+(a\s+)?document\b/.test(command)) {
+    const title =
+      raw.replace(/^(write|create)\s+(a\s+)?document\b/i, "").trim() || "Untitled";
+    return {
+      tool: "writeDocument",
+      label: "Write document",
+      input: { title },
+    };
+  }
+
+  if (/rewrite\s+(this\s+)?(document|content)\b/.test(command)) {
+    return {
+      tool: "rewriteDocumentContent",
+      label: "Rewrite content",
+      input: { mode: "rewrite" },
+    };
+  }
+
+  if (/summarize\s+(this\s+)?document\b/.test(command)) {
+    return {
+      tool: "rewriteDocumentContent",
+      label: "Summarize document",
+      input: { mode: "summarize" },
+    };
+  }
+
+  if (/translate\s+(this\s+)?(document|content)\b/.test(command)) {
+    return {
+      tool: "rewriteDocumentContent",
+      label: "Translate content",
+      input: { mode: "translate", language: "es" },
+    };
+  }
+
+  if (/fix\s+grammar\b/.test(command)) {
+    return {
+      tool: "rewriteDocumentContent",
+      label: "Fix grammar",
+      input: { mode: "grammar" },
+    };
+  }
+
+  if (/generate\s+(an?\s+)?sop\b/.test(command)) {
+    const brief = raw.replace(/generate\s+(an?\s+)?sop\b/i, "").trim() || "Operational workflow";
+    return {
+      tool: "generateDocumentFromPrompt",
+      label: "Generate SOP",
+      input: { title: "SOP", mode: "sop", brief },
+    };
+  }
+
+  if (/generate\s+meeting\s+notes\b/.test(command)) {
+    const brief =
+      raw.replace(/generate\s+meeting\s+notes\b/i, "").trim() || "Team sync";
+    return {
+      tool: "generateDocumentFromPrompt",
+      label: "Generate meeting notes",
+      input: { title: "Meeting notes", mode: "meeting", brief },
+    };
+  }
+
+  if (/create\s+(a\s+)?proposal\b/.test(command)) {
+    const brief = raw.replace(/create\s+(a\s+)?proposal\b/i, "").trim() || "Proposal brief";
+    return {
+      tool: "generateDocumentFromPrompt",
+      label: "Create proposal",
+      input: { title: "Proposal", mode: "proposal", brief },
+    };
+  }
+
+  if (/create\s+(a\s+)?contract\b/.test(command)) {
+    const brief = raw.replace(/create\s+(a\s+)?contract\b/i, "").trim() || "Service agreement";
+    return {
+      tool: "generateDocumentFromPrompt",
+      label: "Create contract",
+      input: { title: "Contract", mode: "contract", brief },
+    };
+  }
+
+  if (
+    /answer\s+from\s+(the\s+)?(company\s+)?knowledge\s+base\b/.test(command) ||
+    /ask\s+knowledge\s+base\b/.test(command)
+  ) {
+    const question = raw
+      .replace(/answer\s+from\s+(the\s+)?(company\s+)?knowledge\s+base\b/i, "")
+      .replace(/ask\s+knowledge\s+base\b/i, "")
+      .trim();
+    return {
+      tool: "answerFromCompanyKnowledge",
+      label: "Answer from company knowledge base",
+      input: { question: question || "What policies do we have?" },
+    };
+  }
+
   return null;
 }

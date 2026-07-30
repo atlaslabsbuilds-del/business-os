@@ -30,7 +30,7 @@ export default async function ProtectedLayout({
     return children;
   }
 
-  const { active, memberships, email, userId } = context;
+  const { active, memberships, userId, email } = context;
   const canInvite = active.role === "owner" || active.role === "admin";
   const unreadCount = await countUnreadNotificationsForUser({
     workspaceId: active.workspace.id,
@@ -53,6 +53,8 @@ export default async function ProtectedLayout({
         { href: "/ai", label: "AI Studio", icon: <IconSparkles /> },
         { href: "/chat", label: "Chat", icon: <IconSparkles /> },
         { href: "/crm", label: "CRM", icon: <IconBriefcase /> },
+        { href: "/projects", label: "Projects", icon: <IconUsers /> },
+        { href: "/documents", label: "Documents", icon: <IconMessage /> },
         { href: "/inbox", label: "Inbox", icon: <IconMail /> },
         { href: "/integrations", label: "Integrations", icon: <IconPlug /> },
         { href: "/content", label: "Content OS", icon: <IconPen /> },

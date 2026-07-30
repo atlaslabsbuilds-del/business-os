@@ -22,6 +22,8 @@
     "./website": "./src/website.ts",
     "./calendar": "./src/calendar.ts",
     "./crm": "./src/crm.ts",
+    "./projects": "./src/projects.ts",
+    "./documents": "./src/documents.ts",
     "./inbox": "./src/inbox.ts",
     "./gmail": "./src/gmail.ts",
     "./ai-reply-drafts": "./src/ai-reply-drafts.ts",

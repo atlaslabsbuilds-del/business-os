@@ -434,3 +434,61 @@ export {
   manualSyncIntegrationSchema,
   listIntegrationsSchema,
 } from "./integrations";
+
+export type {
+  ProjectStatus,
+  ProjectPriority,
+  ProjectTaskStatus,
+  Project,
+  ProjectTask,
+  ProjectSubtask,
+  ProjectMember,
+  ProjectLabel,
+  ProjectComment,
+  ProjectTimeLog,
+  ProjectReport,
+  ProjectSettings,
+  ProjectDashboardStats,
+  ProjectReportSnapshot,
+} from "./projects";
+
+export {
+  projectStatusSchema,
+  projectPrioritySchema,
+  projectTaskStatusSchema,
+  createProjectSchema,
+  updateProjectSchema,
+  createProjectTaskSchema,
+  updateProjectTaskSchema,
+  createSubtaskSchema,
+  updateProjectSettingsSchema,
+  createTimeLogSchema,
+} from "./projects";
+
+export type {
+  DocumentStatus,
+  DocumentSharePermission,
+  KnowledgeCategory,
+  DocFolder,
+  WorkspaceDocument,
+  DocumentVersion,
+  DocumentComment,
+  DocumentShare,
+  KnowledgeArticle,
+  DocumentSettings,
+  DocumentsDashboardStats,
+} from "./documents";
+
+export {
+  documentStatusSchema,
+  documentSharePermissionSchema,
+  knowledgeCategorySchema,
+  createFolderSchema,
+  updateFolderSchema,
+  createDocumentSchema,
+  updateDocumentSchema,
+  createDocumentCommentSchema,
+  createDocumentShareSchema,
+  createKnowledgeArticleSchema,
+  updateDocumentSettingsSchema,
+} from "./documents";

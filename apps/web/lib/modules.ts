@@ -12,6 +12,8 @@ export type PersonalBrandModule = {
     | "leads"
     | "client_portal"
     | "finance"
+    | "projects"
+    | "documents"
     | "digital_products"
     | "email_marketing"
     | "community"
@@ -89,6 +91,41 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
       "Tasks",
       "Reports",
       "AI insights",
+    ],
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    description: "Plan projects, tasks, kanban boards, timelines, teams, and delivery reports.",
+    route: "/projects",
+    status: "active",
+    origin: "vanderbase",
+    capabilities: [
+      "Projects",
+      "Tasks",
+      "Kanban",
+      "Timeline",
+      "Calendar",
+      "Teams",
+      "Reports",
+      "AI insights",
+    ],
+  },
+  {
+    id: "documents",
+    label: "Documents",
+    description: "Write docs, manage folders, knowledge base, templates, and AI-assisted content.",
+    route: "/documents",
+    status: "active",
+    origin: "vanderbase",
+    capabilities: [
+      "Documents",
+      "Folders",
+      "Knowledge base",
+      "Templates",
+      "Versions",
+      "Sharing",
+      "AI writing",
     ],
   },
   {

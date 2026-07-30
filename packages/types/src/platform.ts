@@ -17,6 +17,8 @@ export const platformModuleSchema = z.enum([
   "analytics",
   "workspace",
   "crm",
+  "projects",
+  "documents",
   "inbox",
   "chat",
   "billing",
