@@ -279,6 +279,13 @@ export type {
   FinanceTransaction,
   FinanceMonthlyPoint,
   FinanceDashboardStats,
+  FinanceCustomer,
+  FinanceVendor,
+  FinanceBudget,
+  FinanceCashFlowEntry,
+  FinanceReport,
+  FinanceSettings,
+  FinanceCashFlowPoint,
 } from "./finance";
 
 export {

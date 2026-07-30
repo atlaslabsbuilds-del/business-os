@@ -109,3 +109,100 @@ export type FinanceDashboardStats = {
   topExpenseCategories: Array<{ category: string; amount: number }>;
 };
 
+export type FinanceCustomer = {
+  id: string;
+  workspaceId: string;
+  createdBy: string;
+  crmCompanyId: string | null;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  billingAddress: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanceVendor = {
+  id: string;
+  workspaceId: string;
+  createdBy: string;
+  name: string;
+  email: string | null;
+  category: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanceBudget = {
+  id: string;
+  workspaceId: string;
+  createdBy: string;
+  name: string;
+  category: string | null;
+  department: string | null;
+  periodStart: string;
+  periodEnd: string;
+  amount: number;
+  spent: number;
+  remaining: number;
+  percentUsed: number;
+  alertThreshold: number;
+  status: "active" | "archived";
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanceCashFlowEntry = {
+  id: string;
+  workspaceId: string;
+  createdBy: string;
+  flowType: "in" | "out";
+  description: string;
+  category: string | null;
+  amount: number;
+  currency: string;
+  flowDate: string;
+  isForecast: boolean;
+  status: "projected" | "confirmed" | "cancelled";
+  referenceId: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanceReport = {
+  id: string;
+  workspaceId: string;
+  createdBy: string;
+  reportType: "profit_loss" | "balance_sheet" | "cash_flow" | "revenue" | "expense" | "tax";
+  periodStart: string;
+  periodEnd: string;
+  title: string;
+  summary: string | null;
+  data: Record<string, unknown>;
+  format: "json" | "csv" | "pdf";
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanceSettings = {
+  workspaceId: string;
+  currency: string;
+  taxRate: number;
+  invoiceNumberFormat: string;
+  fiscalYearStartMonth: number;
+  paymentMethods: string[];
+  defaultCategories: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type FinanceCashFlowPoint = {
+  month: string;
+  cashIn: number;
+  cashOut: number;
+  net: number;
+};
+

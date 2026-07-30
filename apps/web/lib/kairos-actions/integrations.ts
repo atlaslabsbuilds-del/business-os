@@ -34,6 +34,8 @@ async function requireConnectedProvider(
 export function buildKairosIntegrationTools(): KairosToolDefinition[] {
   ensureIntegrationProvidersRegistered();
 
+  // The registry intentionally stores heterogeneous Zod input shapes.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const tools: Array<KairosToolDefinition<any, any>> = [
     {
       name: "listConnectedIntegrations",

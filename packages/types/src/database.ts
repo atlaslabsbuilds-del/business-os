@@ -1982,6 +1982,132 @@ export type Database = {
         };
         Relationships: [];
       };
+      finance_customers: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; crm_company_id: string | null;
+          name: string; email: string | null; phone: string | null; billing_address: string | null;
+          notes: string | null; metadata: Json; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; crm_company_id?: string | null;
+          name: string; email?: string | null; phone?: string | null; billing_address?: string | null;
+          notes?: string | null; metadata?: Json; created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; crm_company_id?: string | null;
+          name?: string; email?: string | null; phone?: string | null; billing_address?: string | null;
+          notes?: string | null; metadata?: Json; created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_vendors: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; name: string; email: string | null;
+          category: string | null; notes: string | null; metadata: Json; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; name: string; email?: string | null;
+          category?: string | null; notes?: string | null; metadata?: Json; created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; name?: string; email?: string | null;
+          category?: string | null; notes?: string | null; metadata?: Json; created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_invoice_items: {
+        Row: {
+          id: string; workspace_id: string; invoice_id: string; description: string; quantity: number;
+          unit_price: number; amount: number; sort_order: number; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; invoice_id: string; description: string; quantity?: number;
+          unit_price?: number; amount?: number; sort_order?: number; created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; invoice_id?: string; description?: string; quantity?: number;
+          unit_price?: number; amount?: number; sort_order?: number; created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_budgets: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; name: string; category: string | null;
+          department: string | null; period_start: string; period_end: string; amount: number;
+          alert_threshold: number; status: string; notes: string | null; metadata: Json;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; name: string; category?: string | null;
+          department?: string | null; period_start: string; period_end: string; amount: number;
+          alert_threshold?: number; status?: string; notes?: string | null; metadata?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; name?: string; category?: string | null;
+          department?: string | null; period_start?: string; period_end?: string; amount?: number;
+          alert_threshold?: number; status?: string; notes?: string | null; metadata?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_cash_flow: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; flow_type: string; description: string;
+          category: string | null; amount: number; currency: string; flow_date: string;
+          is_forecast: boolean; status: string; reference_id: string | null; metadata: Json;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; flow_type: string; description: string;
+          category?: string | null; amount: number; currency?: string; flow_date?: string;
+          is_forecast?: boolean; status?: string; reference_id?: string | null; metadata?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; flow_type?: string; description?: string;
+          category?: string | null; amount?: number; currency?: string; flow_date?: string;
+          is_forecast?: boolean; status?: string; reference_id?: string | null; metadata?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_reports: {
+        Row: {
+          id: string; workspace_id: string; created_by: string; report_type: string; period_start: string;
+          period_end: string; title: string; summary: string | null; data: Json; format: string;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; workspace_id: string; created_by: string; report_type: string; period_start: string;
+          period_end: string; title: string; summary?: string | null; data?: Json; format?: string;
+          created_at?: string; updated_at?: string;
+        };
+        Update: {
+          id?: string; workspace_id?: string; created_by?: string; report_type?: string; period_start?: string;
+          period_end?: string; title?: string; summary?: string | null; data?: Json; format?: string;
+          created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
+      finance_settings: {
+        Row: {
+          workspace_id: string; currency: string; tax_rate: number; invoice_number_format: string;
+          fiscal_year_start_month: number; payment_methods: Json; default_categories: Json;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          workspace_id: string; currency?: string; tax_rate?: number; invoice_number_format?: string;
+          fiscal_year_start_month?: number; payment_methods?: Json; default_categories?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Update: {
+          workspace_id?: string; currency?: string; tax_rate?: number; invoice_number_format?: string;
+          fiscal_year_start_month?: number; payment_methods?: Json; default_categories?: Json;
+          created_at?: string; updated_at?: string;
+        };
+        Relationships: [];
+      };
       feedback_items: {
         Row: {
           id: string;

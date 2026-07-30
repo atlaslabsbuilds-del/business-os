@@ -5,10 +5,19 @@ import {
   createFinanceExpense,
   createFinanceInvoice,
   createFinanceTransaction,
+  createFinanceBudget,
+  createFinanceCashFlowEntry,
+  createFinanceReport,
   getFinanceDashboardStats,
+  getFinanceCashFlowSeries,
+  getFinanceSettings,
+  listFinanceBudgets,
+  listFinanceCashFlow,
   listFinanceExpenses,
   listFinanceInvoices,
+  listFinanceReports,
   listFinanceTransactions,
+  updateFinanceSettings,
   updateFinanceInvoiceStatus,
 } from "@repo/database/finance";
 import { getMembershipRole } from "@repo/database/workspace";
@@ -45,7 +54,14 @@ export async function getFinanceData(input?: {
     listFinanceExpenses({ workspaceId: ctx.workspaceId, query: input?.query, status: input?.expenseStatus }),
     listFinanceTransactions({ workspaceId: ctx.workspaceId, query: input?.query, type: input?.transactionType }),
   ]);
-  return { stats, invoices, expenses, transactions };
+  const [budgets, cashFlow, cashFlowSeries, reports, settings] = await Promise.all([
+    listFinanceBudgets({ workspaceId: ctx.workspaceId }),
+    listFinanceCashFlow({ workspaceId: ctx.workspaceId }),
+    getFinanceCashFlowSeries(ctx.workspaceId),
+    listFinanceReports({ workspaceId: ctx.workspaceId }),
+    getFinanceSettings(ctx.workspaceId),
+  ]);
+  return { stats, invoices, expenses, transactions, budgets, cashFlow, cashFlowSeries, reports, settings };
 }
 
 export async function createInvoiceAction(input: {
@@ -169,5 +185,91 @@ export async function createTransactionAction(input: {
     return { ok: true as const, transaction };
   } catch (error) {
     return { ok: false as const, error: error instanceof Error ? error.message : "Unable to create transaction." };
+  }
+}
+
+export async function createBudgetAction(input: {
+  name: string;
+  category?: string;
+  department?: string;
+  periodStart: string;
+  periodEnd: string;
+  amount: number;
+  alertThreshold?: number;
+}) {
+  const ctx = await context();
+  if (!input.name.trim() || input.amount <= 0 || !input.periodStart || !input.periodEnd) {
+    return { ok: false as const, error: "Name, amount, and budget dates are required." };
+  }
+  try {
+    const budget = await createFinanceBudget({ ...input, workspaceId: ctx.workspaceId, userId: ctx.userId });
+    return { ok: true as const, budget };
+  } catch (error) {
+    return { ok: false as const, error: error instanceof Error ? error.message : "Unable to create budget." };
+  }
+}
+
+export async function createCashFlowAction(input: {
+  flowType: "in" | "out";
+  description: string;
+  category?: string;
+  amount: number;
+  flowDate: string;
+  isForecast?: boolean;
+}) {
+  const ctx = await context();
+  if (!input.description.trim() || input.amount <= 0 || !input.flowDate) {
+    return { ok: false as const, error: "Description, positive amount, and date are required." };
+  }
+  try {
+    const entry = await createFinanceCashFlowEntry({ ...input, workspaceId: ctx.workspaceId, userId: ctx.userId });
+    return { ok: true as const, entry };
+  } catch (error) {
+    return { ok: false as const, error: error instanceof Error ? error.message : "Unable to create cash flow entry." };
+  }
+}
+
+export async function updateFinanceSettingsAction(input: {
+  currency: string;
+  taxRate: number;
+  invoiceNumberFormat: string;
+  fiscalYearStartMonth: number;
+  paymentMethods: string[];
+  defaultCategories: string[];
+}) {
+  const ctx = await context();
+  try {
+    const settings = await updateFinanceSettings({ ...input, workspaceId: ctx.workspaceId });
+    return { ok: true as const, settings };
+  } catch (error) {
+    return { ok: false as const, error: error instanceof Error ? error.message : "Unable to update finance settings." };
+  }
+}
+
+export async function generateFinanceReportAction(input: {
+  reportType: "profit_loss" | "balance_sheet" | "cash_flow" | "revenue" | "expense" | "tax";
+  periodStart: string;
+  periodEnd: string;
+}) {
+  const ctx = await context();
+  try {
+    const data = await getFinanceData();
+    const report = await createFinanceReport({
+      workspaceId: ctx.workspaceId,
+      userId: ctx.userId,
+      reportType: input.reportType,
+      periodStart: input.periodStart,
+      periodEnd: input.periodEnd,
+      title: `${input.reportType.replaceAll("_", " ")} report`,
+      summary: `Generated from workspace finance data for ${input.periodStart} through ${input.periodEnd}.`,
+      data: {
+        stats: data.stats,
+        monthly: data.stats.monthly,
+        topExpenseCategories: data.stats.topExpenseCategories,
+      },
+    });
+    return { ok: true as const, report };
+  } catch (error) {
+    return { ok: false as const, error: error instanceof Error ? error.message : "Unable to generate report." };
   }
 }

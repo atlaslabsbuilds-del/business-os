@@ -86,7 +86,7 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     label: "Client Portal",
     description: "Centralize clients, contracts, files, deliverables, and feedback.",
     route: "/clients",
-    status: "coming_soon",
+    status: "active",
     origin: "pbos",
     capabilities: ["Clients", "Contracts", "Files", "Deliverables"],
   },
@@ -97,7 +97,7 @@ export const PERSONAL_BRAND_MODULES: PersonalBrandModule[] = [
     route: "/finance",
     status: "coming_soon",
     origin: "pbos",
-    capabilities: ["Revenue", "Invoices", "Payments", "Expenses"],
+    capabilities: ["Revenue", "Invoices", "Payments", "Expenses", "Budgets", "Reports", "AI insights"],
   },
   {
     id: "digital_products",

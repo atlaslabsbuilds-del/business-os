@@ -2,6 +2,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type {
   Database,
   FinanceDashboardStats,
+  FinanceBudget,
+  FinanceCashFlowEntry,
+  FinanceCashFlowPoint,
+  FinanceCustomer,
   FinanceExpense,
   FinanceExpenseStatus,
   FinanceInvoice,
@@ -10,6 +14,9 @@ import type {
   FinanceInvoiceStatus,
   FinanceTransaction,
   FinanceTransactionType,
+  FinanceReport,
+  FinanceSettings,
+  FinanceVendor,
   Json,
 } from "@repo/types";
 import { clientOrDefault } from "./platform-helpers";
@@ -82,6 +89,116 @@ function mapTransaction(row: TransactionRow): FinanceTransaction {
     referenceId: row.reference_id,
     provider: row.provider,
     createdAt: row.created_at,
+  };
+}
+
+function mapCustomer(row: Database["public"]["Tables"]["finance_customers"]["Row"]): FinanceCustomer {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    createdBy: row.created_by,
+    crmCompanyId: row.crm_company_id,
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    billingAddress: row.billing_address,
+    notes: row.notes,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapVendor(row: Database["public"]["Tables"]["finance_vendors"]["Row"]): FinanceVendor {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    createdBy: row.created_by,
+    name: row.name,
+    email: row.email,
+    category: row.category,
+    notes: row.notes,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapBudget(
+  row: Database["public"]["Tables"]["finance_budgets"]["Row"],
+  spent = 0,
+): FinanceBudget {
+  const amount = number(row.amount);
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    createdBy: row.created_by,
+    name: row.name,
+    category: row.category,
+    department: row.department,
+    periodStart: row.period_start,
+    periodEnd: row.period_end,
+    amount,
+    spent,
+    remaining: amount - spent,
+    percentUsed: amount > 0 ? Math.round((spent / amount) * 100) : 0,
+    alertThreshold: number(row.alert_threshold),
+    status: row.status as FinanceBudget["status"],
+    notes: row.notes,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapCashFlow(row: Database["public"]["Tables"]["finance_cash_flow"]["Row"]): FinanceCashFlowEntry {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    createdBy: row.created_by,
+    flowType: row.flow_type as FinanceCashFlowEntry["flowType"],
+    description: row.description,
+    category: row.category,
+    amount: number(row.amount),
+    currency: row.currency,
+    flowDate: row.flow_date,
+    isForecast: row.is_forecast,
+    status: row.status as FinanceCashFlowEntry["status"],
+    referenceId: row.reference_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapReport(row: Database["public"]["Tables"]["finance_reports"]["Row"]): FinanceReport {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    createdBy: row.created_by,
+    reportType: row.report_type as FinanceReport["reportType"],
+    periodStart: row.period_start,
+    periodEnd: row.period_end,
+    title: row.title,
+    summary: row.summary,
+    data: (row.data && typeof row.data === "object" && !Array.isArray(row.data)
+      ? row.data
+      : {}) as Record<string, unknown>,
+    format: row.format as FinanceReport["format"],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapSettings(row: Database["public"]["Tables"]["finance_settings"]["Row"]): FinanceSettings {
+  const strings = (value: unknown): string[] =>
+    Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  return {
+    workspaceId: row.workspace_id,
+    currency: row.currency,
+    taxRate: number(row.tax_rate),
+    invoiceNumberFormat: row.invoice_number_format,
+    fiscalYearStartMonth: row.fiscal_year_start_month,
+    paymentMethods: strings(row.payment_methods),
+    defaultCategories: strings(row.default_categories),
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -359,5 +476,278 @@ export async function getFinanceDashboardStats(
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5),
   };
+}
+
+export async function listFinanceCustomers(input: {
+  workspaceId: string;
+  query?: string;
+  limit?: number;
+  offset?: number;
+  client?: Db;
+}): Promise<FinanceCustomer[]> {
+  const supabase = await clientOrDefault(input.client);
+  let query = supabase
+    .from("finance_customers")
+    .select("*")
+    .eq("workspace_id", input.workspaceId)
+    .order("name", { ascending: true })
+    .range(input.offset ?? 0, (input.offset ?? 0) + (input.limit ?? 50) - 1);
+  if (input.query?.trim()) {
+    const term = input.query.trim().replace(/[%_]/g, "");
+    query = query.or(`name.ilike.%${term}%,email.ilike.%${term}%`);
+  }
+  const { data, error } = await query;
+  if (error) throw new Error(`Failed to list finance customers: ${error.message}`);
+  return (data ?? []).map(mapCustomer);
+}
+
+export async function listFinanceVendors(input: {
+  workspaceId: string;
+  query?: string;
+  limit?: number;
+  offset?: number;
+  client?: Db;
+}): Promise<FinanceVendor[]> {
+  const supabase = await clientOrDefault(input.client);
+  let query = supabase
+    .from("finance_vendors")
+    .select("*")
+    .eq("workspace_id", input.workspaceId)
+    .order("name", { ascending: true })
+    .range(input.offset ?? 0, (input.offset ?? 0) + (input.limit ?? 50) - 1);
+  if (input.query?.trim()) {
+    const term = input.query.trim().replace(/[%_]/g, "");
+    query = query.or(`name.ilike.%${term}%,email.ilike.%${term}%,category.ilike.%${term}%`);
+  }
+  const { data, error } = await query;
+  if (error) throw new Error(`Failed to list finance vendors: ${error.message}`);
+  return (data ?? []).map(mapVendor);
+}
+
+export async function listFinanceBudgets(input: {
+  workspaceId: string;
+  client?: Db;
+}): Promise<FinanceBudget[]> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("finance_budgets")
+    .select("*")
+    .eq("workspace_id", input.workspaceId)
+    .eq("status", "active")
+    .order("period_start", { ascending: false });
+  if (error) throw new Error(`Failed to list budgets: ${error.message}`);
+  const expenses = await listFinanceExpenses({ workspaceId: input.workspaceId, client: supabase });
+  return (data ?? []).map((row) => {
+    const spent = expenses
+      .filter(
+        (expense) =>
+          expense.expenseDate >= row.period_start &&
+          expense.expenseDate <= row.period_end &&
+          (!row.category || expense.category === row.category),
+      )
+      .reduce((sum, expense) => sum + expense.amount, 0);
+    return mapBudget(row, spent);
+  });
+}
+
+export async function createFinanceBudget(input: {
+  workspaceId: string;
+  userId: string;
+  name: string;
+  category?: string | null;
+  department?: string | null;
+  periodStart: string;
+  periodEnd: string;
+  amount: number;
+  alertThreshold?: number;
+  notes?: string | null;
+  client?: Db;
+}): Promise<FinanceBudget> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("finance_budgets")
+    .insert({
+      workspace_id: input.workspaceId,
+      created_by: input.userId,
+      name: input.name.trim(),
+      category: input.category?.trim() || null,
+      department: input.department?.trim() || null,
+      period_start: input.periodStart,
+      period_end: input.periodEnd,
+      amount: input.amount,
+      alert_threshold: input.alertThreshold ?? 80,
+      notes: input.notes ?? null,
+    })
+    .select("*")
+    .single();
+  if (error) throw new Error(`Failed to create budget: ${error.message}`);
+  return mapBudget(data);
+}
+
+export async function listFinanceCashFlow(input: {
+  workspaceId: string;
+  client?: Db;
+}): Promise<FinanceCashFlowEntry[]> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("finance_cash_flow")
+    .select("*")
+    .eq("workspace_id", input.workspaceId)
+    .order("flow_date", { ascending: false });
+  if (error) throw new Error(`Failed to list cash flow: ${error.message}`);
+  return (data ?? []).map(mapCashFlow);
+}
+
+export async function createFinanceCashFlowEntry(input: {
+  workspaceId: string;
+  userId: string;
+  flowType: "in" | "out";
+  description: string;
+  category?: string | null;
+  amount: number;
+  currency?: string;
+  flowDate: string;
+  isForecast?: boolean;
+  status?: "projected" | "confirmed" | "cancelled";
+  client?: Db;
+}): Promise<FinanceCashFlowEntry> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("finance_cash_flow")
+    .insert({
+      workspace_id: input.workspaceId,
+      created_by: input.userId,
+      flow_type: input.flowType,
+      description: input.description.trim(),
+      category: input.category?.trim() || null,
+      amount: input.amount,
+      currency: input.currency ?? "USD",
+      flow_date: input.flowDate,
+      is_forecast: input.isForecast ?? false,
+      status: input.status ?? "projected",
+    })
+    .select("*")
+    .single();
+  if (error) throw new Error(`Failed to create cash flow entry: ${error.message}`);
+  return mapCashFlow(data);
+}
+
+export async function getFinanceCashFlowSeries(
+  workspaceId: string,
+  client?: Db,
+): Promise<FinanceCashFlowPoint[]> {
+  const entries = await listFinanceCashFlow({ workspaceId, client });
+  const points = new Map<string, FinanceCashFlowPoint>();
+  for (let index = 5; index >= 0; index -= 1) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - index, 1);
+    const month = date.toISOString().slice(0, 7);
+    points.set(month, { month, cashIn: 0, cashOut: 0, net: 0 });
+  }
+  for (const entry of entries) {
+    const point = points.get(entry.flowDate.slice(0, 7));
+    if (!point || entry.status === "cancelled") continue;
+    if (entry.flowType === "in") point.cashIn += entry.amount;
+    else point.cashOut += entry.amount;
+    point.net = point.cashIn - point.cashOut;
+  }
+  return [...points.values()];
+}
+
+export async function getFinanceSettings(
+  workspaceId: string,
+  client?: Db,
+): Promise<FinanceSettings> {
+  const supabase = await clientOrDefault(client);
+  const { data, error } = await supabase
+    .from("finance_settings")
+    .select("*")
+    .eq("workspace_id", workspaceId)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to load finance settings: ${error.message}`);
+  if (data) return mapSettings(data);
+  const { data: created, error: createError } = await supabase
+    .from("finance_settings")
+    .insert({ workspace_id: workspaceId })
+    .select("*")
+    .single();
+  if (createError || !created) {
+    throw new Error(`Failed to initialize finance settings: ${createError?.message ?? "Unknown error"}`);
+  }
+  return mapSettings(created);
+}
+
+export async function updateFinanceSettings(input: {
+  workspaceId: string;
+  currency?: string;
+  taxRate?: number;
+  invoiceNumberFormat?: string;
+  fiscalYearStartMonth?: number;
+  paymentMethods?: string[];
+  defaultCategories?: string[];
+  client?: Db;
+}): Promise<FinanceSettings> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("finance_settings")
+    .upsert({
+      workspace_id: input.workspaceId,
+      currency: input.currency,
+      tax_rate: input.taxRate,
+      invoice_number_format: input.invoiceNumberFormat,
+      fiscal_year_start_month: input.fiscalYearStartMonth,
+      payment_methods: input.paymentMethods,
+      default_categories: input.defaultCategories,
+    })
+    .select("*")
+    .single();
+  if (error || !data) throw new Error(`Failed to update finance settings: ${error?.message ?? "Unknown error"}`);
+  return mapSettings(data);
+}
+
+export async function createFinanceReport(input: {
+  workspaceId: string;
+  userId: string;
+  reportType: FinanceReport["reportType"];
+  periodStart: string;
+  periodEnd: string;
+  title: string;
+  summary?: string | null;
+  data: Record<string, unknown>;
+  format?: FinanceReport["format"];
+  client?: Db;
+}): Promise<FinanceReport> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("finance_reports")
+    .insert({
+      workspace_id: input.workspaceId,
+      created_by: input.userId,
+      report_type: input.reportType,
+      period_start: input.periodStart,
+      period_end: input.periodEnd,
+      title: input.title,
+      summary: input.summary ?? null,
+      data: input.data as Json,
+      format: input.format ?? "json",
+    })
+    .select("*")
+    .single();
+  if (error || !data) throw new Error(`Failed to create finance report: ${error?.message ?? "Unknown error"}`);
+  return mapReport(data);
+}
+
+export async function listFinanceReports(input: {
+  workspaceId: string;
+  client?: Db;
+}): Promise<FinanceReport[]> {
+  const supabase = await clientOrDefault(input.client);
+  const { data, error } = await supabase
+    .from("finance_reports")
+    .select("*")
+    .eq("workspace_id", input.workspaceId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`Failed to list finance reports: ${error.message}`);
+  return (data ?? []).map(mapReport);
 }
 

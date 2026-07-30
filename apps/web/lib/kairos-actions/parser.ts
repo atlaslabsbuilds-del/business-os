@@ -365,5 +365,65 @@ export function parseKairosActionCommand(input: {
     };
   }
 
+  if (
+    /how\s+much\s+did\s+we\s+spend\s+this\s+month\b/.test(command) ||
+    /summarize\s+(monthly\s+)?spending\b/.test(command)
+  ) {
+    return {
+      tool: "summarizeMonthlySpending",
+      label: "Summarize monthly spending",
+      input: {},
+    };
+  }
+
+  if (
+    /show\s+(the\s+)?highest\s+expenses\b/.test(command) ||
+    /find\s+(the\s+)?largest\s+expenses\b/.test(command)
+  ) {
+    return {
+      tool: "showHighestExpenses",
+      label: "Show highest expenses",
+      input: { limit: 5 },
+    };
+  }
+
+  if (
+    /summarize\s+(financial|finance)\s+performance\b/.test(command) ||
+    /financial\s+summary\b/.test(command)
+  ) {
+    return {
+      tool: "summarizeFinancialPerformance",
+      label: "Summarize financial performance",
+      input: {},
+    };
+  }
+
+  if (
+    /predict\s+next\s+month'?s\s+revenue\b/.test(command) ||
+    /forecast\s+next\s+month'?s\s+revenue\b/.test(command)
+  ) {
+    return {
+      tool: "predictNextMonthRevenue",
+      label: "Predict next month's revenue",
+      input: {},
+    };
+  }
+
+  if (/generate\s+(a\s+)?monthly\s+(finance\s+)?report\b/.test(command)) {
+    return {
+      tool: "generateMonthlyFinanceReport",
+      label: "Generate monthly finance report",
+      input: {},
+    };
+  }
+
+  if (/find\s+(unnecessary|non[- ]essential)\s+expenses\b/.test(command)) {
+    return {
+      tool: "findUnnecessaryExpenses",
+      label: "Find unnecessary expenses",
+      input: {},
+    };
+  }
+
   return null;
 }

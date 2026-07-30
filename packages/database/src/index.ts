@@ -202,6 +202,17 @@ export {
   listFinanceTransactions,
   createFinanceTransaction,
   getFinanceDashboardStats,
+  listFinanceCustomers,
+  listFinanceVendors,
+  listFinanceBudgets,
+  createFinanceBudget,
+  listFinanceCashFlow,
+  createFinanceCashFlowEntry,
+  getFinanceCashFlowSeries,
+  getFinanceSettings,
+  updateFinanceSettings,
+  createFinanceReport,
+  listFinanceReports,
 } from "./finance";
 export {
   listFeedbackItems,

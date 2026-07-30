@@ -2,15 +2,31 @@ import type { ReactNode } from "react";
 import { ModulePageShell } from "../app/module-page-shell";
 import { ModuleNav } from "../app/module-nav";
 
-export type FinanceTab = "overview" | "invoices" | "expenses" | "transactions" | "customers" | "analytics";
+export type FinanceTab =
+  | "overview"
+  | "transactions"
+  | "income"
+  | "expenses"
+  | "invoices"
+  | "customers"
+  | "budgets"
+  | "cash-flow"
+  | "reports"
+  | "analytics"
+  | "settings";
 
 const tabs = [
   ["overview", "Overview"],
-  ["invoices", "Invoices"],
-  ["expenses", "Expenses"],
   ["transactions", "Transactions"],
+  ["income", "Income"],
+  ["expenses", "Expenses"],
+  ["invoices", "Invoices"],
   ["customers", "Customers"],
+  ["budgets", "Budgets"],
+  ["cash-flow", "Cash Flow"],
+  ["reports", "Reports"],
   ["analytics", "Analytics"],
+  ["settings", "Settings"],
 ] as const;
 
 export function FinanceShell({

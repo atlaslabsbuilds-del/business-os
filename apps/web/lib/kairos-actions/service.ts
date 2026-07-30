@@ -4,6 +4,7 @@ import {
   createContact,
   createDeal,
   createFinanceInvoice,
+  createFinanceReport,
   createInboxTask,
   createLead,
   createNote,
@@ -11,9 +12,11 @@ import {
   deleteContact,
   deleteDeal,
   getDashboardSnapshot,
+  getFinanceDashboardStats,
   listContacts,
   listDeals,
   listFinanceInvoices,
+  listFinanceExpenses,
   listWorkspaceActivityEvents,
   scheduleInboxMeeting,
   updateDeal,
@@ -425,6 +428,133 @@ function ensureDefaultKairosTools() {
         status: "cancelled",
       });
       return { cancelled: true, invoice };
+    },
+  });
+
+  registerTool({
+    name: "summarizeFinancialPerformance",
+    description: "Summarize revenue, expenses, profit, and cash performance",
+    requiredRole: "Viewer",
+    schema: z.object({}),
+    execute: async (ctx) => {
+      const stats = await getFinanceDashboardStats(ctx.workspaceId);
+      return {
+        revenue: stats.totalRevenue,
+        expenses: stats.totalExpenses,
+        netProfit: stats.netProfit,
+        cashBalance: stats.cashBalance,
+        pendingPayments: stats.pendingPayments,
+        overdueInvoices: stats.overdueInvoices,
+        insight:
+          stats.netProfit >= 0
+            ? "The workspace is currently profitable based on tracked finance records."
+            : "Tracked expenses currently exceed revenue; review the largest categories.",
+      };
+    },
+  });
+
+  registerTool({
+    name: "showHighestExpenses",
+    description: "Find the highest expenses in the workspace",
+    requiredRole: "Viewer",
+    schema: z.object({ limit: z.number().int().min(1).max(20).optional() }),
+    execute: async (ctx, input) => {
+      const expenses = await listFinanceExpenses({ workspaceId: ctx.workspaceId });
+      return expenses
+        .sort((a, b) => b.amount - a.amount)
+        .slice(0, input.limit ?? 5)
+        .map((expense) => ({
+          vendor: expense.vendor,
+          category: expense.category,
+          amount: expense.amount,
+          date: expense.expenseDate,
+        }));
+    },
+  });
+
+  registerTool({
+    name: "summarizeMonthlySpending",
+    description: "Summarize how much the workspace spent this month",
+    requiredRole: "Viewer",
+    schema: z.object({}),
+    execute: async (ctx) => {
+      const expenses = await listFinanceExpenses({ workspaceId: ctx.workspaceId });
+      const month = new Date().toISOString().slice(0, 7);
+      const current = expenses.filter((expense) => expense.expenseDate.startsWith(month));
+      const total = current.reduce((sum, expense) => sum + expense.amount, 0);
+      return {
+        month,
+        total,
+        categories: current.reduce<Record<string, number>>((result, expense) => {
+          result[expense.category] = (result[expense.category] ?? 0) + expense.amount;
+          return result;
+        }, {}),
+      };
+    },
+  });
+
+  registerTool({
+    name: "predictNextMonthRevenue",
+    description: "Estimate next month's revenue from recent monthly performance",
+    requiredRole: "Viewer",
+    schema: z.object({}),
+    execute: async (ctx) => {
+      const stats = await getFinanceDashboardStats(ctx.workspaceId);
+      const active = stats.monthly.filter((point) => point.revenue > 0);
+      const forecast = active.length
+        ? active.reduce((sum, point) => sum + point.revenue, 0) / active.length
+        : 0;
+      return {
+        forecast,
+        basis: `Average of ${active.length} active tracked months`,
+        confidence: active.length >= 3 ? "moderate" : "low",
+      };
+    },
+  });
+
+  registerTool({
+    name: "generateMonthlyFinanceReport",
+    description: "Generate and save a monthly finance report",
+    requiredRole: "Manager",
+    schema: z.object({}),
+    execute: async (ctx) => {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+      const stats = await getFinanceDashboardStats(ctx.workspaceId);
+      const report = await createFinanceReport({
+        workspaceId: ctx.workspaceId,
+        userId: ctx.userId,
+        reportType: "profit_loss",
+        periodStart: start,
+        periodEnd: end,
+        title: `Monthly finance report · ${start.slice(0, 7)}`,
+        summary: `Revenue ${stats.totalRevenue.toFixed(2)}, expenses ${stats.totalExpenses.toFixed(2)}, net profit ${stats.netProfit.toFixed(2)}.`,
+        data: { stats },
+      });
+      return { reportId: report.id, title: report.title, summary: report.summary };
+    },
+  });
+
+  registerTool({
+    name: "findUnnecessaryExpenses",
+    description: "Identify expense categories that may be unnecessary or unusually concentrated",
+    requiredRole: "Manager",
+    schema: z.object({}),
+    execute: async (ctx) => {
+      const expenses = await listFinanceExpenses({ workspaceId: ctx.workspaceId });
+      const totals = new Map<string, number>();
+      for (const expense of expenses) {
+        totals.set(expense.category, (totals.get(expense.category) ?? 0) + expense.amount);
+      }
+      return [...totals.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([category, amount]) => ({
+          category,
+          amount,
+          recommendation: "Review this category for recurring or non-essential spend.",
+        }));
     },
   });
 

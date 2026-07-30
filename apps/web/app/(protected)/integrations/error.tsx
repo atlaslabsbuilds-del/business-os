@@ -14,7 +14,7 @@ export default function IntegrationsError({
   return (
     <IntegrationsShell title="Integrations" description="Something went wrong loading the hub.">
       <div className="bos-glass-strong flex min-h-[280px] flex-col items-center justify-center rounded-[24px] px-6 py-12 text-center">
-        <p className="text-lg font-semibold">Couldn't load integrations</p>
+        <p className="text-lg font-semibold">Couldn&apos;t load integrations</p>
         <p className="mt-2 max-w-md text-sm text-secondary">
           {error.message || "An unexpected error occurred."}
         </p>
