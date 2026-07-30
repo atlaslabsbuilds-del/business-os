@@ -48,18 +48,37 @@ export {
   countUnreadNotificationsForUser,
   createWorkspaceNotification,
   emitWorkspaceNotification,
+  emitKairosAlert,
   markWorkspaceNotificationRead,
   markNotificationReadForUser,
   markAllNotificationsReadForUser,
+  archiveNotificationForUser,
   deleteNotificationForUser,
   deleteWorkspaceNotification,
   getUserNotificationPreferences,
   upsertUserNotificationPreferences,
+  listNotificationTemplates,
+  enqueueNotificationDelivery,
 } from "./notifications";
 export {
   listWorkspaceActivityEvents,
   createWorkspaceActivityEvent,
 } from "./activity";
+export {
+  writeSecurityAuditLog,
+  recordLoginHistory,
+  getWorkspaceSecuritySettings,
+  upsertWorkspaceSecuritySettings,
+  listSecurityAuditLogs,
+  listUserLoginHistory,
+  listUserDeviceSessions,
+  upsertUserDeviceSession,
+  revokeUserDeviceSession,
+  listWorkspaceApiKeys,
+  createWorkspaceApiKey,
+  revokeWorkspaceApiKey,
+  getSecurityDashboardSnapshot,
+} from "./security";
 export {
   listWorkspaceAiMemory,
   createWorkspaceAiMemory,

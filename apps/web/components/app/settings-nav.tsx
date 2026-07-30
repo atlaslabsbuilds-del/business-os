@@ -5,18 +5,21 @@ import { usePathname } from "next/navigation";
 import { cn } from "@repo/ui/utils";
 
 const SETTINGS_NAV = [
-  { href: "/settings", label: "General", exact: true },
+  { href: "/settings", label: "Workspace", exact: true },
+  { href: "/settings/security", label: "Security" },
   { href: "/notifications/preferences", label: "Notifications" },
-  { href: "/team", label: "Team" },
+  { href: "/team", label: "Members" },
+  { href: "/integrations", label: "Integrations" },
   { href: "/billing", label: "Billing" },
   { href: "/credits", label: "AI Credits" },
+  { href: "/notifications/activity", label: "Activity" },
 ];
 
 export function SettingsNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="bos-glass flex flex-col gap-1 rounded-2xl p-2">
+    <nav className="bos-glass flex flex-col gap-1 rounded-2xl p-2" aria-label="Settings">
       {SETTINGS_NAV.map((item) => {
         const active = item.exact
           ? pathname === item.href

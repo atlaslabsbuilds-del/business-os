@@ -69,6 +69,12 @@ export const metadata: Metadata = {
     "msapplication-TileColor": "#0B0B0B",
     "theme-color": "#0B0B0B",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "VanderBase",
+  },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({

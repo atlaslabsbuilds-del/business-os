@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   countUnreadNotificationsForUser,
   listNotificationsForUser,
@@ -8,15 +9,33 @@ import { resolveActiveWorkspace } from "../../../lib/workspace-context";
 
 export const dynamic = "force-dynamic";
 
-export default async function NotificationsPage() {
+export default async function NotificationsPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ section?: string }>;
+}) {
   const context = await resolveActiveWorkspace();
   if (!context) return null;
 
+  const params = searchParams ? await searchParams : {};
+  const section = params.section;
   const { active, userId } = context;
   const [notifications, unreadCount] = await Promise.all([
     listNotificationsForUser({
       workspaceId: active.workspace.id,
       userId,
+      section:
+        section === "unread" ||
+        section === "mentions" ||
+        section === "tasks" ||
+        section === "projects" ||
+        section === "finance" ||
+        section === "crm" ||
+        section === "calendar" ||
+        section === "system"
+          ? section
+          : undefined,
+      unreadOnly: section === "unread",
       limit: 50,
     }),
     countUnreadNotificationsForUser({
@@ -27,12 +46,18 @@ export default async function NotificationsPage() {
 
   return (
     <NotificationsShell>
-      <NotificationsCenterClient
-        workspaceId={active.workspace.id}
-        userId={userId}
-        initialNotifications={notifications}
-        initialUnreadCount={unreadCount}
-      />
+      <Suspense
+        fallback={
+          <div className="h-40 animate-pulse rounded-2xl border border-border bg-elevated/60" />
+        }
+      >
+        <NotificationsCenterClient
+          workspaceId={active.workspace.id}
+          userId={userId}
+          initialNotifications={notifications}
+          initialUnreadCount={unreadCount}
+        />
+      </Suspense>
     </NotificationsShell>
   );
 }

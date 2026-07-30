@@ -29,7 +29,9 @@ function mapRow(row: Record<string, unknown>): NotificationListItem {
     createdAt: String(row.created_at),
     updatedAt: String(row.updated_at),
     readAt: null,
+    archivedAt: null,
     isRead: false,
+    isArchived: false,
   };
 }
 

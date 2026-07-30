@@ -249,7 +249,7 @@ export function AppShell({
             </form>
           </header>
 
-          <main className="relative flex-1 p-4 sm:p-6 lg:p-8">
+          <main className="relative flex-1 p-4 pb-24 sm:p-6 lg:p-8 lg:pb-8">
             <div className="pbos-animate-rise">{children}</div>
           </main>
         </div>

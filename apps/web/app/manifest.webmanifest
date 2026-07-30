@@ -2,10 +2,13 @@
   "name": "VanderBase — The AI-Native Business OS",
   "short_name": "VanderBase",
   "description": "The AI-native Business OS for modern businesses.",
-  "start_url": "/",
+  "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#0B0B0B",
   "theme_color": "#FF7A00",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/branding/vanderbase-icon-48.png",
@@ -21,7 +24,27 @@
       "src": "/branding/vanderbase-icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/branding/vanderbase-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Notifications",
+      "short_name": "Alerts",
+      "url": "/notifications",
+      "icons": [{ "src": "/branding/vanderbase-icon-48.png", "sizes": "48x48" }]
+    },
+    {
+      "name": "Kairos Chat",
+      "short_name": "Chat",
+      "url": "/chat",
+      "icons": [{ "src": "/branding/vanderbase-icon-48.png", "sizes": "48x48" }]
     }
   ]
 }

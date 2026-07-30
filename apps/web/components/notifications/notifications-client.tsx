@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertTriangle,
+  Archive,
   Bell,
   CheckCheck,
   CreditCard,
@@ -20,9 +21,15 @@ import {
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Badge } from "@repo/ui/badge";
 import { Button } from "@repo/ui/button";
-import type { NotificationCategory, NotificationListItem } from "@repo/types";
+import type {
+  NotificationCategory,
+  NotificationListItem,
+  NotificationPriority,
+  NotificationSection,
+} from "@repo/types";
 import { NOTIFICATION_CATEGORY_LABELS } from "@repo/types";
 import {
+  archiveNotificationAction,
   deleteNotificationAction,
   markAllNotificationsReadAction,
   markNotificationReadAction,
@@ -38,29 +45,51 @@ const CATEGORY_ICONS: Record<string, typeof Bell> = {
   new_customer: Users,
   new_lead: UserPlus,
   task_assigned: CheckCheck,
+  task_completed: CheckCheck,
+  project_updated: Workflow,
+  crm_activity: Users,
+  meeting_reminder: Bell,
+  calendar_invite: Bell,
+  document_shared: MessageSquare,
+  mention: MessageSquare,
+  comment: MessageSquare,
   team_invite: UserPlus,
   kairos_suggestion: Sparkles,
+  ai_recommendation: Sparkles,
   billing_alert: CreditCard,
   system_update: Bell,
+  system_alert: AlertTriangle,
   security_alert: Shield,
+  integration_alert: Workflow,
   feedback_update: MessageSquare,
 };
 
-const FILTER_OPTIONS: Array<{ value: "all" | NotificationCategory; label: string }> = [
-  { value: "all", label: "All" },
-  { value: "workspace_update", label: "Workspace" },
-  { value: "invoice_paid", label: "Paid" },
-  { value: "invoice_overdue", label: "Overdue" },
-  { value: "new_customer", label: "Customers" },
-  { value: "new_lead", label: "Leads" },
-  { value: "task_assigned", label: "Tasks" },
-  { value: "team_invite", label: "Team" },
-  { value: "kairos_suggestion", label: "Kairos" },
-  { value: "billing_alert", label: "Billing" },
-  { value: "system_update", label: "System" },
-  { value: "security_alert", label: "Security" },
-  { value: "feedback_update", label: "Feedback" },
+const PRIORITY_OPTIONS: Array<{ value: "all" | NotificationPriority; label: string }> = [
+  { value: "all", label: "All priorities" },
+  { value: "urgent", label: "Urgent" },
+  { value: "high", label: "High" },
+  { value: "normal", label: "Normal" },
+  { value: "low", label: "Low" },
 ];
+
+function resolveSection(value: string | null): NotificationSection {
+  const allowed: NotificationSection[] = [
+    "all",
+    "unread",
+    "mentions",
+    "tasks",
+    "projects",
+    "finance",
+    "crm",
+    "calendar",
+    "system",
+    "settings",
+  ];
+  if (value && allowed.includes(value as NotificationSection)) {
+    return value as NotificationSection;
+  }
+  return "all";
+}
 
 export function NotificationRow({
   notification,
@@ -79,6 +108,13 @@ export function NotificationRow({
     if (notification.isRead) return;
     startTransition(async () => {
       await markNotificationReadAction({ notificationId: notification.id });
+      onChange?.();
+    });
+  };
+
+  const archive = () => {
+    startTransition(async () => {
+      await archiveNotificationAction({ notificationId: notification.id });
       onChange?.();
     });
   };
@@ -163,6 +199,16 @@ export function NotificationRow({
             <Button
               variant="ghost"
               size="sm"
+              className="h-7 px-2 text-xs"
+              disabled={pending}
+              onClick={archive}
+              aria-label="Archive notification"
+            >
+              <Archive className="h-3.5 w-3.5" aria-hidden />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               className="h-7 px-2 text-xs text-muted hover:text-error"
               disabled={pending}
               onClick={remove}
@@ -177,192 +223,175 @@ export function NotificationRow({
   );
 }
 
-export function NotificationsListPanel({
-  notifications,
-  loading,
-  onRefresh,
-}: {
-  notifications: NotificationListItem[];
-  loading?: boolean;
-  onRefresh: () => void;
-}) {
-  const [pending, startTransition] = useTransition();
-
-  const markAll = () => {
-    startTransition(async () => {
-      await markAllNotificationsReadAction();
-      onRefresh();
-    });
-  };
-
-  if (loading && notifications.length === 0) {
-    return (
-      <div className="rounded-2xl border border-border bg-surface p-10 text-center text-sm text-muted">
-        Loading notifications…
-      </div>
-    );
-  }
-
-  if (notifications.length === 0) {
-    return (
-      <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
-        <p className="text-lg font-medium">You&apos;re all caught up 🎉</p>
-        <p className="mt-2 text-sm text-secondary">No new notifications.</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-3">
-      <div className="flex justify-end">
-        <Button variant="secondary" size="sm" disabled={pending} onClick={markAll}>
-          Mark all as read
-        </Button>
-      </div>
-      <div className="space-y-2">
-        {notifications.map((notification) => (
-          <NotificationRow
-            key={notification.id}
-            notification={notification}
-            onChange={onRefresh}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function NotificationsFilters({
-  query,
-  category,
-  unreadOnly,
-  onQueryChange,
-  onCategoryChange,
-  onUnreadOnlyChange,
-}: {
-  query: string;
-  category: "all" | NotificationCategory;
-  unreadOnly: boolean;
-  onQueryChange: (value: string) => void;
-  onCategoryChange: (value: "all" | NotificationCategory) => void;
-  onUnreadOnlyChange: (value: boolean) => void;
-}) {
-  return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
-      <label className="block min-w-0 flex-1">
-        <span className="sr-only">Search notifications</span>
-        <input
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Search notifications…"
-          className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
-        />
-      </label>
-      <div className="flex flex-wrap items-center gap-2">
-        <select
-          value={category}
-          onChange={(event) =>
-            onCategoryChange(event.target.value as "all" | NotificationCategory)
-          }
-          className="h-10 rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
-          aria-label="Filter by type"
-        >
-          {FILTER_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <label className="flex items-center gap-2 rounded-xl border border-border bg-elevated px-3 py-2 text-sm">
-          <input
-            type="checkbox"
-            checked={unreadOnly}
-            onChange={(event) => onUnreadOnlyChange(event.target.checked)}
-            className="accent-[var(--primary)]"
-          />
-          Unread only
-        </label>
-      </div>
-    </div>
-  );
-}
-
 export function NotificationsCenterClient({
   workspaceId,
   userId,
   initialNotifications,
+  initialUnreadCount = 0,
 }: {
   workspaceId: string;
   userId: string;
   initialNotifications: NotificationListItem[];
   initialUnreadCount?: number;
 }) {
+  const searchParams = useSearchParams();
+  const section = resolveSection(searchParams.get("section"));
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<"all" | NotificationCategory>("all");
-  const [unreadOnly, setUnreadOnly] = useState(false);
+  const [priority, setPriority] = useState<"all" | NotificationPriority>("all");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(initialNotifications.length >= 50);
+  const [pending, startTransition] = useTransition();
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedQuery(query.trim()), 250);
     return () => window.clearTimeout(timer);
   }, [query]);
 
-  const refresh = useCallback(async () => {
-    const response = await import("../../app/(protected)/actions/notifications").then(
-      (mod) =>
-        mod.listNotificationsAction({
-          query: debouncedQuery || undefined,
-          category: category === "all" ? undefined : category,
-          unreadOnly,
-        }),
-    );
-    if (response.ok) {
-      return response.data;
-    }
-    return null;
-  }, [category, debouncedQuery, unreadOnly]);
-
-  const [notifications, setNotifications] = useState(initialNotifications);
-  const [loading, setLoading] = useState(false);
+  const refresh = useCallback(
+    async (cursor?: string) => {
+      const response = await import("../../app/(protected)/actions/notifications").then(
+        (mod) =>
+          mod.listNotificationsAction({
+            query: debouncedQuery || undefined,
+            priority: priority === "all" ? undefined : priority,
+            section: section === "all" ? undefined : section,
+            unreadOnly: section === "unread",
+            cursor,
+            limit: 50,
+          }),
+      );
+      if (response.ok) return response.data;
+      return null;
+    },
+    [debouncedQuery, priority, section],
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
     const data = await refresh();
     setLoading(false);
-    if (data) setNotifications(data.notifications);
+    if (!data) return;
+    setNotifications(data.notifications);
+    setUnreadCount(data.unreadCount);
+    setHasMore(data.notifications.length >= 50);
   }, [refresh]);
 
-  const loadRef = useRef(load);
-  loadRef.current = load;
+  const loadMore = useCallback(async () => {
+    if (!hasMore || loadingMore || notifications.length === 0) return;
+    setLoadingMore(true);
+    const cursor = notifications[notifications.length - 1]?.createdAt;
+    const data = await refresh(cursor);
+    setLoadingMore(false);
+    if (!data) return;
+    setNotifications((prev) => {
+      const ids = new Set(prev.map((item) => item.id));
+      return [...prev, ...data.notifications.filter((item) => !ids.has(item.id))];
+    });
+    setHasMore(data.notifications.length >= 50);
+  }, [hasMore, loadingMore, notifications, refresh]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void loadMore();
+      },
+      { rootMargin: "240px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   useNotificationsRealtime({
     workspaceId,
     userId,
     enabled: true,
     onInsert: () => {
-      void loadRef.current();
+      void load();
     },
   });
 
+  const markAll = () => {
+    startTransition(async () => {
+      await markAllNotificationsReadAction();
+      await load();
+    });
+  };
+
   return (
     <div className="space-y-4">
-      <NotificationsFilters
-        query={query}
-        category={category}
-        unreadOnly={unreadOnly}
-        onQueryChange={setQuery}
-        onCategoryChange={setCategory}
-        onUnreadOnlyChange={setUnreadOnly}
-      />
-      <NotificationsListPanel
-        notifications={notifications}
-        loading={loading}
-        onRefresh={load}
-      />
+      <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
+        <label className="block min-w-0 flex-1">
+          <span className="sr-only">Search notifications</span>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search notifications…"
+            className="h-10 w-full rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+          />
+        </label>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={priority}
+            onChange={(event) =>
+              setPriority(event.target.value as "all" | NotificationPriority)
+            }
+            className="h-10 rounded-xl border border-border bg-elevated px-3 text-sm outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Filter by priority"
+          >
+            {PRIORITY_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+          <Badge variant="accent">{unreadCount} unread</Badge>
+          <Button variant="secondary" size="sm" disabled={pending} onClick={markAll}>
+            Mark all as read
+          </Button>
+        </div>
+      </div>
+
+      {loading && notifications.length === 0 ? (
+        <div className="space-y-2" aria-busy="true" aria-label="Loading notifications">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-24 animate-pulse rounded-2xl border border-border bg-elevated/60"
+            />
+          ))}
+        </div>
+      ) : notifications.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border bg-surface p-10 text-center">
+          <p className="text-lg font-medium">You&apos;re all caught up</p>
+          <p className="mt-2 text-sm text-secondary">No notifications in this view.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {notifications.map((notification) => (
+            <NotificationRow
+              key={notification.id}
+              notification={notification}
+              onChange={load}
+            />
+          ))}
+          <div ref={sentinelRef} className="h-8" aria-hidden />
+          {loadingMore ? (
+            <p className="text-center text-xs text-muted">Loading more…</p>
+          ) : null}
+        </div>
+      )}
+
       <p className="text-center text-xs text-muted">
         <Link href="/notifications/preferences" className="text-primary hover:underline">
           Notification preferences

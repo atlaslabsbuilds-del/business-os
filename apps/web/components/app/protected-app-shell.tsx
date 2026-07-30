@@ -7,16 +7,20 @@ import { InviteMemberModal } from "../workspace/invite-member-modal";
 import { WorkspaceSwitcher } from "../workspace/workspace-switcher";
 import { AppChromeProvider } from "./app-chrome-provider";
 import { AppCommandPalette, CommandPaletteTrigger } from "./app-command-palette";
+import { AppErrorBoundary } from "./app-error-boundary";
 import { AppHelpButton } from "./app-help-button";
 import { AppNotificationsCenter } from "./app-notifications-center";
 import { AppProfileMenu } from "./app-profile-menu";
 import { AppQuickActionsPanel } from "./app-quick-actions-panel";
 import { AppToastStack } from "./app-toast-stack";
+import { MobileBottomNav } from "./mobile-bottom-nav";
 import { PageTransition } from "./page-transition";
 import { KairosFab } from "../kairos/kairos-fab";
 import { KairosChromeOverlays } from "../kairos/kairos-chrome-overlays";
 import { KairosChatPanel, KairosChatProvider } from "../kairos/chat";
 import { VanderBaseLogo } from "../branding/vanderbase-logo";
+import { ProductTour } from "../onboarding/product-tour";
+import { PwaRegister } from "../pwa/pwa-register";
 import { useNotificationsRealtime, useUnreadNotificationCount } from "../../lib/notifications-realtime";
 
 export function ProtectedAppShell({
@@ -97,13 +101,18 @@ export function ProtectedAppShell({
           }
           helpSlot={<AppHelpButton />}
         >
-          <PageTransition>{children}</PageTransition>
+          <AppErrorBoundary>
+            <PageTransition>{children}</PageTransition>
+          </AppErrorBoundary>
         </AppShell>
-      <AppCommandPalette />
-      <AppToastStack />
-      <KairosFab />
-      <KairosChatPanel />
-      <KairosChromeOverlays />
+        <MobileBottomNav items={navWithBadge} />
+        <PwaRegister />
+        <ProductTour />
+        <AppCommandPalette />
+        <AppToastStack />
+        <KairosFab />
+        <KairosChatPanel />
+        <KairosChromeOverlays />
       </AppChromeProvider>
     </KairosChatProvider>
   );

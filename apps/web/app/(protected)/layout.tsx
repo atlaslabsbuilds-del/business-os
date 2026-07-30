@@ -11,6 +11,7 @@ import {
   IconPlug,
   IconSettings,
   IconShare,
+  IconShield,
   IconSparkles,
   IconUsers,
 } from "@repo/ui/icons";
@@ -64,6 +65,7 @@ export default async function ProtectedLayout({
         { href: "/analytics", label: "Analytics", icon: <IconLayout /> },
         { href: "/finance", label: "Finance", icon: <IconCreditCard /> },
         { href: "/notifications", label: "Notifications", icon: <IconBell /> },
+        { href: "/settings/security", label: "Security", icon: <IconShield /> },
         { href: "/feedback", label: "Feedback", icon: <IconMessage /> },
         { href: "/team", label: "Team", icon: <IconUsers /> },
         { href: "/settings", label: "Settings", icon: <IconSettings /> },

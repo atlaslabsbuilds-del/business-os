@@ -30,6 +30,7 @@ import { buildKairosProjectsTools } from "./projects";
 import { buildKairosDocumentsTools } from "./documents";
 import { buildKairosCalendarTools } from "./calendar";
 import { buildKairosAnalyticsTools } from "./analytics";
+import { buildKairosPlatformTools } from "./platform";
 import type {
   KairosActionExecutionContext,
   KairosActionResponse,
@@ -584,6 +585,10 @@ function ensureDefaultKairosTools() {
   }
 
   for (const tool of buildKairosAnalyticsTools()) {
+    registerTool(tool);
+  }
+
+  for (const tool of buildKairosPlatformTools()) {
     registerTool(tool);
   }
 }

@@ -78,9 +78,13 @@ export {
 export type {
   NotificationCategory,
   NotificationPriority,
+  NotificationDeliveryChannel,
+  NotificationSection,
   UserNotificationPreferences,
   UserNotificationState,
   NotificationListItem,
+  NotificationTemplate,
+  DeliveryQueueItem,
   ListNotificationsInput,
   UpdateNotificationPreferencesInput,
 } from "./notifications";
@@ -88,12 +92,33 @@ export type {
 export {
   notificationCategorySchema,
   notificationPrioritySchema,
+  notificationDeliveryChannelSchema,
+  notificationSectionSchema,
   listNotificationsSchema,
   markNotificationReadSchema,
+  archiveNotificationSchema,
   deleteNotificationSchema,
   updateNotificationPreferencesSchema,
   NOTIFICATION_CATEGORY_LABELS,
+  NOTIFICATION_SECTION_CATEGORIES,
 } from "./notifications";
+
+export type {
+  WorkspaceSecuritySettings,
+  WorkspaceApiKey,
+  UserLoginHistoryItem,
+  UserDeviceSession,
+  SecurityAuditLogItem,
+  CreateWorkspaceApiKeyInput,
+  UpdateWorkspaceSecuritySettingsInput,
+} from "./security-platform";
+
+export {
+  createWorkspaceApiKeySchema,
+  revokeWorkspaceApiKeySchema,
+  revokeDeviceSessionSchema,
+  updateWorkspaceSecuritySettingsSchema,
+} from "./security-platform";
 
 export type {
   KairosAgentId,

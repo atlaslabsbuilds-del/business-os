@@ -53,6 +53,7 @@ const nextConfig = {
       "form-action 'self'",
       "frame-ancestors 'none'",
       "manifest-src 'self'",
+      "worker-src 'self' blob:",
       ...(process.env.NODE_ENV === "production"
         ? ["upgrade-insecure-requests"]
         : []),

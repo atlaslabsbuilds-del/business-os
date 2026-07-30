@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  archiveNotificationForUser,
   countUnreadNotificationsForUser,
   deleteNotificationForUser,
   getUserNotificationPreferences,
@@ -10,6 +11,7 @@ import {
   upsertUserNotificationPreferences,
 } from "@repo/database/notifications";
 import {
+  archiveNotificationSchema,
   deleteNotificationSchema,
   listNotificationsSchema,
   markNotificationReadSchema,
@@ -53,7 +55,11 @@ export async function listNotificationsAction(
         userId: ctx.userId,
         query: parsed.data.query,
         category: parsed.data.category,
+        priority: parsed.data.priority,
+        section: parsed.data.section,
         unreadOnly: parsed.data.unreadOnly,
+        archivedOnly: parsed.data.archivedOnly,
+        cursor: parsed.data.cursor,
         limit: parsed.data.limit,
       }),
       countUnreadNotificationsForUser({
@@ -126,6 +132,29 @@ export async function markAllNotificationsReadAction(): Promise<
     return {
       ok: false,
       error: error instanceof Error ? error.message : "Failed to mark all read",
+    };
+  }
+}
+
+export async function archiveNotificationAction(
+  input: unknown,
+): Promise<NotificationsActionResult<{ archived: true }>> {
+  const parsed = archiveNotificationSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  try {
+    const ctx = await requireContext();
+    await archiveNotificationForUser({
+      userId: ctx.userId,
+      notificationId: parsed.data.notificationId,
+    });
+    return { ok: true, data: { archived: true } };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Failed to archive",
     };
   }
 }

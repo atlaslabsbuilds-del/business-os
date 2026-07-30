@@ -661,6 +661,12 @@ export function parseKairosActionCommand(input: {
   if (/summarize\s+analytics/.test(command)) return { tool: "summarizeAnalytics", label: "Summarize analytics", input: {} };
   if (/find\s+business\s+bottlenecks/.test(command)) return { tool: "findBusinessBottlenecks", label: "Find business bottlenecks", input: {} };
   if (/generate\s+(an?\s+)?executive\s+report/.test(command)) return { tool: "generateExecutiveReport", label: "Generate executive report", input: {} };
+  if (/show\s+unread\s+notifications/.test(command)) return { tool: "showUnreadNotifications", label: "Show unread notifications", input: {} };
+  if (/summarize\s+today'?s\s+activity/.test(command)) return { tool: "summarizeTodaysActivity", label: "Summarize today's activity", input: {} };
+  if (/review\s+security/.test(command)) return { tool: "reviewSecurity", label: "Review security", input: {} };
+  if (/optimize\s+(my\s+)?workspace/.test(command)) return { tool: "optimizeWorkspace", label: "Optimize my workspace", input: {} };
+  if (/improve\s+productivity/.test(command)) return { tool: "improveProductivity", label: "Improve productivity", input: {} };
+  if (/find\s+inactive\s+members/.test(command)) return { tool: "findInactiveMembers", label: "Find inactive members", input: {} };
 
   return null;
 }
